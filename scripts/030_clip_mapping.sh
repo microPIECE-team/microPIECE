@@ -9,8 +9,7 @@ command -v bedtools >/dev/null 2>&1 || { echo "I require bedtools but it's not i
 
 mkdir ../030/
 # build genome index for gsnap
-zcat ../data/AAE/GCF_000004015.4_AaegL3_genomic.fna.gz > ../030/GCF_000004015.4_AaegL3_genomic.fna
-gmap_build -D ../030/gsnap_db -k 15 -d Aedes_aegypti ../030/GCF_000004015.4_AaegL3_genomic.fna
+gmap_build -g -D ../030/gsnap_db -k 15 -d Aedes_aegypti ../data/AAE/GCF_000004015.4_AaegL3_genomic.fna.gz
 
 
 # gsnap mapping
