@@ -3,10 +3,11 @@
 # run gsnap to map the reads of CLIP sequencing to AAE genome
 
 # check for required programs
-command -v gsnap >/dev/null 2>&1 || { echo "I require gsnap but it's not installed. Aborting." >&2; exit 1; }
-command -v gmap_build >/dev/null 2>&1 || { echo "I require gsnap but it's not installed. Aborting." >&2; exit 1; }
-command -v samtools >/dev/null 2>&1 || { echo "I require samtools but it's not installed. Aborting." >&2; exit 1; }
-command -v bedtools >/dev/null 2>&1 || { echo "I require bedtools but it's not installed. Aborting." >&2; exit 1; }
+REQ_PROGS=(gsnap gmap_build samtools bedtools)
+for prog in ${REQ_PROGS[*]}
+do
+    command -v ${prog} >/dev/null 2>&1 || { echo "I require ${prog} but it's not installed. Aborting." >&2; exit 1; }
+done
 
 # creation of temporary folder for this step
 mkdir ../030/
