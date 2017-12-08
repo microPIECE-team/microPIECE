@@ -4,7 +4,7 @@ command -v fastq-dump >/dev/null 2>&1 || { echo "I require NCBI SRA Toolkit but 
 command -v wget >/dev/null 2>&1 || { echo "I require wget but it's not installed. Aborting." >&2; exit 1; }
 
 
-# obtain data from public servers
+# obtain data from public servers - may take 2-3 h
 
 # Aedes aegypti
 mkdir ../data/AAE/
