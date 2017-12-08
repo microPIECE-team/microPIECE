@@ -1,4 +1,7 @@
 #!/bin/bash
+command -v makeblastdb >/dev/null 2>&1 || { echo "I require makeblastdb but it's not installed. Aborting." >&2; exit 1; }
+command -v proteinortho5.pl >/dev/null 2>&1 || { echo "I require proteinortho5.pl but it's not installed. Aborting." >&2; exit 1; }
+
 #create folder for this step
 mkdir ../010/
 #unzip data
