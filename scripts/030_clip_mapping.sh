@@ -1,4 +1,5 @@
-#! /bin/bash
+#!/bin/bash
+
 # run gsnap to map the reads of CLIP sequencing to AAE genome
 command -v gsnap >/dev/null 2>&1 || { echo "I require gsnap but it's not installed. Aborting." >&2; exit 1; }
 command -v gmap_build >/dev/null 2>&1 || { echo "I require gsnap but it's not installed. Aborting." >&2; exit 1; }
