@@ -1,6 +1,7 @@
 #! /bin/bash
 # check for tools
 command -v fastq-dump >/dev/null 2>&1 || { echo "I require NCBI SRA Toolkit but it's not installed. Get it on https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software ! Aborting." >&2; exit 1; }
+command -v wget >/dev/null 2>&1 || { echo "I require wget but it's not installed. Aborting." >&2; exit 1; }
 
 
 # obtain data from public servers
@@ -14,7 +15,7 @@ wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/004/015/GCF_000004015.4_Aaeg
 # Transcriptome
 wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/004/015/GCF_000004015.4_AaegL3/GCF_000004015.4_AaegL3_rna.fna.gz -O ../data/AAE/GCF_000004015.4_AaegL3_rna.fna.gz
 # Proteome
-wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/004/015/GCF_000004015.4_AaegL3/GCF_000004015.4_AaegL3_protein.faa.gz -O ../data/GCF_000004015.4_AaegL3_protein.faa.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/004/015/GCF_000004015.4_AaegL3/GCF_000004015.4_AaegL3_protein.faa.gz -O ../data/AAE/GCF_000004015.4_AaegL3_protein.faa.gz
 # CLIP
 # 24h
 fastq-dump --gzip SRR5163635 -O ../data/AAE/
