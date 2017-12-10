@@ -1,11 +1,7 @@
 # tca_miRNA_data_generation
 All stuff which is required to generate data for Daniels miRNA project
 
-<<<<<<< HEAD
 # Order of execution
-- 005_getFiles.sh
-- 010
-=======
 ### 005_getFiles.sh
 Download all files needed for AGO CLIP transfer of AAE to TCA.
 Needs fastq-dump from the NCBI SRA Toolkit and wget
@@ -47,5 +43,3 @@ Merges the two conditions
 Extraction of the longest transcripts for each gene from the GFF files of AAE and TCA
 Transfer of the AAE CLIP regions to the orthologous longest transcripts from TCA
 
-
->>>>>>> c7fab6a4045f575ad438af37dadca346905bcfff
