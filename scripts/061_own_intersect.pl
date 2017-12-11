@@ -79,7 +79,8 @@ foreach my $chromosome (sort keys %genome)
 		    $stop = int(@{$genome{$chromosome}});
 		}
 
-		print join("\t", ($chromosome, $start, $stop, ".", ".", $strand)), "\n";
+		my @counts = map {$genome{$chromosome}[$_]{$strand}} ($start..$stop);
+		print join("\t", ($chromosome, $start, $stop, join(",", @counts), ".", $strand)), "\n";
 		$i = $stop+1;
 		$start = -1; $stop = -1;
 	    }
