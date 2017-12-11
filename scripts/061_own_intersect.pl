@@ -36,7 +36,19 @@ foreach my $key (keys %input)
             # NW_001809801.1	533942	533950	XM_001647802.1	1	-
             # NW_001809801.1	2779750	2779790	XM_001647839.1	1	+
 
+	    my ($chromosome, $start, $stop, $mrna_ids, undef, $strand) = split(/\t/, $_);
+
+	    # for each chromosomal position we need to consider:
+	    # Counter + strand
+	    # Counter - strand
+
+	    for (my $i=$start; $i<=$stop; $i++)
+	    {
+		$genome{$chromosome}[$i]{$strand}++;
+	    }
 	}
 	close(FH) || die "Unable to close file '$file': $!";
     }
 }
+
+print Dumper(\%genome);
