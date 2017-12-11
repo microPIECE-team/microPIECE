@@ -232,8 +232,8 @@ sub parse_needle{
 sub ortho_parser{
 	my $op_file	= $_[0];
 	my %op_hash;
-	open(OP,"<",$op_file);
-	while(<OP>) || die{
+	open(OP,"<",$op_file) || die;
+	while(<OP>){
 		chomp;
 		my $op_line		= $_;
 		my @op_split		= split(" ",$op_line);
@@ -263,6 +263,7 @@ sub GFF_parser{
 	while(<GP>){
 		chomp;
 		my $gp_line	= $_;
+		next if(/^\t$/);
 #		print "$gp_line\n";
 		my @gp_split	= split(" ",$gp_line);
 		my $gp_xm	= $gp_split[0];
