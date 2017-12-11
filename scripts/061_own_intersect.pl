@@ -52,4 +52,39 @@ foreach my $key (keys %input)
     }
 }
 
-print Dumper(\%genome);
+# print the output
+foreach my $chromosome (sort keys %genome)
+{
+    foreach my $strand (qw(- +))
+    {
+	my $start = -1;
+	for (my $i=0; $i<@{$genome{$chromosome}}; $i++)
+	{
+	    if (defined $genome{$chromosome}[$i] && exists $genome{$chromosome}[$i]{$strand} && $genome{$chromosome}[$i]{$strand}>0)
+	    {
+		# we found a new block
+		$start = $i;
+		my $stop = -1;
+		for (my $j=$i+1; $j<@{$genome{$chromosome}}; $j++)
+		{
+		    if (defined $genome{$chromosome}[$j] && exists $genome{$chromosome}[$j]{$strand} && $genome{$chromosome}[$j]{$strand}>0)
+		    {
+			$stop = $j;
+		    } else {
+			last;
+		    }
+		}
+		if ($stop == -1)
+		{
+		    $stop = int(@{$genome{$chromosome}});
+		}
+
+		print join("\t", ($chromosome, $start, $stop, ".", ".", $strand)), "\n";
+		$i = $stop+1;
+		$start = -1; $stop = -1;
+	    }
+	}
+    }
+}
+
+#print Dumper(\%genome);
