@@ -27,4 +27,11 @@ bedtools bamtobed -i ../030/SRR5163632_trim_gsnap.bam > ../030/SRR5163632_trim_g
 bedtools bamtobed -i ../030/SRR5163633_trim_gsnap.bam > ../030/SRR5163633_trim_gsnap.bed
 bedtools bamtobed -i ../030/SRR5163634_trim_gsnap.bam > ../030/SRR5163634_trim_gsnap.bed
 
+rm ../030/SRR5163635_trim_gsnap.bam
+rm ../030/SRR5163636_trim_gsnap.bam
+rm ../030/SRR5163637_trim_gsnap.bam
+
+rm ../030/SRR5163632_trim_gsnap.bam
+rm ../030/SRR5163633_trim_gsnap.bam
+rm ../030/SRR5163634_trim_gsnap.bam
 
