@@ -1,7 +1,6 @@
 #! /bin/bash
 # check for tools
 command -v fastq-dump >/dev/null 2>&1 || { echo "I require NCBI SRA Toolkit but it's not installed. Get it on https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software ! Aborting." >&2; exit 1; }
-command -v wget >/dev/null 2>&1 || { echo "I require wget but it's not installed. Aborting." >&2; exit 1; }
 
 
 # obtain data from public servers - may take 2-3 h
