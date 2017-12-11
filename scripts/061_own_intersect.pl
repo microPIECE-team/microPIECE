@@ -24,6 +24,7 @@ foreach my $key (keys %input)
 {
     foreach my $file (@{$input{$key}})
     {
+	warn "Working on file '$file'\n";
 	open(FH, "<", $file) || die "Unable to open file '$file': $!";
 	while(<FH>)
 	{
