@@ -1,5 +1,12 @@
 #!/bin/bash
 
+REQ_PROGS=(./2_bedtool_discard_sizes.pl bedtools ./3_fasta_uc.pl)
+for prog in ${REQ_PROGS[*]}
+do
+    command -v ${prog} >/dev/null 2>&1 || { echo "I require ${prog} but it's not installed. Aborting." >&2; exit 1; }
+done
+
+
 mkdir ../070/
 
 # discard sizes
