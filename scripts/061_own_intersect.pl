@@ -18,4 +18,25 @@ foreach my $key (keys %input)
     $input{$key} = [ split(/,/, $input{$key}) ];
 }
 
-print Dumper(\%input);
+my %genome = ();
+
+foreach my $key (keys %input)
+{
+    foreach my $file (@{$input{$key}})
+    {
+	open(FH, "<", $file) || die "Unable to open file '$file': $!";
+	while(<FH>)
+	{
+	    # go through the bed files
+	    chomp;
+
+	    # NW_001809801.1	79510	79534	XM_001647792.1	1	+
+	    # NW_001809801.1	79527	79534	XM_001647792.1	1	+
+	    # NW_001809801.1	248783	248807	XM_001647796.1	1	-
+            # NW_001809801.1	533942	533950	XM_001647802.1	1	-
+            # NW_001809801.1	2779750	2779790	XM_001647839.1	1	+
+
+	}
+	close(FH) || die "Unable to close file '$file': $!";
+    }
+}
