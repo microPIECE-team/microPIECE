@@ -80,12 +80,36 @@ foreach my $chromosome (sort keys %genome)
 		}
 
 		my @counts = map {$genome{$chromosome}[$_]{$strand}} ($start..$stop);
-		print join("\t", ($chromosome, $start, $stop, join(",", @counts), ".", $strand)), "\n";
+		print join("\t", ($chromosome, $start, $stop, generate_cigar_like_string(@counts), ".", $strand)), "\n";
 		$i = $stop+1;
 		$start = -1; $stop = -1;
 	    }
 	}
     }
+}
+
+sub generate_cigar_like_string
+{
+    my @dat = @_;
+    my $last = $dat[0];
+    my $counter = 1;
+
+    my @output = ();
+
+    for(my $i=1; $i<@dat; $i++)
+    {
+	if ($dat[$i] == $last)
+	{
+	    $counter++;
+	} else {
+	    push(@output, sprintf("%dx%d", $counter, $last));
+	    $last = $dat[$i];
+	    $counter = 1;
+	}
+    }
+    push(@output, sprintf("%dx%d", $counter, $last));
+
+    return join(",", @output);
 }
 
 #print Dumper(\%genome);
