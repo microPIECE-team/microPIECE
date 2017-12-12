@@ -18,7 +18,11 @@ foreach my $key (keys %input)
     $input{$key} = [ split(/,/, $input{$key}) ];
 }
 
-my %genome = ();
+my @genome = ();
+my %chromosomes = ();
+my %strands    = ();
+my %conditions = ();
+
 
 foreach my $key (keys %input)
 {
@@ -39,13 +43,34 @@ foreach my $key (keys %input)
 
 	    my ($chromosome, $start, $stop, $mrna_ids, undef, $strand) = split(/\t/, $_);
 
+	    # check if chromosome is already known
+	    unless (exists $chromosomes{$chromosome})
+	    {
+		$chromosomes{$chromosome} = int(keys %chromosomes);
+	    }
+	    $chromosome = $chromosomes{$chromosome};
+
+	    # check if strand is already known
+	    unless (exists $strands{$strand})
+	    {
+		$strands{$strand} = int(keys %strands);
+	    }
+	    $strand = $strands{$strand};
+
+	    # check if condition/key is already known
+	    unless (exists $conditions{$key})
+	    {
+		$conditions{$key} = int(keys %conditions);
+	    }
+	    my $condition = $conditions{$key};
+
 	    # for each chromosomal position we need to consider:
 	    # Counter + strand
 	    # Counter - strand
 
 	    for (my $i=$start; $i<=$stop; $i++)
 	    {
-		$genome{$chromosome}[$i]{$strand}++;
+		$genome[$chromosome][$strand][$i][$condition]++;
 	    }
 	}
 	close(FH) || die "Unable to close file '$file': $!";
@@ -53,63 +78,94 @@ foreach my $key (keys %input)
 }
 
 # print the output
-foreach my $chromosome (sort keys %genome)
+my @conditions_ordered = sort (keys %conditions);
+print "# Conditional counts are printed in the following order: ", join(", ", ("total", @conditions_ordered)), "\n";
+
+foreach my $chromosome_key (sort keys %chromosomes)
 {
-    foreach my $strand (qw(- +))
+    my $chromosome = $chromosomes{$chromosome_key};
+    foreach my $strand_key (sort keys %strands)
     {
-	my $start = -1;
-	for (my $i=0; $i<@{$genome{$chromosome}}; $i++)
+	my $strand = $strands{$strand_key};
+
+	# check if the strand and the chromosome are existing
+	unless (defined $genome[$chromosome] && ref($genome[$chromosome]) eq "ARRAY")
 	{
-	    if (defined $genome{$chromosome}[$i] && exists $genome{$chromosome}[$i]{$strand} && $genome{$chromosome}[$i]{$strand}>0)
+	    # chromosomes should be always defined!
+	    die "Missing entry for chromosome '$chromosome_key'\n";
+	}
+	unless (defined $genome[$chromosome][$strand] && ref($genome[$chromosome][$strand]) eq "ARRAY")
+	{
+	    # if no feature is annotated on the strand if could be missing
+	    warn "No feature on chromosome '$chromosome_key' for ($strand_key)-strand.\n";
+	    next;
+	}
+
+	my $start = -1;
+	for (my $i=0; $i<@{$genome[$chromosome][$strand]}; $i++)
+	{
+	    my $counts_on_position = get_counts_for_position(\@genome, $chromosome, $strand, $i, \%conditions);
+
+	    if ($counts_on_position->{total} > 0)
 	    {
 		# we found a new block
 		$start = $i;
 		my $stop = -1;
-		for (my $j=$i+1; $j<@{$genome{$chromosome}}; $j++)
+
+		my @counts = ($counts_on_position);
+
+		for (my $j=$i+1; $j<@{$genome[$chromosome][$strand]}; $j++)
 		{
-		    if (defined $genome{$chromosome}[$j] && exists $genome{$chromosome}[$j]{$strand} && $genome{$chromosome}[$j]{$strand}>0)
+		    my $counts_on_inner_position = get_counts_for_position(\@genome, $chromosome, $strand, $j, \%conditions);
+
+		    if ($counts_on_inner_position->{total} > 0)
 		    {
 			$stop = $j;
+			push(@counts, $counts_on_inner_position);
 		    } else {
 			last;
 		    }
 		}
 		if ($stop == -1)
 		{
-		    $stop = int(@{$genome{$chromosome}});
+		    $stop = int(@{$genome[$chromosome][$strand]});
 		}
 
-		my @counts = map {$genome{$chromosome}[$_]{$strand}} ($start..$stop);
-		print join("\t", ($chromosome, $start, $stop, generate_cigar_like_string(@counts), ".", $strand)), "\n";
+		print join("\t", ($chromosome_key, $start, $stop, sprintf("length=%d;counts=%s", @counts+0, generate_cigar_like_string(\@counts, ["total", @conditions_ordered])), ".", $strand_key)), "\n";
 		$i = $stop+1;
 		$start = -1; $stop = -1;
 	    }
 	}
+	$genome[$chromosome][$strand] = undef; # reduce memory footprint
     }
+    $genome[$chromosome] = undef; # reduce memory footprint
 }
 
 sub generate_cigar_like_string
 {
-    my @dat = @_;
-    my $last = $dat[0];
-    my $counter = 1;
+    my ($ref_counts, $ref_ordered_conditions) = @_;
 
     my @output = ();
 
-    for(my $i=1; $i<@dat; $i++)
+    foreach my $counts (@{$ref_counts})
     {
-	if ($dat[$i] == $last)
-	{
-	    $counter++;
-	} else {
-	    push(@output, sprintf("%dx%d", $counter, $last));
-	    $last = $dat[$i];
-	    $counter = 1;
-	}
+	push(@output, join("/", map {$counts->{$_}} (@{$ref_ordered_conditions})));
     }
-    push(@output, sprintf("%dx%d", $counter, $last));
 
     return join(",", @output);
 }
 
-#print Dumper(\%genome);
+sub get_counts_for_position
+{
+    my ($ref_genome, $chr, $str, $pos, $ref_conditions) = @_;
+
+    my %counts = ( total => 0 );
+    foreach my $condition (keys %{$ref_conditions})
+    {
+	my $val = $ref_genome->[$chr][$str][$pos][$ref_conditions->{$condition}];
+	$counts{$condition} = (defined $val) ? $val : 0;
+	$counts{total} += $counts{$condition};
+    }
+
+    return \%counts;
+}
