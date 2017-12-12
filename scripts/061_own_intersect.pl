@@ -104,6 +104,12 @@ foreach my $chromosome_key (sort keys %chromosomes)
 	my $start = -1;
 	for (my $i=0; $i<@{$genome[$chromosome][$strand]}; $i++)
 	{
+	    # check if we can skip this position
+	    unless (defined $genome[$chromosome][$strand][$i] && ref($genome[$chromosome][$strand][$i]) eq "ARRAY")
+	    {
+		next;
+	    }
+
 	    my $counts_on_position = get_counts_for_position(\@genome, $chromosome, $strand, $i, \%conditions);
 
 	    if ($counts_on_position->{total} > 0)
@@ -160,6 +166,7 @@ sub get_counts_for_position
     my ($ref_genome, $chr, $str, $pos, $ref_conditions) = @_;
 
     my %counts = ( total => 0 );
+
     foreach my $condition (keys %{$ref_conditions})
     {
 	my $val = $ref_genome->[$chr][$str][$pos][$ref_conditions->{$condition}];
