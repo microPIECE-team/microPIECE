@@ -1,5 +1,5 @@
 #!/bin/bash
-REQ_PROGS=(miRDeep2.pl bwa RNAfold)
+REQ_PROGS=(miRDeep2.pl bwa)
 for prog in ${REQ_PROGS[*]}
 do
     command -v ${prog} >/dev/null 2>&1 || { echo "I require ${prog} but it's not installed. Aborting." >&2; exit 1; }
