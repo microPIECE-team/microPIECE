@@ -10,5 +10,11 @@ perl -aF'/\t/' -ne 'next unless ($F[2] =~ /mRNA|exon|CDS/); $F[8] =~ /Dbxref=Vec
 zcat ../data/TCA/GCF_000002335.3_Tcas5.2_rna.fna.gz > ../080/GCF_000002335.3_Tcas5.2_rna.fna
 
 # transfer with needle
-./4_map_clip_gff_needle.pl ../080/GCF_000004015.4_AaegL3_genomic_XM_XP_unique.csv ../010/TCA_vs_AAE.proteinortho ../070/SRR5163632_SRR5163633_SRR5163634_SRR5163635_SRR5163636_SRR5163637_trim_gsnap_piranha_sort_merge_mapGFF_minLen0_intersect_min22_max50_cat_sort_merge_UC.fa ../080/GCF_000002335.3_Tcas5.2_genomic_XM_XP_unique.csv ../080/GCF_000002335.3_Tcas5.2_rna.fna ../080/SRR5163632_SRR5163633_SRR5163634_SRR5163635_SRR5163636_SRR5163637_trim_gsnap_piranha_sort_merge_mapGFF_minLen0_intersect_min22_max50_cat_sort_merge_UC_mapNeedle.csv > ../080/SRR5163632_SRR5163633_SRR5163634_SRR5163635_SRR5163636_SRR5163637_trim_gsnap_piranha_sort_merge_mapGFF_minLen0_intersect_min22_max50_cat_sort_merge_UC_mapNeedle.aln
+./4_map_clip_gff_needle.pl \
+    ../080/GCF_000004015.4_AaegL3_genomic_XM_XP_unique.csv ../010/TCA_vs_AAE.proteinortho \
+    ../070/../070/clip_merged_mapGFF_minLen0_min22_max50_sort_UC.fa \
+    ../080/GCF_000002335.3_Tcas5.2_genomic_XM_XP_unique.csv \
+    ../080/GCF_000002335.3_Tcas5.2_rna.fna \
+    ../080/SRR5163632_SRR5163633_SRR5163634_SRR5163635_SRR5163636_SRR5163637_trim_gsnap_piranha_sort_merge_mapGFF_minLen0_intersect_min22_max50_cat_sort_merge_UC_mapNeedle.csv \
+    > ../080/SRR5163632_SRR5163633_SRR5163634_SRR5163635_SRR5163636_SRR5163637_trim_gsnap_piranha_sort_merge_mapGFF_minLen0_intersect_min22_max50_cat_sort_merge_UC_mapNeedle.aln
 
