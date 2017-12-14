@@ -15,6 +15,6 @@ zcat ../data/TCA/GCF_000002335.3_Tcas5.2_rna.fna.gz > ../080/GCF_000002335.3_Tca
     ../070/../070/clip_merged_mapGFF_minLen0_min22_max50_sort_UC.fa \
     ../080/GCF_000002335.3_Tcas5.2_genomic_XM_XP_unique.csv \
     ../080/GCF_000002335.3_Tcas5.2_rna.fna \
-    ../080/SRR5163632_SRR5163633_SRR5163634_SRR5163635_SRR5163636_SRR5163637_trim_gsnap_piranha_sort_merge_mapGFF_minLen0_intersect_min22_max50_cat_sort_merge_UC_mapNeedle.csv \
-    > ../080/SRR5163632_SRR5163633_SRR5163634_SRR5163635_SRR5163636_SRR5163637_trim_gsnap_piranha_sort_merge_mapGFF_minLen0_intersect_min22_max50_cat_sort_merge_UC_mapNeedle.aln
+    ../080/clip_merged_mapGFF_minLen0_min22_max50_sort_UC.csv \
+    > ../080/clip_merged_mapGFF_minLen0_min22_max50_sort_UC.aln
 
