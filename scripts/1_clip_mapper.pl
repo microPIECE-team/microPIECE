@@ -5,8 +5,6 @@ use warnings;
 my $bed_file	= $ARGV[0];
 my $gff_file	= $ARGV[1];
 
-my $min_length	= $ARGV[2];
-
 my %gff_hash	= %{&gff_parser($gff_file)};
 
 my $genomic_loci	= 0;	# clip peaks inside genome regions
@@ -23,15 +21,7 @@ while(<BED>){
 	my $bed_stop	= $bed_split[2];
         my $bed_strand  = $bed_split[5];	
 	my $bed_len	= $bed_stop-$bed_start+1; 	
-	if($bed_len	< $min_length){
-		my $bed_diff	 = $min_length - $bed_len;
-		my $bed_diff_half=int($bed_diff/2);
-		$bed_start 	-= $bed_diff_half;
-		$bed_stop	+= $bed_diff_half;	 
-		if($bed_diff % 2){
-			$bed_start--;
-		}
-	}
+
 	$bed_stop++;		# bed format does not include last character
 	
 	my $bed_center = int($bed_split[1]+$bed_len/2); # center of the bed peak
