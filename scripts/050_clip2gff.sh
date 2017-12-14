@@ -7,11 +7,5 @@ mkdir ../050/
 zcat ../data/AAE/GCF_000004015.4_AaegL3_genomic.gff.gz > ../050/GCF_000004015.4_AaegL3_genomic.gff
 
 # run mapping of peaks to gff mRNAs
-./1_clip_mapper.pl ../040/SRR5163632_trim_gsnap_piranha_sort_merge.bed ../050/GCF_000004015.4_AaegL3_genomic.gff 0 > ../050/SRR5163632_trim_gsnap_piranha_sort_merge_mapGFF_minLen0.bed
-./1_clip_mapper.pl ../040/SRR5163633_trim_gsnap_piranha_sort_merge.bed ../050/GCF_000004015.4_AaegL3_genomic.gff 0 > ../050/SRR5163633_trim_gsnap_piranha_sort_merge_mapGFF_minLen0.bed
-./1_clip_mapper.pl ../040/SRR5163634_trim_gsnap_piranha_sort_merge.bed ../050/GCF_000004015.4_AaegL3_genomic.gff 0 > ../050/SRR5163634_trim_gsnap_piranha_sort_merge_mapGFF_minLen0.bed
-
-./1_clip_mapper.pl ../040/SRR5163635_trim_gsnap_piranha_sort_merge.bed ../050/GCF_000004015.4_AaegL3_genomic.gff 0 > ../050/SRR5163635_trim_gsnap_piranha_sort_merge_mapGFF_minLen0.bed
-./1_clip_mapper.pl ../040/SRR5163636_trim_gsnap_piranha_sort_merge.bed ../050/GCF_000004015.4_AaegL3_genomic.gff 0 > ../050/SRR5163636_trim_gsnap_piranha_sort_merge_mapGFF_minLen0.bed
-./1_clip_mapper.pl ../040/SRR5163637_trim_gsnap_piranha_sort_merge.bed ../050/GCF_000004015.4_AaegL3_genomic.gff 0 > ../050/SRR5163637_trim_gsnap_piranha_sort_merge_mapGFF_minLen0.bed
+./1_clip_mapper.pl ../040/clip_merged.bed ../050/GCF_000004015.4_AaegL3_genomic.gff 0 > ../050/clip_merged_mapGFF_minLen0.bed
  
