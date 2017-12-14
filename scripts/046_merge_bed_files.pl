@@ -4,6 +4,57 @@ use strict;
 use warnings;
 use Pod::Usage;
 
+=pod
+
+=head1 046_merge_bed_files.pl
+
+This script is used to merge bed files into a single bed file, while
+keeping the information about the input counts in column #4 of the
+resulting bed file.
+
+=head2 Synopsis
+
+   046_merge_bed_files.pl \
+      --input 24h=file1.bed,file2.bed \
+      --input 72h=file3.bed,file4.bed \
+      --output merged.bed
+
+=head2 Options/Parameters
+
+=head3 --input
+
+Specifies the input classes. For a single class, at least one file
+need to be specified. Multiple files are supported. In that case use a
+comma as delimiter between file names.
+
+Counts for each input class are maintained.
+
+Specifying at least one input class is mandatory.
+
+=head3 --output
+
+Specifies the output file. Will be a bed file, with columns 1-3
+default bed format, followed by a count/length field, an undefiled
+column (.), and the strand field.
+
+=head3 --overwrite
+
+By default, an existing output file will not overwritten, but will
+kill the script. Using --overwrite will force to overwrite existing
+output files.
+
+=head3 --log
+
+Specifies the location of the log file. If no log file is set, logging
+information are written to STDERR, if a file is set, logging to
+STDERR/that file will performed.
+
+=head3 --help
+
+Print that help message
+
+=cut
+
 my %input     = ();
 my $output    = "-"; # default is standard out
 my $log       = "STDERR"; # default is standard error, if a value is specified, the messages will be printed to STDERR and that file
