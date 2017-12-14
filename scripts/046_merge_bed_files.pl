@@ -2,11 +2,13 @@
 
 use strict;
 use warnings;
+use Pod::Usage;
 
 my %input     = ();
 my $output    = "-"; # default is standard out
 my $log       = "STDERR"; # default is standard error, if a value is specified, the messages will be printed to STDERR and that file
 my $overwrite = 0;
+my $help      = 0;
 
 use Getopt::Long;
 use Log::Log4perl qw(:easy);
@@ -15,8 +17,11 @@ GetOptions(
     "input=s%"  => \%input,
     "output=s"  => \$output,
     "log=s"     => \$log,
-    "overwrite" => \$overwrite
-    );
+    "overwrite" => \$overwrite,
+    "help"       => \$help
+    ) || pod2usage(2);
+
+pod2usage(-exitval => 0, -verbose => 2) if $help;
 
 # split input keys into seperate files
 foreach my $key (keys %input)
