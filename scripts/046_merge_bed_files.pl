@@ -72,6 +72,12 @@ GetOptions(
     "help"       => \$help
     ) || pod2usage(2);
 
+# check that at least one class was specified via input parameter
+unless (keys %input >= 1)
+{
+    pod2usage(2);
+}
+
 pod2usage(-exitval => 0, -verbose => 2) if $help;
 
 # split input keys into seperate files
