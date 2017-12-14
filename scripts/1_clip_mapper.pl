@@ -25,18 +25,11 @@ while(<BED>){
 
 	my $bed_center = int($bed_split[1]+$bed_len/2); # center of the bed peak
 
-	foreach(@{$gff_hash{$bed_chr}}){
-		my @gh_array	= @{$_};
-		my $gh_chr	= $gh_array[0];
-		my $gh_start	= $gh_array[1];
-		my $gh_stop	= $gh_array[2];
-		my $gh_info	= $gh_array[3];
-		my $gh_strand	= $gh_array[4];
-		# check position of peak on genome and count types
-		if (($bed_center <= $gh_stop) && ($bed_center >= $gh_start)&&($bed_strand eq $gh_strand)){
-			print join("\t", ($bed_chr, $bed_start, $bed_stop, $bed_info.";annotation=".$gh_info, ".", $gh_strand)), "\n";
-		}
-	}		
+	# gff_hash contains array refs: element [1] = feature start, [2] feature stop, [4] strand
+	# features which cover at least half of the bed region are extracted and joined by ,
+	my $target_annotation = join(",", map { $_->[3] } grep { (($bed_center <= $_->[2]) && ($bed_center >= $_->[1])&&($bed_strand eq $_->[4])) } (@{$gff_hash{$bed_chr}}));
+
+	print join("\t", ($bed_chr, $bed_start, $bed_stop, join(";", ($bed_info, "annotation=".$target_annotation)), ".", $bed_strand)), "\n";
 }
 close(BED) || die;
 
