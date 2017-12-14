@@ -17,11 +17,15 @@ while(<BED>){
 	}
 	my $bed_line	= $_;	# chr	start	stop	info	.	strand
 	my ($bed_chr, $bed_start, $bed_stop, $bed_info, undef, $bed_strand)	= split("\t",$bed_line);
-	my @bed_nt_info		= split(";",$bed_info);	# length=XY;counts=pos_1sum/pos1_rep1/pos2_rep2/.../pos1_repN/,pos2_sum/pos2_rep1/...
-	my $bed_nt_len		= $bed_nt_info[0];
-	my $bed_nt_cnt		= $bed_nt_info[1];		# count=5/1/1/0/1/1/1,1/1/0/0/0/0/0,...
-	$bed_nt_cnt		=~s/^counts=//;			#       5/1/1/0/1/1/1,1/1/0/0/0/0/0,...
-	my @bed_nt_pos_list	= split(",",$bed_nt_cnt);	#	@(5/1/1/0/1/1/1 , 1/1/0/0/0/0/0 , ...)
+	my %data_from_bed_info = ();
+	foreach my $key_value (split(";",$bed_info))           # length=XY;counts=pos_1sum/pos1_rep1/pos2_rep2/.../pos1_repN/,pos2_sum/pos2_rep1/...
+	{
+	    my ($key, $value) = split("=", $key_value,2);
+	    $data_from_bed_info{$key} = $value;
+	}
+
+	my @bed_nt_pos_list	= split(",", $data_from_bed_info{counts});	#	@(5/1/1/0/1/1/1 , 1/1/0/0/0/0/0 , ...)
+
 	# create sum array
 	my $bed_pos_cnt		= $bed_start;
 	my %bed_pos_tmp_hash;	#{tmpID}=\@(pos1,pos2,pos3,...)
