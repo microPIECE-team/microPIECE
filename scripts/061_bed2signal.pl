@@ -57,7 +57,14 @@ while(<BED>){
 		my @bed_pos_tmp_hash_positions_sort 	= sort { $a <=> $b } @bed_pos_tmp_hash_positions;
 		my $bed_pos_tmp_hash_positions_start	= $bed_pos_tmp_hash_positions_sort[0];
 		my $bed_pos_tmp_hash_positions_stop	= $bed_pos_tmp_hash_positions_sort[-1];
-		print "$bed_chr\t$bed_pos_tmp_hash_positions_start\t$bed_pos_tmp_hash_positions_stop\t$bed_pos_tmp_hash_info_str\t.\t$bed_strand\n";
+		print join("\t",
+			   $bed_chr,
+			   $bed_pos_tmp_hash_positions_start,
+			   $bed_pos_tmp_hash_positions_stop,
+			   $bed_pos_tmp_hash_info_str,
+			   ".",
+			   $bed_strand
+		    ), "\n";
 	}
 }
 close(BED) || die;
