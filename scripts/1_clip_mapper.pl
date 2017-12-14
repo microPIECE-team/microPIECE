@@ -22,8 +22,6 @@ while(<BED>){
         my $bed_strand  = $bed_split[5];	
 	my $bed_len	= $bed_stop-$bed_start+1; 	
 
-	$bed_stop++;		# bed format does not include last character
-	
 	my $bed_center = int($bed_split[1]+$bed_len/2); # center of the bed peak
 
 	foreach(@{$gff_hash{$bed_chr}}){
