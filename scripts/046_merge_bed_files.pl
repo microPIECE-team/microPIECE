@@ -3,13 +3,15 @@
 use strict;
 use warnings;
 
-my %input = ();
+my %input     = ();
+my $log       = "STDERR"; # default is standard error, if a value is specified, the messages will be printed to STDERR and that file
 
 use Getopt::Long;
-use Data::Dumper;
+use Log::Log4perl qw(:easy);
 
 GetOptions(
-    "input=s%" => \%input
+    "input=s%"  => \%input,
+    "log=s"     => \$log
     );
 
 # split input keys into seperate files
@@ -17,6 +19,27 @@ foreach my $key (keys %input)
 {
     $input{$key} = [ split(/,/, $input{$key}) ];
 }
+
+my @log4perl_init = (
+    {
+	level  => $DEBUG,
+	file   => "STDERR",
+	layout => '[%d] (%p) %m%n'
+    }
+    );
+
+if ($log ne "STDERR")
+{
+    push(@log4perl_init,
+	 {
+	     level  => $DEBUG,
+	     file   => ">>$log",
+	     layout => '[%d] (%p) %m%n'
+	 }
+	);
+}
+
+Log::Log4perl->easy_init(@log4perl_init);
 
 my @genome = ();
 my %chromosomes = ();
@@ -28,8 +51,8 @@ foreach my $key (keys %input)
 {
     foreach my $file (@{$input{$key}})
     {
-	warn "Working on file '$file'\n";
-	open(FH, "<", $file) || die "Unable to open file '$file': $!";
+	WARN("Working on file '$file'");
+	open(FH, "<", $file) || LOGDIE("Unable to open file '$file': $!");
 	while(<FH>)
 	{
 	    # go through the bed files
@@ -73,7 +96,7 @@ foreach my $key (keys %input)
 		$genome[$chromosome][$strand][$i][$condition]++;
 	    }
 	}
-	close(FH) || die "Unable to close file '$file': $!";
+	close(FH) || LOGDIE("Unable to close file '$file': $!");
     }
 }
 
@@ -92,12 +115,12 @@ foreach my $chromosome_key (sort keys %chromosomes)
 	unless (defined $genome[$chromosome] && ref($genome[$chromosome]) eq "ARRAY")
 	{
 	    # chromosomes should be always defined!
-	    die "Missing entry for chromosome '$chromosome_key'\n";
+	    LOGDIE("Missing entry for chromosome '$chromosome_key'");
 	}
 	unless (defined $genome[$chromosome][$strand] && ref($genome[$chromosome][$strand]) eq "ARRAY")
 	{
 	    # if no feature is annotated on the strand if could be missing
-	    warn "No feature on chromosome '$chromosome_key' for ($strand_key)-strand.\n";
+	    WARN("No feature on chromosome '$chromosome_key' for ($strand_key)-strand.");
 	    next;
 	}
 
