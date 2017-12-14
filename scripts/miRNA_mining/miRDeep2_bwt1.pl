@@ -95,7 +95,7 @@ foreach(@files){
 	my $mirdeep2_log	= $out."run.log";
 	print "MIRDEEP2\n";
 	
-	system("$mirdeep $fasta_collapse $ref_genome_no_ws $bowtie_arf $mature_ref_mir_no_ws $mature_other_mir_no_ws $hairpin_ref_mir_no_ws -P");	
+	system("$mirdeep $fasta_collapse $ref_genome_no_ws $bowtie_arf $mature_ref_mir_no_ws $mature_other_mir_no_ws $hairpin_ref_mir_no_ws -P &>$mirdeep2_log");	
 }
 
 
