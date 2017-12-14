@@ -19,6 +19,7 @@ while(<BED>){
 	my $bed_chr	= $bed_split[0];
 	my $bed_start	= $bed_split[1];
 	my $bed_stop	= $bed_split[2];
+        my $bed_info    = $bed_split[3];
         my $bed_strand  = $bed_split[5];	
 	my $bed_len	= $bed_stop-$bed_start+1; 	
 
@@ -33,9 +34,8 @@ while(<BED>){
 		my $gh_strand	= $gh_array[4];
 		# check position of peak on genome and count types
 		if (($bed_center <= $gh_stop) && ($bed_center >= $gh_start)&&($bed_strand eq $gh_strand)){
-			print "$bed_chr\t$bed_start\t$bed_stop\t$gh_info\t1\t$gh_strand\n";
+			print join("\t", ($bed_chr, $bed_start, $bed_stop, $bed_info.";annotation=".$gh_info, ".", $gh_strand)), "\n";
 		}
-		
 	}		
 }
 close(BED) || die;
