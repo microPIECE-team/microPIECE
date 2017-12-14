@@ -6,22 +6,37 @@ use Pod::Usage;
 
 =pod
 
-=head1 046_merge_bed_files.pl
+=head1 NAME
+
+046_merge_bed_files.pl - merging bed files, while maintaining count information
+
+=head1 DESCRIPTION
 
 This script is used to merge bed files into a single bed file, while
 keeping the information about the input counts in column #4 of the
 resulting bed file.
 
-=head2 Synopsis
+=head1 SYNOPSIS
 
-   046_merge_bed_files.pl \
+   046_merge_bed_files.pl [options] --input inputclass=filename1,filename2
+
+   Options:
+     --help
+     --output
+     --overwrite
+     --log
+
+   # Example defining to classes with two files each and output to merged.bed
+   046_merge_bed_files.pl
       --input 24h=file1.bed,file2.bed \
       --input 72h=file3.bed,file4.bed \
       --output merged.bed
 
-=head2 Options/Parameters
+=head1 OPTIONS
 
-=head3 --input
+=over 8
+
+=item C<--input>
 
 Specifies the input classes. For a single class, at least one file
 need to be specified. Multiple files are supported. In that case use a
@@ -31,27 +46,29 @@ Counts for each input class are maintained.
 
 Specifying at least one input class is mandatory.
 
-=head3 --output
+=item C<--output>
 
 Specifies the output file. Will be a bed file, with columns 1-3
 default bed format, followed by a count/length field, an undefiled
 column (.), and the strand field.
 
-=head3 --overwrite
+=item C<--overwrite>
 
 By default, an existing output file will not overwritten, but will
 kill the script. Using --overwrite will force to overwrite existing
 output files.
 
-=head3 --log
+=item C<--log>
 
 Specifies the location of the log file. If no log file is set, logging
 information are written to STDERR, if a file is set, logging to
 STDERR/that file will performed.
 
-=head3 --help
+=item C<--help>
 
 Print that help message
+
+=back
 
 =cut
 
@@ -78,7 +95,7 @@ unless (keys %input >= 1)
     pod2usage(2);
 }
 
-pod2usage(-exitval => 0, -verbose => 2) if $help;
+pod2usage(1) if $help;
 
 # split input keys into seperate files
 foreach my $key (keys %input)
