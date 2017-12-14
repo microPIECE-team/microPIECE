@@ -4,14 +4,18 @@ use strict;
 use warnings;
 
 my %input     = ();
+my $output    = "-"; # default is standard out
 my $log       = "STDERR"; # default is standard error, if a value is specified, the messages will be printed to STDERR and that file
+my $overwrite = 0;
 
 use Getopt::Long;
 use Log::Log4perl qw(:easy);
 
 GetOptions(
     "input=s%"  => \%input,
-    "log=s"     => \$log
+    "output=s"  => \$output,
+    "log=s"     => \$log,
+    "overwrite" => \$overwrite
     );
 
 # split input keys into seperate files
@@ -40,6 +44,19 @@ if ($log ne "STDERR")
 }
 
 Log::Log4perl->easy_init(@log4perl_init);
+
+# check if output is redirected to a file
+my $fh = *STDOUT;  # default output should go to STDOUT
+if ($output ne "-")
+{
+    # test if output file exists
+    if (-e $output && ! $overwrite)
+    {
+	LOGDIE("Output file '$output' exists!");
+    } else {
+	open($fh, ">", $output) || LOGDIE("Unable to open output file '$output': $!");
+    }
+}
 
 my @genome = ();
 my %chromosomes = ();
@@ -102,7 +119,7 @@ foreach my $key (keys %input)
 
 # print the output
 my @conditions_ordered = sort (keys %conditions);
-print "# Conditional counts are printed in the following order: ", join(", ", ("total", @conditions_ordered)), "\n";
+print $fh "# Conditional counts are printed in the following order: ", join(", ", ("total", @conditions_ordered)), "\n";
 
 foreach my $chromosome_key (sort keys %chromosomes)
 {
@@ -160,7 +177,7 @@ foreach my $chromosome_key (sort keys %chromosomes)
 		    $stop = int(@{$genome[$chromosome][$strand]});
 		}
 
-		print join("\t", ($chromosome_key, $start, $stop, sprintf("length=%d;counts=%s", @counts+0, generate_cigar_like_string(\@counts, ["total", @conditions_ordered])), ".", $strand_key)), "\n";
+		print $fh join("\t", ($chromosome_key, $start, $stop, sprintf("length=%d;counts=%s", @counts+0, generate_cigar_like_string(\@counts, ["total", @conditions_ordered])), ".", $strand_key)), "\n";
 		$i = $stop+1;
 		$start = -1; $stop = -1;
 	    }
