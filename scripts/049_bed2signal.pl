@@ -45,16 +45,15 @@ while(<BED>){
 		my $stop  = $i;
 		for(my $j=$i+1; $j<@{$data_from_bed_info{counts}}; $j++)
 		{
-		    if ($data_from_bed_info{counts}[$i][0] < $signal_strength)
+		    if ($data_from_bed_info{counts}[$j][0] < $signal_strength)
 		    {
-			$i = $j;
 			last;
 		    } else {
 			$stop = $j;
 		    }
 		}
 
-		$i = $stop+1; # ensure we are starting after the region
+		$i = $stop; # ensure we are starting after the region
 
 		push(@subregions, { start => $start, stop => $stop } );
 	    }
