@@ -1,7 +1,7 @@
 #!/bin/bash
 command -v ./081_map_clip_gff_needle.pl >/dev/null 2>&1 || { echo "I require 081_map_clip_gff_needle.pl but it's not installed. Aborting." >&2; exit 1; }
 
-mkdir ../080/
+mkdir -p ../080/
 
 # filter GFF files for unqiue longest transcripts
 zcat ../data/AAE/GCF_000004015.4_AaegL3_genomic.gff.gz > ../080/GCF_000004015.4_AaegL3_genomic.gff
