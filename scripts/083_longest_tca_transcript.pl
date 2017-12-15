@@ -13,20 +13,31 @@ while (<>)
 
     next unless ($fields[2] =~ /mRNA|exon|CDS/);
 
-    $fields[8] =~ /ID=([^;]+).*Dbxref=GeneID:(\d+).*Genbank:([^,;]+)/;
+    $fields[8] =~ /Dbxref=GeneID:(\d+).*Genbank:([^,;]+)/;
 
+    my $name = $2;
+    my $gene = $1;
+    
+    $fields[8] =~ /ID=([^;]+)/;
+    my $id = $1;
+    $fields[8] =~ /Parent=([^;]+)/;
+    my $parent = $1;
+    
     if ($fields[2] eq "mRNA")
     {
-	$h{$2}{$1} = {};
+	my $mrna = $id;
+	$h{$gene}{$mrna} = {};
     }
-    elsif ($fields[2] eq "exon" && exists $h{$2}{$1} )
+    elsif ($fields[2] eq "exon" && exists $h{$gene}{$parent} )
     {
-	$h{$2}{$1}{exon}{name} = $3;
-	$h{$2}{$1}{exon}{len} += abs($fields[3]-$fields[4]);
+	my $mrna = $parent;
+	$h{$gene}{$mrna}{exon}{name} = $name;
+	$h{$gene}{$mrna}{exon}{len} += abs($fields[3]-$fields[4]);
     }
-    elsif (exists $h{$2}{$1})
+    elsif (exists $h{$gene}{$parent})
     {
-	$h{$2}{$1}{cds}{name} = $3;
+	my $mrna = $parent;
+	$h{$gene}{$mrna}{cds}{name} = $name;
     }
     else
     {
