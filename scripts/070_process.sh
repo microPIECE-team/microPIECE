@@ -22,7 +22,7 @@ zcat ../data/AAE/GCF_000004015.4_AaegL3_genomic.fna.gz > ../070/GCF_000004015.4_
 bedtools getfasta -s -name -fi \
 	 ../070/GCF_000004015.4_AaegL3_genomic.fna \
 	 -bed ../070/clip_merged_mapGFF_minLen0_4of6BEDfilter_min22_max50_sort.bed \
-	 -fo ../070/clip_merged_mapGFF_minLen0_min22_max50_sort.fa
+	 -fo ../070/clip_merged_mapGFF_minLen0_4of6BEDfilter_min22_max50_sort.fa
 
 # upper case
 ./072_fasta_uc.pl \
