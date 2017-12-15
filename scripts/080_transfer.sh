@@ -1,5 +1,9 @@
 #!/bin/bash
-command -v ./081_map_clip_gff_needle.pl >/dev/null 2>&1 || { echo "I require 081_map_clip_gff_needle.pl but it's not installed. Aborting." >&2; exit 1; }
+REQ_PROGS=(./081_map_clip_gff_needle.pl ./082_longest_aae_transcript.pl)
+for prog in ${REQ_PROGS[*]}
+do
+    command -v ${prog} >/dev/null 2>&1 || { echo "I require ${prog} but it's not installed. Aborting." >&2; exit 1; }
+done
 
 mkdir -p ../080/
 
