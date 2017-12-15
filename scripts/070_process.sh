@@ -6,8 +6,7 @@ do
     command -v ${prog} >/dev/null 2>&1 || { echo "I require ${prog} but it's not installed. Aborting." >&2; exit 1; }
 done
 
-
-mkdir ../070/
+mkdir -p ../070/
 
 # discard sizes
 
