@@ -6,7 +6,7 @@ mkdir -p ../080/
 # filter GFF files for unqiue longest transcripts
 zcat ../data/AAE/GCF_000004015.4_AaegL3_genomic.gff.gz > ../080/GCF_000004015.4_AaegL3_genomic.gff
 # AAE
-perl -aF'/\t/' -ne 'next unless ($F[2] =~ /mRNA|exon|CDS/); $F[8] =~ /Dbxref=VectorBase:([^-]+)-[RP]([^,]+).+Genbank:([^,]+)/; if ($F[2] eq "mRNA") { $h{$1}{$2} = {}; } elsif ($F[2] eq "exon" && exists $h{$1}{$2} ) { $h{$1}{$2}{exon}{name} = $3; $h{$1}{$2}{exon}{len} += abs($F[3]-$F[4]); } elsif (exists $h{$1}{$2}) { $h{$1}{$2}{cds}{name} = $3; } else { warn "For line $_ no mRNA was found\n"; } END{ foreach my $vec(sort keys %h) { my ($longest) = sort {$h{$vec}{$b}{exon}{len} <=> $h{$vec}{$a}{exon}{len}} (keys %{$h{$vec}}); next unless (exists $h{$vec}{$longest}{exon} && exists $h{$vec}{$longest}{cds}); print join("\t", sort ($h{$vec}{$longest}{cds}{name}, $h{$vec}{$longest}{exon}{name})), "\n"; }}' -MData::Dumper ../080/GCF_000004015.4_AaegL3_genomic.gff > ../080/GCF_000004015.4_AaegL3_genomic_XM_XP_unique.csv 2> ../080/GCF_000004015.4_AaegL3_genomic_XM_XP_unique.err
+./082_longest_aae_transcript.pl ../080/GCF_000004015.4_AaegL3_genomic.gff > ../080/GCF_000004015.4_AaegL3_genomic_XM_XP_unique.csv 2> ../080/GCF_000004015.4_AaegL3_genomic_XM_XP_unique.err
 # TCA
 
 zcat ../data/TCA/GCF_000002335.3_Tcas5.2_rna.fna.gz > ../080/GCF_000002335.3_Tcas5.2_rna.fna
