@@ -14,6 +14,12 @@ my $peak_count		= 0;	# count peaks
 open (BED,"<",$bed_file) || die;
 while(<BED>){
 	chomp;
+	# ignore comment lines
+	if ($_ =~ /^#/)
+	{
+	    print $_, "\n";
+	    next;
+	}
 	my $bed_line	= $_;
 	my @bed_split	= split("\t",$bed_line);
 	my $bed_chr	= $bed_split[0];
