@@ -7,5 +7,5 @@ mkdir ../050/
 zcat ../data/AAE/GCF_000004015.4_AaegL3_genomic.gff.gz > ../050/GCF_000004015.4_AaegL3_genomic.gff
 
 # run mapping of peaks to gff mRNAs
-./1_clip_mapper.pl ../040/clip_merged.bed ../050/GCF_000004015.4_AaegL3_genomic.gff 0 > ../050/clip_merged_mapGFF_minLen0.bed
+./1_clip_mapper.pl ../040/clip_merged_4of6BEDfilter.bed ../050/GCF_000004015.4_AaegL3_genomic.gff 0 > ../050/clip_merged_4of6BEDfilter_mapGFF_minLen0.bed
  
