@@ -9,6 +9,7 @@ mkdir -p ../080/
 
 # filter GFF files for unqiue longest transcripts
 zcat ../data/AAE/GCF_000004015.4_AaegL3_genomic.gff.gz > ../080/GCF_000004015.4_AaegL3_genomic.gff
+zcat ../data/TCA/GCF_000002335.3_Tcas5.2_genomic.gff.gz > ../080/GCF_000002335.3_Tcas5.2_genomic.gff
 # AAE
 ./082_longest_aae_transcript.pl ../080/GCF_000004015.4_AaegL3_genomic.gff > ../080/GCF_000004015.4_AaegL3_genomic_XM_XP_unique.csv 2> ../080/GCF_000004015.4_AaegL3_genomic_XM_XP_unique.err
 # TCA
