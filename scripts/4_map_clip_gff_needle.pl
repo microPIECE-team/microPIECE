@@ -279,6 +279,7 @@ sub fasta_parser{
         my $fp_file             = $_[0];
         my %fp_hash;
         my $fp_header           = "";
+	my @header              = ();
         my $fp_count            = 0;
         open(FP,"<",$fp_file) || die;
         while(<FP>){
@@ -288,15 +289,40 @@ sub fasta_parser{
                         my @fp_split    = split(" ",$fp_line);
                         $fp_header      = $fp_split[0];
                         $fp_header      =~s/^>//;
-                        if(not exists $fp_hash{$fp_header}){
-                                $fp_hash{$fp_header} = "";
-                        }
-                        else{	# fasta clip headers were unified --> should not be processed anymore
-				print STDERR "$fp_header : has double entry\n";
-                        }
+
+			# extract annotation field plus counter
+			unless($fp_header =~ /(-\d+)$/)
+			{
+			    die "Unable to identify counter\n";
+			}
+			my $counter = $1;
+
+			unless ($fp_header =~ /annotation=([^-:;]*)/)
+			{
+			    die "Unable to identify annotation field\n";
+			}
+
+			my @annotations = split(",", $1);
+
+			@header = map {$_.$counter} (@annotations);
+
+			foreach my $fp_header_new (@header)
+			{
+
+			    if(not exists $fp_hash{$fp_header_new}){
+                                $fp_hash{$fp_header_new} = "";
+			    }
+			    else{	# fasta clip headers were unified --> should not be processed anymore
+				print STDERR "$fp_header_new : has double entry\n";
+			    }
+			}
+
                 }
                 else{
-                        $fp_hash{$fp_header}    .= $fp_line;
+		    foreach my $fp_header_new (@header)
+		    {
+			$fp_hash{$fp_header_new}    .= $fp_line;
+		    }
                 }
         }
         close(FP) || die;
