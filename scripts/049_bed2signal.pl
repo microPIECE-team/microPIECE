@@ -107,5 +107,8 @@ sub get_new_info_string
     # add a new key-value-pair to indicate that string as substring
     push(@output, "subregion=".join(",", ($ref_subregion->{start},$ref_subregion->{stop})));
 
+    # add a new key-value-pair to indicate the original length
+    push(@output, "originallength=".$ref_data->{length});
+
     return join(";", @output);
 }
