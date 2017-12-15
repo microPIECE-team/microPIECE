@@ -9,6 +9,14 @@ my $max		= $ARGV[2];	# eg 50
 open(BED ,"<",$bedfile) || die;
 while(<BED>){
 	chomp;
+
+	# ignore comment line
+	if ($_ =~ /^#/)
+	{
+	    print $_, "\n";
+	    next;
+	}
+
 	my $bed_line	= $_;
 	my @bed_array	= split(" ",$bed_line);
 	my $bed_start	= $bed_array[1];
