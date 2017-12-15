@@ -19,6 +19,7 @@ while(<BED>){
 	    next;
 	}
 
+	# parse the bed line
 	my $bed_line	= $_;	# chr	start	stop	info	.	strand
 	my ($bed_chr, $bed_start, $bed_stop, $bed_info, undef, $bed_strand)	= split("\t",$bed_line);
 	my %data_from_bed_info = ();
