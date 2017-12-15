@@ -54,6 +54,8 @@ while(<BED>){
 		    }
 		}
 
+		$i = $stop+1; # ensure we are starting after the region
+
 		push(@subregions, { start => $start, stop => $stop } );
 	    }
 	}
