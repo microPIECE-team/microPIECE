@@ -102,7 +102,7 @@ sub get_new_info_string
     push(@output, "counts=".join(",", map { join("/", @{$_}) } (@new_counts)));
 
     # get the new length
-    push(@output, "length=".@new_counts+0);
+    push(@output, "length=".int(@new_counts));
 
     # add a new key-value-pair to indicate that string as substring
     push(@output, "subregion=".join(",", ($ref_subregion->{start},$ref_subregion->{stop})));
