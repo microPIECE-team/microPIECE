@@ -57,32 +57,53 @@ while(<BED>){
 		push(@subregions, { start => $start, stop => $stop } );
 	    }
 	}
-	foreach(keys %bed_pos_tmp_hash){
-		my $bed_pos_tmp_hash_id		= $_;
-		my @bed_pos_tmp_hash_array	= @{$bed_pos_tmp_hash{$bed_pos_tmp_hash_id}};
-		my @bed_pos_tmp_hash_positions	= ();	# 1000,1001,1002,...
-		my @bed_pos_tmp_hash_info	= ();	# 5/1/1/0/1/1/1,1/1/0/0/0/0/0,...
-		foreach(@bed_pos_tmp_hash_array){
-			my ($bed_pos_tmp_hash_array_pos, $bed_pos_tmp_hash_array_nt) = split(";",$_);
-			push(@bed_pos_tmp_hash_positions,$bed_pos_tmp_hash_array_pos);
-			push(@bed_pos_tmp_hash_info,$bed_pos_tmp_hash_array_nt);
-		}
-		my $bed_pos_tmp_hash_info_str		= join(",",@bed_pos_tmp_hash_info);
-		my @bed_pos_tmp_hash_positions_sort 	= sort { $a <=> $b } @bed_pos_tmp_hash_positions;
-		my $bed_pos_tmp_hash_positions_start	= $bed_pos_tmp_hash_positions_sort[0];
-		my $bed_pos_tmp_hash_positions_stop	= $bed_pos_tmp_hash_positions_sort[-1];
-		print join("\t",
-			   $bed_chr,
-			   $bed_pos_tmp_hash_positions_start,
-			   $bed_pos_tmp_hash_positions_stop,
-			   $bed_pos_tmp_hash_info_str,
-			   ".",
-			   $bed_strand
-		    ), "\n";
+
+	# print subregions as new bed lines
+	foreach my $subregion (@subregions)
+	{
+	    my $new_bed_chr    = $bed_chr;                       # should be the same
+	    my $new_bed_start  = $bed_start+$subregion->{start}; # shift the new start
+	    my $new_bed_stop   = $bed_start+$subregion->{stop};  # shift the new stop
+	    my $new_bed_info   = get_new_info_string(\%data_from_bed_info, $subregion);
+	    my $new_bed_strand = $bed_strand;                    # should be the same
+
+	    print join("\t",
+		       $new_bed_chr,
+		       $new_bed_start,
+		       $new_bed_stop,
+		       $new_bed_info,
+		       ".",
+		       $new_bed_strand
+		), "\n";
+
 	}
 }
 close(BED) || die;
 
 
-# output:
-# chr	start	stop	sum1,sum2,sum3,...	.	strand
+sub get_new_info_string
+{
+    my ($ref_data, $ref_subregion) = @_;
+
+    my @output = ();
+
+    # create a string containing all information, but counts and length
+    foreach my $key (keys %{$ref_data})
+    {
+	next if ($key eq "counts" || $key eq "length");
+
+	push(@output, $key."=".$ref_data->{$key});
+    }
+
+    # get the counts for the subregion
+    my @new_counts = map { $ref_data->{counts}[$_] } ($ref_subregion->{start}..$ref_subregion->{stop});
+    push(@output, "counts=".join(",", map { join("/", @{$_}) } (@new_counts)));
+
+    # get the new length
+    push(@output, "length=".@new_counts+0);
+
+    # add a new key-value-pair to indicate that string as substring
+    push(@output, "subregion=".join(",", ($ref_subregion->{start},$ref_subregion->{stop})));
+
+    return join(";", @output);
+}
