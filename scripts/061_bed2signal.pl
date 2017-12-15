@@ -29,24 +29,33 @@ while(<BED>){
 	    $data_from_bed_info{$key} = $value;
 	}
 
-	my @bed_nt_pos_list	= split(",", $data_from_bed_info{counts});	#	@(5/1/1/0/1/1/1 , 1/1/0/0/0/0/0 , ...)
+	# split the count data
+	$data_from_bed_info{counts} = [ map { [ split('/', $_) ] } (split(",", $data_from_bed_info{counts})) ];
 
-	# create sum array
-	my $bed_pos_cnt		= $bed_start;
-	my %bed_pos_tmp_hash;	#{tmpID}=\@(pos1,pos2,pos3,...)
-	my $bed_pos_tmp_ID	= 0;
-	foreach my $bed_nt_pos (@bed_nt_pos_list){
-		my @bed_nt_pos_rep_list	= split("/",$bed_nt_pos);	#@(5,1,1,0,1,1,1)
-		my $bed_nt_pos_rep_sum	= $bed_nt_pos_rep_list[0];
-		
-		#check for signal strength cutoff
-		if($bed_nt_pos_rep_sum >= $signal_strength){
-			push(@{$bed_pos_tmp_hash{$bed_pos_tmp_ID}},"$bed_pos_cnt;$bed_nt_pos");
+	# go through the bed counts and keep stretches which are
+	# supported by $signal_strength or more peaks and store the
+	# coordinates in new array @subregions
+	my @subregions = ();
+
+	for(my $i=0; $i<@{$data_from_bed_info{counts}}; $i++)
+	{
+	    if ($data_from_bed_info{counts}[$i][0] >= $signal_strength)
+	    {
+		my $start = $i;
+		my $stop  = $i;
+		for(my $j=$i+1; $j<@{$data_from_bed_info{counts}}; $j++)
+		{
+		    if ($data_from_bed_info{counts}[$i][0] < $signal_strength)
+		    {
+			$i = $j;
+			last;
+		    } else {
+			$stop = $j;
+		    }
 		}
-		else{
-			$bed_pos_tmp_ID++;
-		}
-		$bed_pos_cnt++;	
+
+		push(@subregions, { start => $start, stop => $stop } );
+	    }
 	}
 	foreach(keys %bed_pos_tmp_hash){
 		my $bed_pos_tmp_hash_id		= $_;
