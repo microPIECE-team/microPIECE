@@ -109,5 +109,8 @@ sub get_new_info_string
     # add a new key-value-pair to indicate the original length
     push(@output, "originallength=".$ref_data->{length});
 
+    # add a new key-value-pair to indicate the original line number
+    push(@output, "originalbedline=".$.);
+
     return join(";", @output);
 }
