@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REQ_PROGS=(./071_bedtool_discard_sizes.pl bedtools ./072_fasta_uc.pl)
+REQ_PROGS=(./071_bedtool_discard_sizes.pl bedtools ./072_fasta_uc_and_filter4annotations.pl)
 for prog in ${REQ_PROGS[*]}
 do
     command -v ${prog} >/dev/null 2>&1 || { echo "I require ${prog} but it's not installed. Aborting." >&2; exit 1; }
@@ -33,7 +33,7 @@ do
 	     -fo ../070/${FILEBASENAME}_min${MIN}_max${MAX}_sort.fa
 
     # upper case
-    ./072_fasta_uc.pl \
+    ./072_fasta_uc_and_filter4annotations.pl \
 	../070/${FILEBASENAME}_min${MIN}_max${MAX}_sort.fa \
 	> ../070/${FILEBASENAME}_min${MIN}_max${MAX}_sort_UC.fa
 done
