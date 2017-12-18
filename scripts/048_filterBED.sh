@@ -1,6 +1,10 @@
 #!/bin/bash
 mkdir -p ../040/
 
-./049_bed2signal.pl ../040/clip_merged.bed 4 > ../040/clip_merged_4of6BEDfilter.bed
+for i in 1 2 3 4 5 6;
+do
+    echo "Working on setting $i of 6"
+    ./049_bed2signal.pl ../040/clip_merged.bed "$i" > ../040/clip_merged_"$i"of6BEDfilter.bed
+done
 
 

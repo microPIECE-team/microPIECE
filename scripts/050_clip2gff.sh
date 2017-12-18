@@ -7,5 +7,9 @@ mkdir -p ../050/
 zcat ../data/AAE/GCF_000004015.4_AaegL3_genomic.gff.gz > ../050/GCF_000004015.4_AaegL3_genomic.gff
 
 # run mapping of peaks to gff mRNAs
-./051_clip_mapper.pl ../040/clip_merged_4of6BEDfilter.bed ../050/GCF_000004015.4_AaegL3_genomic.gff 0 > ../050/clip_merged_4of6BEDfilter_mapGFF_minLen0.bed
- 
+for i in ../040/clip_merged_*of6BEDfilter.bed;
+do
+    echo "Working on file $i"
+
+    ./051_clip_mapper.pl "$i" ../050/GCF_000004015.4_AaegL3_genomic.gff 0 >../050/$(basename "$i" .bed)_mapGFF_minLen0.bed
+done
