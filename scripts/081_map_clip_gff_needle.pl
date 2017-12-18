@@ -290,39 +290,16 @@ sub fasta_parser{
                         $fp_header      = $fp_split[0];
                         $fp_header      =~s/^>//;
 
-			# extract annotation field plus counter
-			unless($fp_header =~ /(-\d+)$/)
-			{
-			    die "Unable to identify counter\n";
+			if(not exists $fp_hash{$fp_header}){
+			    $fp_hash{$fp_header} = "";
 			}
-			my $counter = $1;
-
-			unless ($fp_header =~ /annotation=([^-:;]*)/)
-			{
-			    die "Unable to identify annotation field\n";
-			}
-
-			my @annotations = split(",", $1);
-
-			@header = map {$_.$counter} (@annotations);
-
-			foreach my $fp_header_new (@header)
-			{
-
-			    if(not exists $fp_hash{$fp_header_new}){
-                                $fp_hash{$fp_header_new} = "";
-			    }
-			    else{	# fasta clip headers were unified --> should not be processed anymore
-				print STDERR "$fp_header_new : has double entry\n";
-			    }
+			else{	# fasta clip headers were unified --> should not be processed anymore
+			    print STDERR "$fp_header : has double entry\n";
 			}
 
                 }
                 else{
-		    foreach my $fp_header_new (@header)
-		    {
-			$fp_hash{$fp_header_new}    .= $fp_line;
-		    }
+		    $fp_hash{$fp_header}    .= $fp_line;
                 }
         }
         close(FP) || die;
