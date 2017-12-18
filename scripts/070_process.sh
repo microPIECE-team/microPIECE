@@ -16,7 +16,7 @@ MAX=50
 zcat ../data/AAE/GCF_000004015.4_AaegL3_genomic.fna.gz > ../070/GCF_000004015.4_AaegL3_genomic.fna
 
 # discard sizes
-for i in ../050/clip_merged_*of6BEDfilter_mapGFF_minLen0.bed
+for i in ../050/clip_merged_[0-9]*of6BEDfilter_mapGFF_minLen0.bed
 do
     echo "Working on file $i"
 

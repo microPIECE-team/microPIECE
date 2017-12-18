@@ -7,7 +7,7 @@ mkdir -p ../050/
 zcat ../data/AAE/GCF_000004015.4_AaegL3_genomic.gff.gz > ../050/GCF_000004015.4_AaegL3_genomic.gff
 
 # run mapping of peaks to gff mRNAs
-for i in ../040/clip_merged_*of6BEDfilter.bed;
+for i in ../040/clip_merged_[0-9]*of6BEDfilter.bed;
 do
     echo "Working on file $i"
 

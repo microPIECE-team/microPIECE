@@ -17,17 +17,17 @@ zcat ../data/TCA/GCF_000002335.3_Tcas5.2_genomic.gff.gz > ../080/GCF_000002335.3
 
 zcat ../data/TCA/GCF_000002335.3_Tcas5.2_rna.fna.gz > ../080/GCF_000002335.3_Tcas5.2_rna.fna
 
-for i in ../070/clip_merged_mapGFF_minLen0_*of6BEDfilter_min22_max50_sort_UC.fa
+for i in ../070/clip_merged_[0-9]*of6BEDfilter_mapGFF_minLen0_min22_max50_sort_UC.fa
 do
-    echo "Working on file $i"
+    echo "Working on file $FILENAME"
 
-    FILEBASENAME=$(basename "$i" .fa)
+    FILEBASENAME=$(basename "$FILENAME" .fa)
 
     # transfer with needle
     ./081_map_clip_gff_needle.pl \
 	../080/GCF_000004015.4_AaegL3_genomic_XM_XP_unique.csv \
 	../010/TCA_vs_AAE.proteinortho \
-	../070/clip_merged_mapGFF_minLen0_4of6BEDfilter_min22_max50_sort_UC.fa \
+	${i} \
 	../080/GCF_000002335.3_Tcas5.2_genomic_XM_XP_unique.csv \
 	../080/GCF_000002335.3_Tcas5.2_rna.fna \
 	../080/${FILEBASENAME}_needle.csv \
