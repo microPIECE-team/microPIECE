@@ -19,9 +19,9 @@ zcat ../data/TCA/GCF_000002335.3_Tcas5.2_rna.fna.gz > ../080/GCF_000002335.3_Tca
 
 for i in ../070/clip_merged_[0-9]*of6BEDfilter_mapGFF_minLen0_min22_max50_sort_UC.fa
 do
-    echo "Working on file $FILENAME"
+    echo "Working on file ${i}"
 
-    FILEBASENAME=$(basename "$FILENAME" .fa)
+    FILEBASENAME=$(basename "${i}" .fa)
 
     # transfer with needle
     ./081_map_clip_gff_needle.pl \
