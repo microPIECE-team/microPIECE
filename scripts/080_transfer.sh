@@ -1,5 +1,5 @@
 #!/bin/bash
-REQ_PROGS=(./081_map_clip_gff_needle.pl ./082_longest_aae_transcript.pl ./083_longest_tca_transcript.pl)
+REQ_PROGS=(./081_map_clip_gff_needle.pl ./085_parse_gff_return_longest_transcript.pl)
 for prog in ${REQ_PROGS[*]}
 do
     command -v ${prog} >/dev/null 2>&1 || { echo "I require ${prog} but it's not installed. Aborting." >&2; exit 1; }
@@ -11,9 +11,9 @@ mkdir -p ../080/
 zcat ../data/AAE/GCF_000004015.4_AaegL3_genomic.gff.gz > ../080/GCF_000004015.4_AaegL3_genomic.gff
 zcat ../data/TCA/GCF_000002335.3_Tcas5.2_genomic.gff.gz > ../080/GCF_000002335.3_Tcas5.2_genomic.gff
 # AAE
-./082_longest_aae_transcript.pl ../080/GCF_000004015.4_AaegL3_genomic.gff > ../080/GCF_000004015.4_AaegL3_genomic_XM_XP_unique.csv 2> ../080/GCF_000004015.4_AaegL3_genomic_XM_XP_unique.err
+./085_parse_gff_return_longest_transcript.pl ../080/GCF_000004015.4_AaegL3_genomic.gff > ../080/GCF_000004015.4_AaegL3_genomic_XM_XP_unique.csv 2> ../080/GCF_000004015.4_AaegL3_genomic_XM_XP_unique.err
 # TCA
-./083_longest_tca_transcript.pl ../080/GCF_000002335.3_Tcas5.2_genomic.gff > ../080/GCF_000002335.3_Tcas5.2_genomic_XM_XP_unique.csv 2> ../080/GCF_000002335.3_Tcas5.2_genomic_XM_XP_unique.err
+./085_parse_gff_return_longest_transcript.pl ../080/GCF_000002335.3_Tcas5.2_genomic.gff > ../080/GCF_000002335.3_Tcas5.2_genomic_XM_XP_unique.csv 2> ../080/GCF_000002335.3_Tcas5.2_genomic_XM_XP_unique.err
 
 zcat ../data/TCA/GCF_000002335.3_Tcas5.2_rna.fna.gz > ../080/GCF_000002335.3_Tcas5.2_rna.fna
 
