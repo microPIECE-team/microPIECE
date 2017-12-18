@@ -1,5 +1,5 @@
 #!/bin/bash
-REQ_PROGS=(./5_csv_to_bed.pl bedtools ./6_mapping.pl miranda)
+REQ_PROGS=(./095_csv_to_bed.pl bedtools ./096_mapping.pl miranda)
 for prog in ${REQ_PROGS[*]}
 do
     command -v ${prog} >/dev/null 2>&1 || { echo "I require ${prog} but it's not installed. Aborting." >&2; exit 1; }
@@ -16,7 +16,7 @@ do
     FILENAMEBASE=$(basename "${i}" .csv)
 
     # csv2bed
-    ./5_csv_to_bed.pl \
+    ./095_csv_to_bed.pl \
 	"${i}" \
 	../090/"${FILENAMEBASE}".bed
 
@@ -33,7 +33,7 @@ do
 	     -fo ../090/"${FILENAMEBASE}"_merge.fa
 
     #targetprediciton
-    ./6_mapping.pl \
+    ./096_mapping.pl \
 	../090/tca_miRNA_mature_dna_novel_add_missing_miRs.fa \
 	../090/"${FILENAMEBASE}"_merge.fa \
 	../090/"${FILENAMEBASE}"_merge_miranda.out
