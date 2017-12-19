@@ -11,7 +11,6 @@ like($stderr,qr/Example defining to classes with two files each and output to me
 #is($Test::Script::Run::last_script_exit_code,0,'script with one bed file as input');
 #print "$return\n$stdout\n$stderr\n";
 
-
 my $got	= &parser($stdout);
 my $expected = &parser(join('',<DATA>));	
 is_deeply($got,$expected,'output as expected');
@@ -33,7 +32,14 @@ sub parser{
 		}
 		push(@p_stdout_array,\@bed_fields);
 	}
-	return(\@p_stdout_array);
+	return( [ sort
+		  {
+		      $a->[0] cmp $b->[0] ||
+			  $a->[1] <=> $b->[1] ||
+			  $a->[2] <=> $b->[2] ||
+			  $a->[5] cmp $b->[5] ||
+			  $a->[3]{counts} cmp $b->[3]{counts}
+		  } @p_stdout_array ] );
 }
 __DATA__
 NC_010241.1	0	1	length=1;counts=1/1	.	+
