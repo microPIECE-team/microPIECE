@@ -101,68 +101,6 @@ foreach(@files){
 
 
 
-# discard all 100% hits from fasta file
-sub filter_blast{
-	my $fb_blast_file	= $_[0];
-	my $fb_fasta_file	= $_[1];
-	
-	my $fb_fasta_filtered	= $fb_fasta_file;
-	$fb_fasta_filtered	=~s/\.fasta$/_filtered.fasta/;
-
-	my %fb_blast_hash;
-	my %fb_fasta_hash;
-
-
-	my $fb_fasta_id;
-	open(FA,"<",$fb_fasta_file);
-	while(<FA>){
-		chomp;
-		my $fb_fasta_line	= $_;
-		if(/^>/){
-			$fb_fasta_id	= $fb_fasta_line;
-			$fb_fasta_id	=~s/>//;
-		}
-		else{
-			$fb_fasta_hash{$fb_fasta_id}=$fb_fasta_line;
-		}
-	}
-	close(FA);
-	
-	open(BLAST,"<",$fb_blast_file);
-	while(<BLAST>){
-		chomp;
-		my $fb_blast_line	= $_;
-		my @fb_blast_array	= split(" ",$fb_blast_line);
-		if($fb_blast_array[2] >= 100){	
-			$fb_blast_hash{$fb_blast_array[0]}=$fb_blast_array[3];	# {query_coverage} = aln_length
-		}
-	}
-	close(BLAST);
-
-
-	foreach(keys %fb_fasta_hash){
-		my $fb_fasta_key	= $_;
-		if(exists $fb_blast_hash{$fb_fasta_key}){
-			my $fb_fasta_seq_len	= length($fb_fasta_hash{$fb_fasta_key});
-			if ($fb_fasta_seq_len == $fb_blast_hash{$fb_fasta_key}){
-				delete $fb_fasta_hash{$fb_fasta_key};
-				#print "QRY-LEN: $fb_fasta_seq_len | ALN-LEN: $fb_blast_hash{$fb_fasta_key} | $fb_fasta_key\n";
-			}
-		}
-	
-	}
-	
-
-	open(OUT,">",$fb_fasta_filtered);
-	foreach(keys %fb_fasta_hash){
-		print OUT ">$_\n";
-		print OUT "$fb_fasta_hash{$_}\n";
-	}
-	close(OUT);
-	return($fb_fasta_filtered);
-}
-
-
 sub RNA2DNA{
         my $r2d_rna_file        = $_[0];
         my $r2d_dna_file        = $r2d_rna_file."_dna.fa";
