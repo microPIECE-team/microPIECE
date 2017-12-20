@@ -27,10 +27,6 @@ NC_010241.1	150	165	length=15;counts=1/1,1/1,1/1,1/1,1/1,1/1,1/1,1/1,1/1,1/1,1/1
 NC_010241.1	70	80	length=10;counts=1/1,1/1,1/1,1/1,1/1,1/1,1/1,1/1,1/1,1/1	.	+
 };
 
-# remove empty lines
-$first_file =~ s/^\s*$//mg;
-$expected_output =~ s/^\s*$//mg;
-
 my ($fh, $filename) = File::Temp::tempfile();
 
 print $fh $first_file;
