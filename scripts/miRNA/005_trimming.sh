@@ -16,7 +16,7 @@ mkdir -p data/001_trim_smRNA/
 mkdir -p data/002_filter_smRNA/
 
 # create database from ncRNAs
-gunzip -k db/TCA_all_ncRNA_but_miR.fa_dna.fa.gz
+gunzip -f -k db/TCA_all_ncRNA_but_miR.fa_dna.fa.gz
 bwa index db/TCA_all_ncRNA_but_miR.fa_dna.fa
 
 # alignment of smallRNA to ncRNA

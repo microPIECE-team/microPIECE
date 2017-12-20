@@ -35,7 +35,7 @@ mkdir -p data/003_condition_smRNA/male_adult_quant/
 mkdir -p data/003_condition_smRNA/female_adult_quant/
 
 # make databases for alignment
-gunzip -k db/tcas5.2_unspliced_transcript.fa.gz
+gunzip -f -k db/tcas5.2_unspliced_transcript.fa.gz
 bwa index db/tcas5.2_unspliced_transcript.fa
 bwa index db/tca_precursor_mirbase_completed_novel.fa
 # run quantification
