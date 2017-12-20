@@ -1,19 +1,29 @@
 package bed;
 
+use strict;
+use warnings;
+
 sub parser{
     my $p_stdout		= $_[0];
+
     my @p_stdout_array	= ();
+
     foreach my $bed_line (split("\n",$p_stdout)){
 	next if ($bed_line =~ /^#/);
+
 	my @bed_fields		= split("\t",$bed_line);
 	my @key_value_pairs 	= split(";",$bed_fields[3]);
+
 	$bed_fields[3]		= {};
+
 	foreach(@key_value_pairs){
 	    my ($key,$value)= split("=",$_,2);
 	    $bed_fields[3]{$key}=$value;
 	}
+
 	push(@p_stdout_array,\@bed_fields);
     }
+
     return( [ sort
 	      {
 		  $a->[0] cmp $b->[0] ||
