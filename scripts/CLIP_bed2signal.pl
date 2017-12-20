@@ -67,7 +67,7 @@ while(<BED>){
 	{
 	    my $new_bed_chr    = $bed_chr;                       # should be the same
 	    my $new_bed_start  = $bed_start+$subregion->{start}; # shift the new start
-	    my $new_bed_stop   = $bed_start+$subregion->{stop};  # shift the new stop
+	    my $new_bed_stop   = $bed_start+$subregion->{stop}+1;  # shift the new stop
 	    my $new_bed_info   = get_new_info_string(\%data_from_bed_info, $subregion);
 	    my $new_bed_strand = $bed_strand;                    # should be the same
 
