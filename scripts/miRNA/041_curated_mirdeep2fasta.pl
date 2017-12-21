@@ -3,7 +3,7 @@ use strict;
 use warnings;
 # get novel miRNAs above threshold
 my $csv_file	= $ARGV[0];
-my $cutoff	= $ARGV[1]; # cutoff score
+my $cutoff	= $ARGV[1]; # cutoff score (inclusive)
 
 my $mature_file	= $csv_file;
 $mature_file	=~ s/\.csv$/-mature.fa/;
