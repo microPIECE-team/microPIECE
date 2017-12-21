@@ -34,6 +34,8 @@ sub parser{
 }
 
 __DATA__
+>tca-miR-3905-5p
+GGAAGGGGGAGCCGCCUUG
 >tca-miR-3811c-1-5p
 UUCUUGCUCAGGGUUUACAUGU
 >tca-miR-3811c-2-5p
