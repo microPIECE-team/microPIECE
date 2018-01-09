@@ -247,7 +247,7 @@ close(OUT);
 
 print "plotting\n";
 my $outfilesvg  = $outfile."_plot.svg";
-system("./052_stacked_barplot.R $outfile $outfilesvg");
+system("052_stacked_barplot.R $outfile $outfilesvg");
 
 
 
@@ -303,7 +303,7 @@ sub countFASTA{
                 my $cf_count            = $cf_hash{$cf_key};
                 my $cf_rpm              = ($cf_count/$cf_total)*1000000;
                 $cf_hash{$cf_key}       = $cf_rpm;
-                #print "#### $cf_file ::: len  $cf_key : count $cf_count : total $cf_total | rpm $cf_rpm\n";
+               	print "#### $cf_file ::: len  $cf_key : count $cf_count : total $cf_total | rpm $cf_rpm\n";
         }
         return(\%cf_hash);
 }

@@ -5,8 +5,7 @@ use warnings;
 #adult-female_S10_L001_R1_001_trim_17_40_N_5_3_adapter.fastq-ncrna_ual_bwa_aln_multi.sam		adult_female
 my $cfg_file		= $ARGV[0];	
 my $mature_mir_file	= $ARGV[1];	
-# output : cpm; condition; microRNA
-# 3 heatmaps : mirbase, novel (score>6), putative novel (score4-6)
+# output : rpm; condition; microRNA
 
 
 my %sam_hash		= %{&read_cfg($cfg_file)};	#{rep_name}	= \@(sam1,sam2,sam3,sam4)
@@ -58,42 +57,6 @@ foreach(keys %sam_hash){	# {condition} = \@(rep1,rep2,rep3,rep4)
 		print "$con_rpm_mir_hash{$_};$sh_condition;$_\n";
 	}	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # {mirID}	= 0;
 sub read_fasta{
