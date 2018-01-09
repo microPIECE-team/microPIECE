@@ -10,7 +10,7 @@ $mature_file	=~ s/\.csv$/-mature.fa/;
 my $hairpin_file= $csv_file;
 $hairpin_file	=~s /\.csv$/-hairpin.fa/;
 
-my %novel_hash	= %{&parse_mirdeep($csv_file)};
+my %novel_hash	= %{&parse_mirdeep($csv_file,$cutoff)};
 
 
 open(MATURE,">",$mature_file) || die;
@@ -19,9 +19,9 @@ open(HAIRPIN,">",$hairpin_file) || die;
 foreach(keys %novel_hash){
 	my $novel_count	= $_;
 	my @novel_split	= @{$novel_hash{$novel_count}};
-	my $mature	= uc($csv_split[7]);
-	my $star	= uc($csv_split[8]);
-	my $hairpin	= uc($csv_split[9]);
+	my $mature	= uc($novel_split[7]);
+	my $star	= uc($novel_split[8]);
+	my $hairpin	= uc($novel_split[9]);
 	
 	my $mature5p;
 	my $mature3p;
@@ -54,7 +54,7 @@ foreach(keys %novel_hash){
 #close(CSV) || die;
 
 close(MATURE) || die;
-close(HAIRPIN)|| die
+close(HAIRPIN)|| die;
 
 
 ###########################################################################
