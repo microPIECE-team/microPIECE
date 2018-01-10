@@ -10,6 +10,8 @@ mkdir -p data/004_filterN_smRNA/
 for i in data/001_trim_smRNA ; do ./071_filter_fastq_N.pl $i > $i.filterN.fastq; done;
 mv $i data/004_filterN_smRNA/
 
+
+wget ftp://mirbase.org/pub/mirbase/CURRENT/miRNA.str.gz db/
 ./072_create_mirbase_struct.pl db/tca_precursor_mirbase_completed_novel.fa db/tca_mature_mirbase_completed_novel.fa
 mv custom.str data/070_isomiR_db/
 cp db/tca_precursor_mirbase_completed_novel.fa /data/070_isomiR_db/
