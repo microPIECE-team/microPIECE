@@ -27,12 +27,14 @@ use RNA::HairpinFigure qw/draw/;
 
 my $hairpin_file	= $ARGV[0];
 my $mature_file		= $ARGV[1];
+my $struct_file		= $ARGV[2];
 my $rnafold		= "RNAfold -noPS";
 
 
 my %hairpin_hash	= %{&read_fasta($hairpin_file)};
 my %mature_hash		= %{&read_fasta($mature_file)};
 
+my %structure_hash	= %{&parse_structure($struct_file)};
 
 open(OUT,">","custom.str") || die;
 
@@ -40,10 +42,12 @@ foreach(keys %hairpin_hash){
 	my $hairpin_id		= $_;
 	my $hairpin_seq		= $hairpin_hash{$hairpin_id};
 	if(not exists $mature_hash{"$hairpin_id-5p"}){
-		print STDERR "check $hairpin_id-5p manually ! Did not find hairpin!\n";
+		print OUT "$structure_hash{$hairpin_id}";
+		print STDERR "Missing one arm of $hairpin_id : Using miRBase entry instead.\n";
 	}
 	elsif(not exists $mature_hash{"$hairpin_id-3p"}){
-		print STDERR "check $hairpin_id-3p manually ! Did not find hairpin\n";
+		print OUT "$structure_hash{$hairpin_id}";
+		print STDERR "Missing one arm of $hairpin_id : Using miRBase entry instead.\n";
 	}
 	else{
 		my $mature5p_id		= "$hairpin_id-5p";
@@ -74,7 +78,13 @@ foreach(keys %hairpin_hash){
 			$hairpin_energy	= $rna_split[1];
 		}
 		close(RNA) || die;
-		my $hairpin_figure	= draw($hairpin_seq,$hairpin_struct);
+
+		my $hairpin_caseSens	= "";
+		$hairpin_caseSens	= lc(substr($hairpin_seq,0,($mature5p_start-1))).substr($hairpin_seq,($mature5p_start-1),($mature5p_stop-$mature5p_start+1)).lc(substr($hairpin_seq,$mature5p_stop,($mature3p_start-$mature5p_stop-1))).substr($hairpin_seq,($mature3p_start-1),($mature3p_stop-$mature3p_start+1)).lc(substr($hairpin_seq,($mature3p_stop)));
+
+		$mature5p_id		=~s/mir/miR/;
+		$mature3p_id		=~s/mir/miR/;
+		my $hairpin_figure	= draw($hairpin_caseSens,$hairpin_struct);
 		print OUT "$hairpin_id $hairpin_energy   [$mature5p_id:$mature5p_start-$mature5p_stop] [$mature3p_id:$mature3p_start-$mature3p_stop]";
 		print OUT "\n\n";
 		print OUT "$hairpin_figure\n\n";
@@ -86,8 +96,35 @@ close(OUT) || die;
 
 
 
-
-
+# {cel-let-7}	= 
+#>cel-let-7 (-42.90)   [cel-let-7-5p:17-38] [cel-let-7-3p:60-81]
+#
+#------uaca    gga             U              ---  aaua
+#          cugu   uccggUGAGGUAG AGGUUGUAUAGUUu   gg    u
+#          ||||   ||||||||||||| ||||||||||||||   ||
+#          gaca   aggCCAUUCCAUC UUUAACGUAUCaag   cc    u
+#agcuucucaa    --g             U              ugg  acca
+sub parse_structure{
+	my $ps_file	= $_[0];
+	my %ps_hash;
+	my $ps_id	= "";
+	open(PS,"<",$ps_file) || die;
+	while(<PS>){
+		chomp;
+		my $ps_line	= $_;
+		if(/^>/){
+			my @ps_split	= split(" ",$ps_line);
+			$ps_id		= $ps_split[0];
+			#$ps_id		=~s/^>//;
+			$ps_hash{$ps_id}= "$ps_line\n";
+		}
+		else{
+			$ps_hash{$ps_id}.= "$ps_line\n";
+		}
+	}
+	close(PS) || die;
+	return(\%ps_hash);
+}
 
 
 
