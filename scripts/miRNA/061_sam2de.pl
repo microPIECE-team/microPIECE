@@ -62,7 +62,7 @@ foreach(keys %sam_hash){	# {condition} = \@(rep1,rep2,rep3,rep4)
 sub read_fasta{
 	my $rf_file	= $_[0];
 	my %rf_hash;	#{mirID} = 0
-	open(RF,"<",$rf_file);
+	open(RF,"<",$rf_file) || die;
 	while(<RF>){
 		chomp;
 		next unless (/^>/);
@@ -72,7 +72,7 @@ sub read_fasta{
 		$rf_mirID		=~s/^>//;		# remove > 
 		$rf_hash{$rf_mirID}	= 0;
 	}
-	close(RF);
+	close(RF) || die;
 	return(\%rf_hash);
 }
 
@@ -84,7 +84,7 @@ sub read_fasta{
 sub read_sam{
 	my $rs_file	= $_[0];
 	my %rs_hash;
-	open(RS,"<",$rs_file);
+	open(RS,"<",$rs_file) || die;
 	while(<RS>){
 		chomp;
 		next if (/^@/);
@@ -103,7 +103,7 @@ sub read_sam{
 			$rs_hash{$rs_readID}	= \@rs_list2;
 		}
 	}
-	close(RS);
+	close(RS) || die;
 	return(\%rs_hash);
 }
 
@@ -114,7 +114,7 @@ sub read_sam{
 sub read_cfg{
 	my $rc_cfg_file	= $_[0];	# config file
 	my %rc_hash;			# {rep_name}	= \@(sam1,sam2,sam3,sam4);
-	open(RC,"<",$rc_cfg_file);
+	open(RC,"<",$rc_cfg_file) || die;
 	while(<RC>){
 		chomp;
 		next if(/^#/);
@@ -122,6 +122,8 @@ sub read_cfg{
 		my @rc_split		= split(" ",$rc_line);
 		my $rc_file		= $rc_split[0];
 		my $rc_condition	= $rc_split[1];
+#		push(@{$rc_hash{$rc_condition}},$rc_file);
+
 		if(not exists $rc_hash{$rc_condition}){
 			my @rc_list1		= ();
 			push(@rc_list1,$rc_file);
@@ -132,8 +134,9 @@ sub read_cfg{
 			push(@rc_list2,$rc_file);
 			$rc_hash{$rc_condition}	= \@rc_list2;
 		}
+
 	}
-	close(RC);
+	close(RC) || die;
 	return(\%rc_hash);
 }
 
