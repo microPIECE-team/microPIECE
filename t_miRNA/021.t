@@ -5,36 +5,8 @@ use Test::Script::Run;
 use Test::More;
 use Switch;
 
-my ($return,$stdout,$stderr)=run_script('../scripts/miRNA/021_parse_miRBaseOUT.pl',[qw(020/021_test_mirdeep2.csv 020/021_test_mature.fa tca-mir-3811c-1,tca-mir-3811c-2,tca-mir-3851a-1,tca-mir-3851a-2)]);
 
-
-my $got = &parser($stdout);
-my $expected = &parser(join('',<DATA>));
-is_deeply($got,$expected,'021 output as expected');
-
-done_testing();
-
-
-
-
-
-sub parser{
-        my $p_stdout            =       $_[0];
-        my $p_header            =       "";
-        my %p_hash;
-        foreach my $p_line ( split("\n",$p_stdout)){
-		if($p_line=~/^>/){
-			$p_header	= $p_line;
-		}
-		else{
-			$p_hash{$p_header}=$p_line;
-		}
-	}
-
-}
-
-__DATA__
->tca-miR-3905-5p
+my $expected_data	= qq{>tca-miR-3905-5p
 GGAAGGGGGAGCCGCCUUG
 >tca-miR-3811c-1-5p
 UUCUUGCUCAGGGUUUACAUGU
@@ -67,4 +39,39 @@ UUCGUUGUCGACGAAACCUGCA
 >tca-miR-315-5p
 UUUUGAUUGUUGCUCAGAAAGCC
 >tca-miR-315-3p
-CUUUCGGGCAAUAAUCAUUUCC
+CUUUCGGGCAAUAAUCAUUUCC};
+
+
+
+
+
+my ($return,$stdout,$stderr)=run_script('../scripts/miRNA/021_parse_miRBaseOUT.pl',[qw(020/021_test_mirdeep2.csv 020/021_test_mature.fa tca-mir-3811c-1,tca-mir-3811c-2,tca-mir-3851a-1,tca-mir-3851a-2)]);
+
+
+my $got = &parser($stdout);
+#my $expected = &parser(join('',<DATA>));
+my $expected = &parser($expected_data);
+
+is_deeply($got,$expected,'021 output as expected');
+
+done_testing();
+
+
+
+
+
+sub parser{
+        my $p_stdout            =       $_[0];
+        my $p_header            =       "";
+        my %p_hash;
+        foreach my $p_line ( split("\n",$p_stdout)){
+		if($p_line=~/^>/){
+			$p_header	= $p_line;
+		}
+		else{
+			$p_hash{$p_header}=$p_line;
+		}
+	}
+	return (\%p_hash);	
+}
+
