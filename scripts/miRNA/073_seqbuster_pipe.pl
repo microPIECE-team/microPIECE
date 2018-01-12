@@ -15,7 +15,6 @@ my @fastq_files = grep { $_ ne '.' && $_ ne '..' } readdir DIR;       # each fas
 closedir DIR || die ;
 $fastq_path	=~s/\/$//;
 
-open(OUT,">","time_stamps.csv") || die;
 foreach(@fastq_files){
 	my $fastq_data	= $_;
 	my $fastq_file	= "$fastq_path/$_";
@@ -24,7 +23,6 @@ foreach(@fastq_files){
 	system("$collapse -f $fastq_file -o $output");
 	
 	# miraligner
-	my $st = time();
 	my $collapsed_file	= $fastq_data;
 	$collapsed_file		=~s/\.fastq$//;
 	$collapsed_file		=~s/\.fq$//;
@@ -33,7 +31,5 @@ foreach(@fastq_files){
 	$aligned_file		=~s/\.fastq$//;
 	$aligned_file		=~s/\.fq$//;
 	system("$miraligner -i $collapsed_file -db $db -o $aligned_file");
-	print OUT "TIME TAKEN $fastq_data:\t" . (time() - $st) . "\n";
 
 }
-close(OUT) || die;
