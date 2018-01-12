@@ -5,7 +5,7 @@ bwa index data/041_miRDeep_completed_with_novels/tca_mature_mirbase_completed_no
 for i in data/002_filter_smRNA/*;
 do 
 	FILEBASENAME=$(basename $i)
-	bwa aln -n 1 -o 0 -e 0 -k 1 -t 10 -f data/061_miRNA_expression/${FILEBASENAME}_mature_miR.sai data/041_miRDeep_completed_with_novels/tca_mature_mirbase_completed_novel.fa ${i};
+	bwa aln -n 1 -o 0 -e 0 -k 1 -t 100 -f data/061_miRNA_expression/${FILEBASENAME}_mature_miR.sai data/041_miRDeep_completed_with_novels/tca_mature_mirbase_completed_novel.fa ${i};
 	bwa samse -f data/061_miRNA_expression/${FILEBASENAME}_mature_miR.sam data/041_miRDeep_completed_with_novels/tca_mature_mirbase_completed_novel.fa data/061_miRNA_expression/${FILEBASENAME}_mature_miR.sai ${i};
 	samtools view -F 4 data/061_miRNA_expression/${FILEBASENAME}_mature_miR.sam -o data/061_miRNA_expression/${FILEBASENAME}_mature_miR_aln.sam;
 	./xa2multi.pl data/061_miRNA_expression/${FILEBASENAME}_mature_miR_aln.sam > data/061_miRNA_expression/${FILEBASENAME}_mature_miR_aln_xa2multi.sam;
