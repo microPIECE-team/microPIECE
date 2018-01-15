@@ -19,7 +19,7 @@ cat data/002_filter_smRNA/* > data/011_concat_smRNA/TCA_smallRNA_concat.fastq
 mkdir -p data/012_miRDeep2_output_bwt1
 
 
-./012_miRDeep2_bwt1.pl data/011_concat_smRNA/ data/012_miRDeep2_output_bwt1/ db/GCF_000002335.3_Tcas5.2_genomic.fna db/tca_mature_mirbase.fa db/mature.fa-no-tca.fa db/tca_precursor_mirbase.fa 110
+./012_miRDeep2_bwt1.pl -dir data/011_concat_smRNA/ -out data/012_miRDeep2_output_bwt1/ -ref_genome db/GCF_000002335.3_Tcas5.2_genomic.fna -species_mature_miRs db/tca_mature_mirbase.fa -other_mature_miRs db/mature.fa-no-tca.fa -species_precursor_mirs db/tca_precursor_mirbase.fa -threads 110
 mv result_*.csv data/012_miRDeep2_output_bwt1/result-bwt1.csv
 
 #clean up all files 

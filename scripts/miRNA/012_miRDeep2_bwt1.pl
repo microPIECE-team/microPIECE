@@ -1,9 +1,8 @@
 #! /usr/bin/perl
 use strict;
 use warnings;
+use Getopt::Long;
 
-#my $makeblastdb		= 'makeblastdb';
-#my $blastn		= 'blastn';
 
 my $fastq2fasta		= 'fastq2fasta.pl';
 my $remove_ws		= 'remove_white_space_in_id.pl';
@@ -14,14 +13,23 @@ my $bowtie_build	= 'bowtie-build';
 
 my $mirdeep			= 'miRDeep2.pl';
 
-my $dir				= $ARGV[0];
-my $out				= $ARGV[1];
-my $ref_genome			= $ARGV[2];
-my $mature_ref_mir_file      	= $ARGV[3];
-my $mature_other_mir_file    	= $ARGV[4];
-my $hairpin_ref_mir_file     	= $ARGV[5];
-#my $nc_rna_ref_file		= $ARGV[6];
-my $cpu				= $ARGV[6];
+my $dir;
+my $out;
+my $ref_genome;
+my $mature_ref_mir_file;
+my $mature_other_mir_file;
+my $hairpin_ref_mir_file;
+my $cpu;
+
+GetOptions(
+    	"dir=s"  			=> \$dir,
+    	"out=s"     			=> \$out,
+    	"ref_genome=s" 			=> \$ref_genome,
+    	"species_mature_miRs=s"		=> \$mature_ref_mir_file,
+	"other_mature_miRs=s"		=> \$mature_other_mir_file,
+	"species_precursor_mirs=s"	=> \$hairpin_ref_mir_file,
+	"threads=i"			=> \$cpu) || die;
+
 
 if (not $dir =~/\/$/){
 	$dir .= "/";
