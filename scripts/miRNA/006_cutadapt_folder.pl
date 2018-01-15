@@ -21,7 +21,7 @@ foreach(@files){
 	$outpath	=~ s/\.fastq$/_trim_$minlen-$maxlen-N_5_3_adapter.fastq/;
 	
 	system("$cutadapt $inpath -o $outpath");
-	if($? == -1){
+	if($? != 0){
 		print STDERR "Execution fail : $!\n";
 		die;
 	}
