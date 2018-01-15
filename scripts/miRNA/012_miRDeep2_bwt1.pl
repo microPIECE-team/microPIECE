@@ -41,7 +41,7 @@ if (not $out =~/\/$/){
 my $ref_genome_no_ws	= $ref_genome;
 $ref_genome_no_ws      .= "_noWhitespace.fa";
 system("$remove_ws $ref_genome > $ref_genome_no_ws");
-if($? == -1){
+if($? != 0){
 	print STDERR "Execution fail : $!\n";
         die;
 }
@@ -52,7 +52,7 @@ my $mature_ref_mir		= &RNA2DNA($mature_ref_mir_file);
 my $mature_ref_mir_no_ws	= $mature_ref_mir;
 $mature_ref_mir_no_ws	       .= "_noWhitespace.fa";
 system("$remove_ws $mature_ref_mir > $mature_ref_mir_no_ws");
-if($? == -1){
+if($? != 0){
         print STDERR "Execution fail : $!\n";
         die;
 }
@@ -61,7 +61,7 @@ my $mature_other_mir		= &RNA2DNA($mature_other_mir_file);
 my $mature_other_mir_no_ws	= $mature_other_mir;
 $mature_other_mir_no_ws	       .= "_noWhitespace.fa";
 system("$remove_ws $mature_other_mir > $mature_other_mir_no_ws");
-if($? == -1){
+if($? != 0){
         print STDERR "Execution fail : $!\n";
         die;
 }
@@ -69,7 +69,7 @@ my $hairpin_ref_mir		= &RNA2DNA($hairpin_ref_mir_file);
 my $hairpin_ref_mir_no_ws	= $hairpin_ref_mir;
 $hairpin_ref_mir_no_ws	       .= "_noWhitespace.fa";
 system("$remove_ws $hairpin_ref_mir > $hairpin_ref_mir_no_ws");
-if($? == -1){
+if($? != 0){
         print STDERR "Execution fail : $!\n";
         die;
 }
@@ -81,7 +81,7 @@ closedir DIR;
 
 my $bowtie_index	= "$ref_genome_no_ws-BWT_INDX";
 system("$bowtie_build $ref_genome_no_ws $bowtie_index");
-if($? == -1){
+if($? != 0){
         print STDERR "Execution fail : $!\n";
         die;
 }
@@ -97,7 +97,7 @@ foreach(@files){
 	$fasta_file    .= ".fasta";
 	print "FASTQ2FASTA\n";
 	system("$fastq2fasta $inpath > $fasta_file"); 
-	if($? == -1){
+	if($? != 0){
 	        print STDERR "Execution fail : $!\n";
        		die;
 	}	
@@ -105,7 +105,7 @@ foreach(@files){
 	$fasta_no_whitespace	=~s/\.fasta$/_noWhitespace.fasta/;
 	print "NO WHITESPACE\n";
 	system("$remove_ws $fasta_file > $fasta_no_whitespace");
-	if($? == -1){
+	if($? != 0){
 	        print STDERR "Execution fail : $!\n";
 	        die;
 	}
@@ -113,7 +113,7 @@ foreach(@files){
 	$fasta_collapse		=~s/\.fasta$/_collapse.fasta/;
 	print "COLLAPSE\n";
 	system("$collapse_reads $fasta_no_whitespace tca > $fasta_collapse");
-	if($? == -1){
+	if($? != 0){
        		print STDERR "Execution fail : $!\n";
 	        die;
 	}
@@ -122,7 +122,7 @@ foreach(@files){
 	$bowtie_arf	=~s/\.fasta$/.arf/;
 	print "MAPPER\n";
 	system("$mapper $fasta_collapse -c -q -n -l 17 -p $bowtie_index -t $bowtie_arf");
-	        if($? == -1){
+	if($? != 0){
                 print STDERR "Execution fail : $!\n";
                 die;
         }
@@ -131,7 +131,7 @@ foreach(@files){
 	print "MIRDEEP2\n";
 	
 	system("$mirdeep $fasta_collapse $ref_genome_no_ws $bowtie_arf $mature_ref_mir_no_ws $mature_other_mir_no_ws $hairpin_ref_mir_no_ws -P");
-        if($? == -1){
+        if($? != 0){
                 print STDERR "Execution fail : $!\n";
                 die;
         }
