@@ -2,7 +2,10 @@
 use strict;
 use warnings;
 
-my $cutadapt	= "cutadapt -a TGGAATTCTCGGGTGCCAAGG -g GTTCAGAGTTCTACAGTCCGACGATC --trim-n --minimum-length 17 --maximum-length 40"; # $path > $trimmed
+my $minlen	= 17;
+my $maxlen	= 40;
+
+my $cutadapt	= "cutadapt -a TGGAATTCTCGGGTGCCAAGG -g GTTCAGAGTTCTACAGTCCGACGATC --trim-n --minimum-length $minlen --maximum-length $maxlen"; # $path > $trimmed
 my $infolder	= $ARGV[0];
 my $outfolder	= $ARGV[1];
 
@@ -15,10 +18,13 @@ foreach(@files){
 	my $file	= $_;
 	my $inpath	= $infolder.$file;
 	my $outpath	= $outfolder.$file;
-	$outpath	=~ s/\.fastq$/_trim_17_40_N_5_3_adapter.fastq/;
+	$outpath	=~ s/\.fastq$/_trim_$minlen-$maxlen-N_5_3_adapter.fastq/;
 	
 	system("$cutadapt $inpath -o $outpath");
-
+	if($? == -1){
+		print STDERR "Execution fail : $!\n";
+		die;
+	}
 }
 
 
