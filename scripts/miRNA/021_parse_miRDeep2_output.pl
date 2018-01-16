@@ -36,7 +36,6 @@ while(<CSV>){
 	}
 	my (undef, undef, undef, undef, undef, undef, undef, undef, undef, $mature_name, undef, undef, undef, $mature_seq, $star_seq, $hairpin_seq, undef) = split("\t",$_);
 	next if ($mature_name =~/.+p$/);
-#	print STDERR "$mature_name: $mature_seq | $star_seq || $hairpin_seq\n"; 
 	$mature_seq	= uc($mature_seq);
 	$star_seq	= uc($star_seq);
 	$hairpin_seq	= uc($hairpin_seq);
