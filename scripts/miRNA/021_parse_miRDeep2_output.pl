@@ -1,9 +1,14 @@
 #! /usr/bin/perl
 use strict;
 use warnings;
-my $mirdeep_csv		= $ARGV[0];
-my $mature_fasta	= $ARGV[1];	# original file from miRBase
-my $precursor_copies	= $ARGV[2];	# comma list of mirna precursor names	#tca-mir-3811c-1,tca-mir-3811c-2,tca-mir-3851a-1,tca-mir-3851a-2
+use GetOpt::Long;
+
+
+GetOptions(
+	"mirdeep_out=s"	=>\$mirdeep_csv,
+	"mature_fasta=s"=>\$mature_fasta,
+	"precursor_copies=s"=\$precursor_copies) || die;
+
 my @precursor_list	= split(",",$precursor_copies);
 my %precursor_hash;	#{precursor} = 1
 foreach my $precursor (@precursor_list){
