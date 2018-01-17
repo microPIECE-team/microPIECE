@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use RNA::HairpinFigure qw/draw/;
 use GetOpt::Long;
+use File::Temp qw(tmpnam);
 
 #>cel-let-7 (-42.90)   [cel-let-7-5p:17-38] [cel-let-7-3p:60-81]
 #
@@ -41,7 +42,8 @@ my %mature_hash		= %{&read_fasta($mature_file)};
 
 my %structure_hash	= %{&parse_structure($struct_file)};
 
-open(OUT,">","custom.str") || die;
+my $custom_tmp	= tmpnam();
+open(OUT,">",$custom_tmp) || die;
 
 foreach(keys %hairpin_hash){
 	my $hairpin_id		= $_;
@@ -65,14 +67,15 @@ foreach(keys %hairpin_hash){
 		my $mature5p_stop	= $mature5p_start + length($mature5p_seq)-1;
 		my $mature3p_start	= index($hairpin_seq,$mature3p_seq)+1;
 		my $mature3p_stop	= $mature3p_start + length($mature3p_seq)-1;
-		
-		open(TMP,">","tmp_hairpin.fa") || die;
+		my $tmp_hairpin_fa	= tmpnam();
+		open(TMP,">",$tmp_hairpin_fa) || die;
 		print TMP "$hairpin_id\n$hairpin_seq";
 		close(TMP) || die;
-		system("$rnafold < tmp_hairpin.fa > tmp_struct.rna");
+		my $tmp_struct_rna	= tmpnam();
+		system("$rnafold < $tmp_hairpin_fa > $tmp_struct_rna");
 		my $hairpin_struct;	#((..))
 		my $hairpin_energy;	#(-20.00)
-		open(RNA,"<","tmp_struct.rna") || die;
+		open(RNA,"<",$tmp_struct_rna) || die;
 		while(<RNA>){
 			chomp;
 			my $rna_line 	= $_;
