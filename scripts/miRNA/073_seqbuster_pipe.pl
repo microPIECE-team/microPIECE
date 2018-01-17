@@ -1,7 +1,7 @@
 #! /usr/bin/perl
 use strict;
 use warnings;
-use GetOpt::Long;
+use Getopt::Long;
 
 my $fastq_path;
 my $db;

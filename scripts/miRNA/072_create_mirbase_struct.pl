@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RNA::HairpinFigure qw/draw/;
-use GetOpt::Long;
+use Getopt::Long;
 use File::Temp qw(tmpnam);
 
 #>cel-let-7 (-42.90)   [cel-let-7-5p:17-38] [cel-let-7-3p:60-81]

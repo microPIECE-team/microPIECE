@@ -1,7 +1,7 @@
 #! /usr/bin/perl
 use strict;
 use warnings;
-use GetOpt::Long;
+use Getopt::Long;
 
 # sam file to DE.csv file for R script 
 my $cfg_file;
