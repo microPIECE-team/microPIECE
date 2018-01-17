@@ -1,10 +1,15 @@
 #! /usr/bin/perl
 use strict;
 use warnings;
+use GetOpt::Long;
+
 # sam file to DE.csv file for R script 
-#adult-female_S10_L001_R1_001_trim_17_40_N_5_3_adapter.fastq-ncrna_ual_bwa_aln_multi.sam		adult_female
-my $cfg_file		= $ARGV[0];	
-my $mature_mir_file	= $ARGV[1];	
+my $cfg_file;
+my $mature_mir_file;
+GetOptions(
+	"cfg=s"		=> \$cfg_file,
+	"mature_file=s"	=> \$mature_mir_file) || die;
+
 # output : rpm; condition; microRNA
 
 

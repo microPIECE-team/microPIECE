@@ -13,5 +13,5 @@ do
 done
 
 # calculate expression from SAM files 
-./061_sam2de.pl 062_s2d_cfg data/041_miRDeep_completed_with_novels/tca_mature_mirbase_completed_novel.fa > data/061_miRNA_expression/TCA_miRNA_expression.csv
+./061_sam2de.pl -cfg 062_s2d_cfg -mature_file data/041_miRDeep_completed_with_novels/tca_mature_mirbase_completed_novel.fa > data/061_miRNA_expression/TCA_miRNA_expression.csv
 
