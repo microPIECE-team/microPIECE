@@ -4,7 +4,7 @@ use warnings;
 use Test::Script::Run;
 use Test::More;
 
-my ($return,$stdout,$stderr)=run_script('../scripts/miRNA/041_curated_mirdeep2fasta.pl',['040/040_test_miRDeep2_out.csv 10']);
+my ($return,$stdout,$stderr)=run_script('../scripts/miRNA/041_curated_mirdeep2fasta.pl',["-csv", "040/040_test_miRDeep2_out.csv", "-cutoff", "10"]);
 
 
 open(HP,"<","040/040_test_miRDeep2_out-hairpin.fa") || die;
