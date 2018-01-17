@@ -31,8 +31,8 @@ while(<DATA>){
 
 
 
-is_deeply(\@got_mature,\@exp_mature,'041 mature output as expected');
-is_deeply(\@got_hairpin,\@exp_hairpin,'041 hairpin output as expected');
+is_deeply(\@got_mature,\@exp_mature,'051 mature output as expected');
+is_deeply(\@got_hairpin,\@exp_hairpin,'051 hairpin output as expected');
 
 
 done_testing();
