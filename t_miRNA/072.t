@@ -25,11 +25,8 @@ sub parser{
 	my $p_return	= "";
 	my $p_header;
 	open(DAT,"<",$p_dat) || die;	
-	while(<DAT>){
-		chomp;
-		my $p_line	= $_;
-		$p_return	.= "$p_line\n";
-        }
+	local $/;
+	$p_return	= <DAT>;
 	close(DAT) || die;
         return ($p_return);
 }
