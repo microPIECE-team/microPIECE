@@ -39,39 +39,21 @@ UUCGUUGUCGACGAAACCUGCA
 >tca-miR-315-5p
 UUUUGAUUGUUGCUCAGAAAGCC
 >tca-miR-315-3p
-CUUUCGGGCAAUAAUCAUUUCC};
+CUUUCGGGCAAUAAUCAUUUCC
+};
 
 
 
+my ($return,$stdout,$stderr)=run_script('../scripts/miRNA/021_parse_miRDeep2_output.pl',["-mirdeep_out", "020/021_test_mirdeep2.csv", "-mature_fasta", "020/021_test_mature.fa", "-precursor_copies", "tca-mir-3811c-1,tca-mir-3811c-2,tca-mir-3851a-1,tca-mir-3851a-2"]);
 
 
-my ($return,$stdout,$stderr)=run_script('../scripts/miRNA/021_parse_miRBaseOUT.pl',[qw(020/021_test_mirdeep2.csv 020/021_test_mature.fa tca-mir-3811c-1,tca-mir-3811c-2,tca-mir-3851a-1,tca-mir-3851a-2)]);
-
-
-my $got = &parser($stdout);
-#my $expected = &parser(join('',<DATA>));
-my $expected = &parser($expected_data);
-
-is_deeply($got,$expected,'021 output as expected');
+isnt($stdout,"",'021 output is not empty');
+my $got = join("\n",sort(split("\n",$stdout)));
+my $expected = join("\n",sort(split("\n",$expected_data)));
+is($got,$expected,'021 output as expected');
 
 done_testing();
 
 
 
-
-
-sub parser{
-        my $p_stdout            =       $_[0];
-        my $p_header            =       "";
-        my %p_hash;
-        foreach my $p_line ( split("\n",$p_stdout)){
-		if($p_line=~/^>/){
-			$p_header	= $p_line;
-		}
-		else{
-			$p_hash{$p_header}=$p_line;
-		}
-	}
-	return (\%p_hash);	
-}
 
