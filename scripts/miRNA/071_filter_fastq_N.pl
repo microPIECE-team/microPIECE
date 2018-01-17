@@ -1,6 +1,7 @@
 #! /usr/bin/perl
 use strict;
 use warnings;
+use GetOpt::Long;
 
 # input is a FASTQ file, which will be scanned for sequences containing Ns.
 # All FASTQ blocks containing Ns will be skipped. All other are printed to STDOUT.

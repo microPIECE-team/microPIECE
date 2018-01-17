@@ -1,11 +1,18 @@
 #! /usr/bin/perl
 use strict;
 use warnings;
-my $fastq_path		= $ARGV[0];	# input folder
-my $db			= $ARGV[1];	# database folder with hairpin.fa and miRNA.str
-my $output		= $ARGV[2];	# output folder
-my $species		= $ARGV[3];	# tca (like in mirbase)
+use GetOpt::Long;
 
+my $fastq_path;
+my $db;
+my $output;
+my $species;
+
+GetOptions(
+	"fq_path=s"		=>\$fastq_path,
+	"db_path=s"		=>\$db,
+	"out_path=s"		=>\$output,
+	"species=s"		=\$species) || die;
 
 my $collapse            = "/opt/anaconda2/bin/seqcluster collapse";
 my $miraligner          = "java -jar miraligner.jar -sub 1 -trim 3 -add 3 -s $species -freq";
@@ -21,6 +28,10 @@ foreach(@fastq_files){
 	
 	# collapse reads
 	system("$collapse -f $fastq_file -o $output");
+        if($? != 0){
+                print STDERR "Execution fail : $!\n";
+                die;
+        }
 	
 	# miraligner
 	my $collapsed_file	= $fastq_data;
@@ -31,5 +42,9 @@ foreach(@fastq_files){
 	$aligned_file		=~s/\.fastq$//;
 	$aligned_file		=~s/\.fq$//;
 	system("$miraligner -i $collapsed_file -db $db -o $aligned_file");
+        if($? != 0){
+                print STDERR "Execution fail : $!\n";
+                die;
+        }
 
 }

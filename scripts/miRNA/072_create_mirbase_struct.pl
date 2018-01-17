@@ -2,6 +2,7 @@
 use strict;
 use warnings;
 use RNA::HairpinFigure qw/draw/;
+use GetOpt::Long;
 
 #>cel-let-7 (-42.90)   [cel-let-7-5p:17-38] [cel-let-7-3p:60-81]
 #
@@ -23,11 +24,15 @@ use RNA::HairpinFigure qw/draw/;
 #GGUUGGCAUAAGGUGGUACCAUGUAACAUUUUAACCCAUAGUACGACCCAUGCCGACUCA
 #(((((((((..(((.((((.(((.............))).)))).))).))))))))).. (-21.92)
 
+my $hairpin_file;
+my $mature_file;
+my $struct_file;
 
+GetOptions(
+	"hairpin=s"	=> \$hairpin_file,
+	"mature=s"	=> \$mature_file,
+	"struct=s"	=> \$struct_file) || die;
 
-my $hairpin_file	= $ARGV[0];
-my $mature_file		= $ARGV[1];
-my $struct_file		= $ARGV[2];
 my $rnafold		= "RNAfold -noPS";
 
 
@@ -78,9 +83,10 @@ foreach(keys %hairpin_hash){
 			$hairpin_energy	= $rna_split[1];
 		}
 		close(RNA) || die;
-
+		# case and strucutre are taken from miRBase miRNA.str file 
+		# according to that file, mature sequences are upper case and the rest of the hairpin is lowercase
 		my $hairpin_caseSens	= "";
-		$hairpin_caseSens	= lc(substr($hairpin_seq,0,($mature5p_start-1))).substr($hairpin_seq,($mature5p_start-1),($mature5p_stop-$mature5p_start+1)).lc(substr($hairpin_seq,$mature5p_stop,($mature3p_start-$mature5p_stop-1))).substr($hairpin_seq,($mature3p_start-1),($mature3p_stop-$mature3p_start+1)).lc(substr($hairpin_seq,($mature3p_stop)));
+		$hairpin_caseSens	= lc(substr($hairpin_seq,0,($mature5p_start-1))).uc(substr($hairpin_seq,($mature5p_start-1),($mature5p_stop-$mature5p_start+1))).lc(substr($hairpin_seq,$mature5p_stop,($mature3p_start-$mature5p_stop-1))).uc(substr($hairpin_seq,($mature3p_start-1),($mature3p_stop-$mature3p_start+1))).lc(substr($hairpin_seq,($mature3p_stop)));
 
 		$mature5p_id		=~s/mir/miR/;
 		$mature3p_id		=~s/mir/miR/;
