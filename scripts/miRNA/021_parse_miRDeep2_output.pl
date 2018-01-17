@@ -1,13 +1,15 @@
 #! /usr/bin/perl
 use strict;
 use warnings;
-use GetOpt::Long;
-
+use Getopt::Long;
+my $mirdeep_csv;
+my $mature_fasta;
+my $precursor_copies;
 
 GetOptions(
-	"mirdeep_out=s"	=>\$mirdeep_csv,
-	"mature_fasta=s"=>\$mature_fasta,
-	"precursor_copies=s"=\$precursor_copies) || die;
+	"mirdeep_out=s"		=>\$mirdeep_csv,
+	"mature_fasta=s"	=>\$mature_fasta,
+	"precursor_copies=s"	=>\$precursor_copies) || die;
 
 # split the list of given precursors that have genomic copies
 my @precursor_list	= split(",",$precursor_copies);
@@ -19,7 +21,7 @@ foreach my $precursor (@precursor_list){
 }
 
 my %mature_hash		= %{&parse_fasta($mature_fasta)};
-my %pair_hash		= %{&get_pairs($mature_fasta)};
+my %pair_hash		= %{&get_pairs(\%mature_hash)};
 
 open(CSV,"<",$mirdeep_csv) || die;
 my $line_bool = 0;
@@ -38,7 +40,8 @@ while(<CSV>){
 	my (undef, undef, undef, undef, undef, undef, undef, undef, undef, $mature_name, undef, undef, undef, $mature_seq, $star_seq, $hairpin_seq, undef) = split("\t",$_);
 	#check for miRBase annotations that have only one mature sequence
 	my $precursor_name 	= $mature_name;
-	$precurosr_name		=~s/-.p$//;
+	$precursor_name		=~s/-.p$//;
+	next unless (exists $pair_hash{$precursor_name});
 	next if( $pair_hash{$precursor_name} == 2);
 	$mature_seq	= uc($mature_seq);
 	$star_seq	= uc($star_seq);
