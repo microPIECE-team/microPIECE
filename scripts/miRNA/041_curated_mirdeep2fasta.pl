@@ -1,9 +1,16 @@
 #! /usr/bin/perl
 use strict;
 use warnings;
+use GetOpt::Long;
+my $csv_file;
+my $cutoff;
+
+GetOption(
+	"csv=s"		=> \$csv_file,
+	"cutoff=i" 	=> \$cutoff) || die;
+	# cutoff score included
+
 # get novel miRNAs above threshold
-my $csv_file	= $ARGV[0];
-my $cutoff	= $ARGV[1]; # cutoff score (inclusive)
 
 my $mature_file	= $csv_file;
 $mature_file	=~ s/\.csv$/-mature.fa/;
@@ -26,7 +33,6 @@ foreach(keys %novel_hash){
 	my $mature5p;
 	my $mature3p;
 	
-	my $hairpin_mid = (length($hairpin))/2;
 	my $mature_idx	= index($hairpin,$mature);
 	my $star_idx	= index($hairpin,$star);
 	
@@ -40,6 +46,7 @@ foreach(keys %novel_hash){
 	}
 	else{
 		print STDERR "mature and star sequence have the same position on hairpin\n"; # should never happen
+		die;
 	}	
 
 	$mature5p	=~ s/U/T/g;

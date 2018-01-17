@@ -1,7 +1,7 @@
 #!/bin/bash
 mkdir -p data/041_miRDeep_completed_with_novels/ 
 
-./041_curated_mirdeep2fasta.pl data/012_miRDeep2_output_bwt1/result-bwt1.csv 10
+./041_curated_mirdeep2fasta.pl -csv data/012_miRDeep2_output_bwt1/result-bwt1.csv -cutoff 10
 
 # create miRNA mature dataset : miRBase + missing mature arms + novels
 mv data/012_miRDeep2_output_bwt1/result-bwt1-mature.fa data/041_miRDeep_completed_with_novels/
