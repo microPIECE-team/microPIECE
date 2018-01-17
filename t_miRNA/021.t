@@ -3,7 +3,6 @@ use strict;
 use warnings;
 use Test::Script::Run;
 use Test::More;
-use Switch;
 
 
 my $expected_data	= qq{>tca-miR-3905-5p
