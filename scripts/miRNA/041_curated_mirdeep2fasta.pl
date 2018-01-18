@@ -5,7 +5,7 @@ use Getopt::Long;
 my $csv_file;
 my $cutoff;
 
-GetOption(
+GetOptions(
 	"csv=s"		=> \$csv_file,
 	"cutoff=i" 	=> \$cutoff) || die;
 	# cutoff score included
