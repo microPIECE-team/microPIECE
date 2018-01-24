@@ -11,6 +11,6 @@ zcat ../data/AAE/GCF_000004015.4_AaegL3_protein.faa.gz  >../010/GCF_000004015.4_
 makeblastdb -in ../010/GCF_000002335.3_Tcas5.2_protein.faa -dbtype prot
 makeblastdb -in ../010/GCF_000004015.4_AaegL3_protein.faa -dbtype prot
 # run proteinortho
-proteinortho5.pl  -clean --project=../010/TCA_vs_AAE ../010/GCF_000002335.3_Tcas5.2_protein.faa ../010/GCF_000004015.4_AaegL3_protein.faa
+/opt/proteinortho_v5.16/proteinortho5.pl  -clean --project=../010/TCA_vs_AAE ../010/GCF_000002335.3_Tcas5.2_protein.faa ../010/GCF_000004015.4_AaegL3_protein.faa
 rm ../010/GCF_000002335.3_Tcas5.2_protein.faa
 rm ../010/GCF_000004015.4_AaegL3_protein.faa

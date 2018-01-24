@@ -42,7 +42,7 @@ my %mature_hash		= %{&read_fasta($mature_file)};
 
 my %structure_hash	= %{&parse_structure($struct_file)};
 
-my $custom_tmp	= tmpnam();
+my $custom_tmp	= "custom.str";
 open(OUT,">",$custom_tmp) || die;
 
 foreach(keys %hairpin_hash){
