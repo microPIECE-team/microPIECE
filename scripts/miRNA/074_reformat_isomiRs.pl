@@ -39,7 +39,7 @@ foreach my $input_file	(@input_array){
 		if($tmp_t3 eq 0){
 			$tmp_t3 = 'NULL';
 		}
-		$tmp_id	=~s/tca-n/n/;
+		#$tmp_id	=~s/tca-n/n/;
 		my $tmp_key	= "$tmp_id;$tmp_mism;$tmp_add;$tmp_t5;$tmp_t3;$tmp_seq";
 		$tmp_total_read_count += ($tmp_freq/$tmp_amb);	# count all reads, divided by ambiguity, but also the non-isoforms
 		next if(($tmp_mism eq 'NULL') && ($tmp_add eq 'NULL') && ($tmp_t5 eq 'NULL') && ($tmp_t3 eq 'NULL'));
