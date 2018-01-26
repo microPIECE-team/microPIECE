@@ -6,11 +6,14 @@ do
 done
 
 gunzip -f -k db/GCF_000002335.3_Tcas5.2_genomic.fna.gz || exit 1
-gunzip -f -k db/tca_mature_mirbase.fa.gz || exit 1
-gunzip -f -k db/mature.fa-no-tca.fa.gz || exit 1
-gunzip -f -k db/tca_precursor_mirbase.fa.gz || exit 1
+wget -P db/ ftp://mirbase.org/pub/mirbase/CURRENT/organisms.txt.gz
+wget -P db/ ftp://mirbase.org/pub/mirbase/CURRENT/mature.fa.gz
+wget -P db/ ftp://mirbase.org/pub/mirbase/CURRENT/hairpin.fa.gz
+gunzip -f -k db/organisms.txt.gz
+gunzip -f -k db/mature.fa.gz
+gunzip -f -k db/hairpin.fa.gz
 
-
+./011_mirbase_files.pl -species tca -precursor_file db/hairpin.fa -mature_file db/mature.fa -organism db/organisms.txt
 
 mkdir -p data/011_concat_smRNA/
 cat data/002_filter_smRNA/* > data/011_concat_smRNA/TCA_smallRNA_concat.fastq
