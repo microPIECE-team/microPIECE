@@ -12,7 +12,7 @@ GetOptions(
 	"fq_path=s"		=>\$fastq_path,
 	"db_path=s"		=>\$db,
 	"out_path=s"		=>\$output,
-	"species=s"		=\$species) || die;
+	"species=s"		=>\$species) || die;
 
 my $collapse            = "/opt/anaconda2/bin/seqcluster collapse";
 my $miraligner          = "java -jar miraligner.jar -sub 1 -trim 3 -add 3 -s $species -freq";

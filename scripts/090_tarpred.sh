@@ -7,7 +7,7 @@ done
 
 mkdir ../090/
 zcat ../data/TCA/GCF_000002335.3_Tcas5.2_rna.fna.gz > ../090/GCF_000002335.3_Tcas5.2_rna.fna
-cp ../data/TCA/tca_miRNA_mature_dna_novel_add_missing_miRs.fa ../090/tca_miRNA_mature_dna_novel_add_missing_miRs.fa
+cp miRNA/data/041_miRDeep_completed_with_novels/tca_mature_mirbase_completed_novel.fa ../090/tca_mature_mirbase_completed_novel.fa
 
 for i in ../080/clip_merged_[0-9]*of6BEDfilter_mapGFF_minLen0_min22_max50_sort_UC_needle.csv
 do
@@ -34,7 +34,7 @@ do
 
     #targetprediciton
     ./096_mapping.pl \
-	../090/tca_miRNA_mature_dna_novel_add_missing_miRs.fa \
+	../090/tca_mature_mirbase_completed_novel.fa \
 	../090/"${FILENAMEBASE}"_merge.fa \
 	../090/"${FILENAMEBASE}"_merge_miranda.out
 done
