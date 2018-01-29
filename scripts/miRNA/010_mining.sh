@@ -6,10 +6,10 @@ do
 done
 
 gunzip -f -k db/GCF_000002335.3_Tcas5.2_genomic.fna.gz || exit 1
-wget -P db/ ftp://mirbase.org/pub/mirbase/CURRENT/organisms.txt.gz
-wget -P db/ ftp://mirbase.org/pub/mirbase/CURRENT/mature.fa.gz
-wget -P db/ ftp://mirbase.org/pub/mirbase/CURRENT/hairpin.fa.gz
-gunzip -f -k db/organisms.txt.gz
+wget -P db/ ftp://mirbase.org/pub/mirbase/CURRENT/organisms.txt.gz || exit 1
+wget -P db/ ftp://mirbase.org/pub/mirbase/CURRENT/mature.fa.gz || exit 1
+wget -P db/ ftp://mirbase.org/pub/mirbase/CURRENT/hairpin.fa.gz || exit 1
+gunzip -f -k db/organisms.txt.gz 
 gunzip -f -k db/mature.fa.gz
 gunzip -f -k db/hairpin.fa.gz
 
