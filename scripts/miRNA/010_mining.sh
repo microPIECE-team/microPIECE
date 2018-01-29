@@ -13,7 +13,7 @@ gunzip -f -k db/organisms.txt.gz || exit 1
 gunzip -f -k db/mature.fa.gz || exit 1
 gunzip -f -k db/hairpin.fa.gz || exit 1
 
-./011_mirbase_files.pl -species tca -precursor_file db/hairpin.fa -mature_file db/mature.fa -organism db/organisms.txt || exit 1
+./011_mirbase_files.pl -species tca -precursor_file db/hairpin.fa -mature_file db/mature.fa -organism db/organisms.txt -out db/ || exit 1
 
 mkdir -p data/011_concat_smRNA/ || exit 1
 cat data/002_filter_smRNA/* > data/011_concat_smRNA/TCA_smallRNA_concat.fastq || exit 1
