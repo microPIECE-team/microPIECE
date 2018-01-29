@@ -5,7 +5,6 @@ use warnings;
 
 my $input_list		= $ARGV[0];	# comma separated replicates
 my $condition_ID	= $ARGV[1];	# from db
-#my $mirna_db_file	= $ARGV[2];	# from databse export table_miRNA --> grep out miRNA ID for foreign key
 
 my @input_array		= split(",",$input_list);
 my %condition_hash;	#{condition_file}	= \%rep_hash;
@@ -39,7 +38,6 @@ foreach my $input_file	(@input_array){
 		if($tmp_t3 eq 0){
 			$tmp_t3 = 'NULL';
 		}
-		$tmp_id	=~s/tca-n/n/;
 		my $tmp_key	= "$tmp_id;$tmp_mism;$tmp_add;$tmp_t5;$tmp_t3;$tmp_seq";
 		$tmp_total_read_count += ($tmp_freq/$tmp_amb);	# count all reads, divided by ambiguity, but also the non-isoforms
 		next if(($tmp_mism eq 'NULL') && ($tmp_add eq 'NULL') && ($tmp_t5 eq 'NULL') && ($tmp_t3 eq 'NULL'));
