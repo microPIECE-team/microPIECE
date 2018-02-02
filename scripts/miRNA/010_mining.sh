@@ -5,6 +5,10 @@ do
     command -v ${prog} >/dev/null 2>&1 || { echo "I require ${prog} but it's not installed. Aborting." >&2; exit 1; }
 done
 
+#get maximum threads
+NPROC="$(nproc)"
+
+
 gunzip -f -k db/GCF_000002335.3_Tcas5.2_genomic.fna.gz || exit 1
 wget -P db/ ftp://mirbase.org/pub/mirbase/CURRENT/organisms.txt.gz || exit 1
 wget -P db/ ftp://mirbase.org/pub/mirbase/CURRENT/mature.fa.gz || exit 1
@@ -22,7 +26,7 @@ cat data/002_filter_smRNA/* > data/011_concat_smRNA/TCA_smallRNA_concat.fastq ||
 mkdir -p data/012_miRDeep2_output_bwt1 || exit 1
 
 
-./012_miRDeep2_bwt1.pl -dir data/011_concat_smRNA/ -out data/012_miRDeep2_output_bwt1/ -ref_genome db/GCF_000002335.3_Tcas5.2_genomic.fna -species_mature_miRs db/tca_mature_mirbase.fa -other_mature_miRs db/mature.fa-no-tca.fa -species_precursor_mirs db/tca_precursor_mirbase.fa -threads 110 || exit 1
+./012_miRDeep2_bwt1.pl -dir data/011_concat_smRNA/ -out data/012_miRDeep2_output_bwt1/ -ref_genome db/GCF_000002335.3_Tcas5.2_genomic.fna -species_mature_miRs db/tca_mature_mirbase.fa -other_mature_miRs db/mature.fa-no-tca.fa -species_precursor_mirs db/tca_precursor_mirbase.fa -threads $NPROC || exit 1
 mv result_*.csv data/012_miRDeep2_output_bwt1/result-bwt1.csv || exit 1
 
 #clean up all files 
