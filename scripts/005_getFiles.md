@@ -3,7 +3,7 @@ getFiles.sh
 # VERSION
 0.9
 # DESCRIPTION
-Downloading sequence and annotation data from species A and B. 
+Downloading sequence and annotation data from species A and B.
 Downloading SRA files of CLIP sequencing
 # PARAMETERS
 none
@@ -15,6 +15,7 @@ A set contains the following data for each species:
 - annotation.gff.gz
 - rna.fa.gz
 - protein.fa.gz
+
 Additionally we obatined the SRA.fastq libraries from the CLIP-seq of speciesA
 # CHANGELOG
 - 2018-02-12 Release version 0.9
