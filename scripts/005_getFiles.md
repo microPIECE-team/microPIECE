@@ -6,8 +6,9 @@ getFiles.sh
 Downloading sequence and annotation data from species A and B. 
 Downloading SRA files of CLIP sequencing
 # PARAMETERS
-# INPUT
 none
+# INPUT
+URLs of data locations
 # OUTPUT
 A set contains the following data for each species:
 - genome.fa.gz
