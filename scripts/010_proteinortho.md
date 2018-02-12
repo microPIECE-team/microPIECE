@@ -20,8 +20,8 @@ Tab-separated .proteinortho file:
 - `Species` := number of species in this orthology group
 - `Genes` := number of genes in this orthology group. Genes>Species indicates co-orthologs.
 - `Alg.-Conn.` := algebraic connectivity
-- `species_A_protein.fa`
-- `species_B_protein.fa`
+- `species_A_protein.fa` := proteinIDs involved from species_A
+- `species_B_protein.fa` := proteinIDs involved from species_B
 # CHANGELOG
 - 2018-02-12 Release version 0.9
 # KNOWN BUGS
