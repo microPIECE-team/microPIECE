@@ -7,10 +7,10 @@ cutadapt
 # DESCRIPTION
 Runs cutadapt for each SRA-fastq file and trims the adapter sequence.
 # PARAMETERS
-`-a GTGTCAGTCACTTCCAGCGG` := adapter
-`-m 20` := min. length of retaining reads
-`--trim-n` := remove terminal N's from read
-`-o out/path/` := path for output files
+- `-a GTGTCAGTCACTTCCAGCGG` := adapter
+-`-m 20` := min. length of retaining reads
+- `--trim-n` := remove terminal N's from read
+- `-o out/path/` := path for output files
 # INPUT
 SRA_raw.fastq files
 # OUTPUT
