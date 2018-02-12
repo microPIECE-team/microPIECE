@@ -11,7 +11,7 @@
 no known bugs
 # LICENSE
 This program is released under GPLv2. For further license information, see LICENSE.md shipped with this program.
-Copyright(c)2018 Daniel Amsel and Frank Förster.
+Copyright(c)2018 Daniel Amsel and Frank Förster (employees of Fraunhofer Institute for Molecular Biology and Applied Ecology IME).
 All rights reserved.
 # CONTACT
 daniel.amsel@ime.fraunhofer.de
