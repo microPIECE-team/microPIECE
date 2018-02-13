@@ -21,9 +21,7 @@ header line is indicated by a # and entries are tab separated
 
 `<stop>` 
 
-`legnth=XY;counts=sum_of_all_signals/lib_1_pos_1_signal[0|1],...,lib_n_pos_1_signal[0|1]`
-
-`/.../lib_1_pos_m_signal[0|1],...,lib_n_pos_m_signal[0|1]` 
+`legnth=XY;counts=sum_of_all_signals/lib_1_pos_1_signal[0|1],...,lib_n_pos_1_signal[0|1]/.../lib_1_pos_m_signal[0|1],...,lib_n_pos_m_signal[0|1]` 
 
 `.`
 
