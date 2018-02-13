@@ -2,7 +2,7 @@
 build_db.sh
 # VERSION
 0.9
-# Dependencies
+# DEPENDENCIES
 - gmap_build
 # DESCRIPTION
 Build an alignment database for `gsnap` from the species_A genome.
