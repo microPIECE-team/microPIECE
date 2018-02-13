@@ -10,9 +10,17 @@ Takes the `.bed` with the custom #4 column as input, together with the wanted si
 none
 # INPUT
 - `file.bed`
-- `<int_signal_strength>
+- `<int_signal_strength>`
 # OUTPUT
 A `.bed` file that only contains those regions that have at least the given number of supportive libraries.
+
+Adds additional information to column #4 : 
+
+length=<int>;subregion=<int>,<int>;originallength=<int>;originalbedline=<int>
+  - length := new length of region
+  - subregion := string-substring indicator
+  - originallength := original length of bed region from where this subregion was taken
+  - originalbedline := the line number of the full-length region in the original bed file
 # CHANGELOG
 - 2018-02-12 Release version 0.9
 # KNOWN BUGS
