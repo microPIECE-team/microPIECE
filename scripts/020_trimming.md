@@ -2,7 +2,7 @@
 trimming.sh
 # VERSION
 0.9
-# Dependencies
+# DEPENDENCIES
 cutadapt
 # DESCRIPTION
 Runs cutadapt for each SRA-fastq file and trims the adapter sequence.
