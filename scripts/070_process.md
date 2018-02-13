@@ -16,12 +16,12 @@ Discard the `.bed` regions that are smaller than a given minimum and larger than
 - `MAX=` := 50 - maximal length of bed region
 
 #### sort
-- `-k1,1 -k2,2n`
+- `-k1,1 -k2,2n` := sort the bed file
 
 #### bedtools
-- `getfasta`
-- `-s`
-- `-name`
+- `getfasta` := get fasta sequence according to bed coordinates
+- `-s` := strandness
+- `-name` := name column of bed file is the new fasta header
 # INPUT
 - `species_A_genome.fa`
 - `.bed` files with transcriptome information
