@@ -29,9 +29,9 @@ none
 
 # OUTPUT
 #### `011_mirbase_files.pl`
-- `xxx_mature_sequences` := 
-- `all_other_mature_sequences` :=
-- `xxx_precursor_sequences` :=
+- `xxx_mature_sequences` := all mature miRNAs from the species 
+- `all_other_mature_sequences` := all other miRNAs (metazoa only)
+- `xxx_precursor_sequences` := all precursor miRNAs from the species
 
 #### `012_miRDeep2_bwt1.pl`
 - `result_bwt1.csv` := miRDeep2 output file
