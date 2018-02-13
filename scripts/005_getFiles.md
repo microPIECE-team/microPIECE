@@ -2,6 +2,7 @@
 getFiles.sh
 # VERSION
 0.9
+# DEPENDENCIES
 # DESCRIPTION
 Downloading sequence and annotation data from species A and B.
 Downloading SRA files of CLIP sequencing
