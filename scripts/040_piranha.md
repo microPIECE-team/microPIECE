@@ -4,15 +4,21 @@ piranha.sh
 0.9
 # DEPENDENCIES
 - `Piranha`
+- `sort`
 # DESCRIPTION
-Uses the aligned CLIP-reads to identifiy signal regions of AGO-binding.
+Uses the aligned CLIP-reads to identifiy signal regions of AGO-binding. The resulting `.bed` file is then sorted.
 # PARAMETERS
+`Piranha`:
+
 - `-o` := output
 - `-s` := sort
+
+`sort`:
+- `-k1,1 -k2,2n` := sorting the bed file
 # INPUT
 - `SRR_trim_gsnap.bed`
 # OUTPUT
-- `SRR_trim_gsnap_piranha.bed`
+- `SRR_trim_gsnap_piranha_sort.bed`
 # CHANGELOG
 - 2018-02-12 Release version 0.9
 # KNOWN BUGS
