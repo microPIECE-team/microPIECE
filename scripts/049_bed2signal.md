@@ -16,7 +16,7 @@ A `.bed` file that only contains those regions that have at least the given numb
 
 Adds additional information to column #4 : 
 
-length=<int>;subregion=<int>,<int>;originallength=<int>;originalbedline=<int>
+`length=<int>;subregion=<int>,<int>;originallength=<int>;originalbedline=<int>`
   - length := new length of region
   - subregion := string-substring indicator
   - originallength := original length of bed region from where this subregion was taken
