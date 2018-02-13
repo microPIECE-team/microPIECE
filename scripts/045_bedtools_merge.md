@@ -12,6 +12,22 @@ Calls the perl script to merge the CLIP signal `.bed` files into one. The `.bed`
 `/path/to/SRR_trim_gsnap_piranha_sort.bed`
 # OUTPUT
 `clip_merged.bed`
+
+header line is indicated by a # and entries are tab separated
+
+`<chromosome>`
+
+`<start>`
+
+`<stop>` 
+
+`legnth=XY;counts=sum_of_all_signals/lib_1_pos_1_signal[0|1],...,lib_n_pos_1_signal[0|1]`
+
+`/.../lib_1_pos_m_signal[0|1],...,lib_n_pos_m_signal[0|1]` 
+
+`.`
+
+`strand[+|-]`
 # CHANGELOG
 - 2018-02-12 Release version 0.9
 # KNOWN BUGS
