@@ -7,6 +7,7 @@ clip_mapping.sh
 - `samtools`
 - `bedtools`
 # DESCRIPTION
+Alignes the CLIP-seq reads to the genome and reformats the output into `.bed`
 # PARAMETERS
 `gsnap` :
 - `--gunzip` := input needs to be unzipped
