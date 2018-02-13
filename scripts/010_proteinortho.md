@@ -2,7 +2,7 @@
 010_proteinortho.pl
 # VERSION
 0.9
-# Dependencies
+# DEPENDENCIES
 - makeblast
 - proteinortho5.pl
 # DESCRIPTION
