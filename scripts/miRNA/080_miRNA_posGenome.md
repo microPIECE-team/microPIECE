@@ -6,7 +6,7 @@
 - `blast`
 - `awk`
 # DESCRIPTION
-Creates a BLAST database from the species_B genome and runs a blastn search. The results are filtered by 100% identity and coverage hits only.
+Creates a BLAST database from the species_B genome and runs a blastn search. The results are filtered by 100% identity and coverage hits only. The result contains all genomic loci of all microRNA precursors.
 # PARAMETERS
 #### makeblastdb
 - `-dbtype nucl`
