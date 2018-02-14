@@ -13,7 +13,7 @@ path/to/con1_rep1.sam con1
 path/to/con1_rep2.sam con1
 path/to/con2_rep1.sam con2
 ```
-
+Uses the reference mature microRNAs as universe of potentially available sequences. Then calculates the RPM for each microRNA per condition. Multimapping reads are divided by the number of their occurrence.
 # PARAMETERS
 none
 # INPUT
