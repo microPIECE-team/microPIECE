@@ -1,7 +1,17 @@
 # tca_miRNA_data_generation
 All stuff which is required to generate data for Daniels miRNA project
 
-# Order of execution
+## How to run
+### First, we run the microRNA pipeline
+`mkdir -p scripts/miRNA/data/000_raw_smRNA/`<br />
+Copy smallRNA sequencing raw fastq files into the folder and run the pipeline with <br />
+`scripts/miRNA/run_all.sh`<br />
+### Second, we do the RNA-seq analysis
+
+### Third, we perform the CLIP transfer
+
+
+# Script details
 ### 005_getFiles.sh
 Download all files needed for AGO CLIP transfer of AAE to TCA.
 Needs fastq-dump from the NCBI SRA Toolkit
