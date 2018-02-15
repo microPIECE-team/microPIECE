@@ -7,12 +7,14 @@ my $precursor_file;
 my $mature_file;
 my $species;		# tca
 my $organism_file;	# organisms.txt from mirbase
+my $out;
 
 GetOptions(
 	"organisms=s"		=> \$organism_file,
 	"species=s"		=> \$species,
         "precursor_file=s"      => \$precursor_file,
-        "mature_file=s" 	=> \$mature_file) || die;
+        "mature_file=s" 	=> \$mature_file,
+	"out=s"			=> \$out) || die;
 
 
 
@@ -28,19 +30,19 @@ my %tca_mature					= %{$tca_mature_ref};
 
 my %other_animal_mature				= %{$other_animal_mature};
 
-open(TMP,">","db/tca_mature_mirbase.fa") || die;
+open(TMP,">","$out"."tca_mature_mirbase.fa") || die;
 foreach(keys %tca_mature){
 	print TMP "$_\n$tca_mature{$_}\n";
 }
 close(TMP) || die;
 
-open(TMP,">","db/tca_precursor_mirbase.fa") || die;
+open(TMP,">","$out"."tca_precursor_mirbase.fa") || die;
 foreach(keys %tca_precursor){
 	print TMP "$_\n$tca_precursor{$_}\n";
 }
 close(TMP) || die;
 
-open(TMP,">","db/mature.fa-no-tca.fa") || die;
+open(TMP,">","$out"."mature.fa-no-tca.fa") || die;
 foreach(keys %other_animal_mature){
 	print TMP "$_\n$other_animal_mature{$_}\n";
 }
@@ -52,11 +54,12 @@ sub parse_organism{
 	open(PO,"<",$po_file) || die;
 	while(<PO>){
 		chomp;
+		next if(/^#/);
 		my $po_line	= $_;
 		my ($po_code,undef,undef,$po_kingdom,undef)	= split("\t",$po_line);
 		if($po_kingdom =~ /^Metazoa/){
 			$po_metazoa{$po_code} = "";
-			print "$po_code\n";
+#			print "$po_code\n";
 		}
 	}
 	close(PO) || die;
@@ -84,16 +87,16 @@ sub parse_fasta{
 			$pf_code	=~s/^>//;
 			next unless (exists $pf_kingdom{$pf_code});
 			$pf_header	= $pf_line;
-			print "$pf_code\n";
 		}
 		else{
+			next if($pf_header eq "");	
 			my $pf_seq	= $pf_line;
 			$pf_seq		=~ tr/U/T/;
-			if($pf_header =~ /^>$species/){
-				$pf_soi{$pf_header}=$pf_seq;
+			if($pf_header 	=~ /^>$species/){
+				$pf_soi{$pf_header}.=$pf_seq;
 			}
 			else{
-				$pf_sni{$pf_header}=$pf_seq;
+				$pf_sni{$pf_header}.=$pf_seq;
 			}
 		}
 	}
