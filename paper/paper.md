@@ -42,8 +42,7 @@ Citations to entries in paper.bib should be in
 [rMarkdown](http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html)
 format.
 
-This is an example citation [@figshare_archive].
 
-Figures can be included like this: ![Fidgit deposited in figshare.](figshare_article.png)
+![scheme of the pipeline](miRNA_CLIP_pipe.png)
 
 # References
