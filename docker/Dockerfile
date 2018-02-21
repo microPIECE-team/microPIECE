@@ -84,6 +84,11 @@ RUN wget http://research-pub.gene.com/gmap/src/gmap-gsnap-2018-02-12.tar.gz && \
     make install && \
     cd /opt && rm -rf gmap-gsnap-2018-02-12.tar.gz gmap-2018-02-12
 
+RUN apt update && apt install --yes --no-install-recommends git && \
+    git clone https://github.com/lpantano/seqbuster.git
+
+ENV MIRALIGNERDIR=/opt/seqbuster/modules/miraligner/
+ENV MIRALIGNER="$MIRALIGNERDIR"/miraligner.jar
 
 VOLUME /data
 WORKDIR /data
