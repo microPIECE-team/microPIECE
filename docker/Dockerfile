@@ -1,7 +1,7 @@
 FROM ubuntu
 
 LABEL maintainer="frank.foerster@ime.fraunhofer.de" \
-      description="Container for the MiCPi package" \
+      description="Container for the microPIECE package" \
       version="0.1"
 
 RUN apt update && \
