@@ -24,7 +24,7 @@ affiliations:
   index: 1
 - name: Institute for Insect Biotechnology, Heinrich-Buff-Ring 26-32, 35392 Giessen, Germany
   index: 2
-date: 06 February 2018
+date: 21 February 2018
 bibliography: paper.bib
 ---
 
