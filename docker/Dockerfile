@@ -75,5 +75,15 @@ RUN apt update && apt install --yes --no-install-recommends git && \
     perl install.pl && \
     cd /opt && rm /var/lib/apt/lists/*
 
+RUN wget http://research-pub.gene.com/gmap/src/gmap-gsnap-2018-02-12.tar.gz && \
+    tar xzf gmap-gsnap-2018-02-12.tar.gz && \
+    cd gmap-2018-02-12 && \
+    ./configure && \
+    make && \
+    make check && \
+    make install && \
+    cd /opt && rm -rf gmap-gsnap-2018-02-12.tar.gz gmap-2018-02-12
+
+
 VOLUME /data
 WORKDIR /data
