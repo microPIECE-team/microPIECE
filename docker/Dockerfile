@@ -51,5 +51,15 @@ ENV PATH=/opt/proteinortho_v5.16b/:"$PATH"
 RUN wget -O /usr/local/bin/xa2multi.pl https://raw.githubusercontent.com/lh3/bwa/master/xa2multi.pl && \
     chmod +x /usr/local/bin/xa2multi.pl
 
+RUN apt update && apt install --yes --no-install--recommends cmake git libgsl-dev && \
+    wget -O bamtools.tar.gz https://github.com/pezmaster31/bamtools/archive/v2.5.1.tar.gz && \
+    tar xzf bamtools.tar.gz && cd bamtools-2.5.1 && \
+    mkdir -p build && cd build && \
+    cmake .. && \
+    make && \
+    make install && \
+    cd /opt && rm -rf bamtools-2.5.1 bamtools.tar.gz && \
+    
+
 VOLUME /data
 WORKDIR /data
