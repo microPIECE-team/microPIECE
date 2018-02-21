@@ -8,4 +8,6 @@ RUN apt update && \
     apt install \
        --yes \
        --no-install-recommends \
-       build-essential
+       build-essential \
+       && \
+       rm -rf /var/lib/apt/lists/*
