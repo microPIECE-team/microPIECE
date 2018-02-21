@@ -9,5 +9,13 @@ RUN apt update && \
        --yes \
        --no-install-recommends \
        build-essential \
+       wget \
+       bwa \
+       bowtie \
+       bowtie2 \
+       ncbi-blast+ \
+       python-cutadapt \
+       emboss \
+       openjdk-8-jre-headless \
        && \
        rm -rf /var/lib/apt/lists/*
