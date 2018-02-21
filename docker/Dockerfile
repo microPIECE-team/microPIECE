@@ -51,13 +51,5 @@ ENV PATH=/opt/proteinortho_v5.16b/:"$PATH"
 RUN wget -O /usr/local/bin/xa2multi.pl https://raw.githubusercontent.com/lh3/bwa/master/xa2multi.pl && \
     chmod +x /usr/local/bin/xa2multi.pl
 
-RUN wget https://github.com/ViennaRNA/ViennaRNA/releases/download/v2.4.3/ViennaRNA-2.4.3.tar.gz && \
-    tar -zxvf ViennaRNA-2.4.3.tar.gz && \
-    cd ViennaRNA-2.4.3 && \
-    ./configure && \
-    make && \
-    make install && \
-    cd .. && rm -rf ViennaRNA-2.4.3.tar.gz ViennaRNA-2.4.3
-
 VOLUME /data
 WORKDIR /data
