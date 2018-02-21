@@ -51,15 +51,17 @@ ENV PATH=/opt/proteinortho_v5.16b/:"$PATH"
 RUN wget -O /usr/local/bin/xa2multi.pl https://raw.githubusercontent.com/lh3/bwa/master/xa2multi.pl && \
     chmod +x /usr/local/bin/xa2multi.pl
 
-RUN apt update && apt install --yes --no-install--recommends cmake git libgsl-dev && \
-    wget -O bamtools.tar.gz https://github.com/pezmaster31/bamtools/archive/v2.5.1.tar.gz && \
-    tar xzf bamtools.tar.gz && cd bamtools-2.5.1 && \
-    mkdir -p build && cd build && \
-    cmake .. && \
-    make && \
+RUN apt update && apt install --yes --no-install-recommends bamtools libgsl-dev && \
+    wget http://smithlabresearch.org/downloads/piranha-1.2.1.tar.gz && \
+    tar xzf piranha-1.2.1.tar.gz && \
+    cd piranha-1.2.1 && \
+    ./configure && \
+    make all && \
+    make test && \
     make install && \
-    cd /opt && rm -rf bamtools-2.5.1 bamtools.tar.gz && \
-    
+    cd /opt && rm -rf piranha-1.2.1.tar.gz /var/lib/apt/lists/*
+
+ENV PATH=/opt/piranha-1.2.1/bin/:"$PATH"
 
 VOLUME /data
 WORKDIR /data
