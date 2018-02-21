@@ -63,5 +63,17 @@ RUN apt update && apt install --yes --no-install-recommends bamtools libgsl-dev 
 
 ENV PATH=/opt/piranha-1.2.1/bin/:"$PATH"
 
+ENV PATH="$PATH":/opt/mirdeep2/bin
+ENV PERL_MB_OPT="--install_base /root/perl5"
+ENV PERL_MM_OPT="INSTALL_BASE=/root/perl5"
+ENV PERL5LIB=/opt/mirdeep2/lib/perl5
+
+RUN apt update && apt install --yes --no-install-recommends git && \
+    git clone https://github.com/rajewsky-lab/mirdeep2.git && \
+    cd mirdeep2 && \
+    perl install.pl && \
+    perl install.pl && \
+    cd /opt && rm /var/lib/apt/lists/*
+
 VOLUME /data
 WORKDIR /data
