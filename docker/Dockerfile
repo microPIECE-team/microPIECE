@@ -37,7 +37,11 @@ RUN apt update && apt install --yes --no-install-recommends \
     cd .. && \
     rm -rf samtools-1.4.1 samtools-1.4.1.tar.bz2 /var/lib/apt/lists/*
 
-
+RUN wget -O bedtools.tar.gz https://github.com/arq5x/bedtools2/releases/download/v2.27.1/bedtools-2.27.1.tar.gz && \
+    tar xzf bedtools.tar.gz && \
+    cd bedtools2 && make && \
+    mv bin/* /usr/local/bin/ && \
+    cd .. && rm -rf bedtools2 bedtools.tar.gz
 
 VOLUME /data
 WORKDIR /data
