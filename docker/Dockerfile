@@ -19,3 +19,6 @@ RUN apt update && \
        openjdk-8-jre-headless \
        && \
        rm -rf /var/lib/apt/lists/*
+
+VOLUME /data
+WORKDIR /data
