@@ -48,5 +48,8 @@ RUN wget http://www.bioinf.uni-leipzig.de/Software/proteinortho/proteinortho_v5.
     rm -rf proteinortho_v5.16b.tar.gz
 ENV PATH=/opt/proteinortho_v5.16b/:"$PATH"
 
+RUN wget -O /usr/local/bin/xa2multi.pl https://raw.githubusercontent.com/lh3/bwa/master/xa2multi.pl && \
+    chmod +x /usr/local/bin/xa2multi.pl
+
 VOLUME /data
 WORKDIR /data
