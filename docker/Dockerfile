@@ -91,5 +91,14 @@ RUN apt update && apt install --yes --no-install-recommends git && \
 ENV MIRALIGNERDIR=/opt/seqbuster/modules/miraligner/
 ENV MIRALIGNER="$MIRALIGNERDIR"/miraligner.jar
 
+RUN wget http://cbio.mskcc.org/microrna_data/miRanda-aug2010.tar.gz && \
+    tar xzf miRanda-aug2010.tar.gz && \
+    cd miRanda-3.3a && \
+    ./configure && \
+    make && \
+    make check && \
+    make install && \
+    cd /opt && rm -rf miRanda-aug2010.tar.gz miRanda-3.3a
+
 VOLUME /data
 WORKDIR /data
