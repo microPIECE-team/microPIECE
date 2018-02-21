@@ -1,5 +1,5 @@
 ---
-title: 'miRNA CLIP pipe'
+title: 'microRNA CLIP pipe'
 tags:
 - CLIP-seq
 - microRNA
