@@ -43,5 +43,10 @@ RUN wget -O bedtools.tar.gz https://github.com/arq5x/bedtools2/releases/download
     mv bin/* /usr/local/bin/ && \
     cd .. && rm -rf bedtools2 bedtools.tar.gz
 
+RUN wget http://www.bioinf.uni-leipzig.de/Software/proteinortho/proteinortho_v5.16b.tar.gz && \
+    tar xzf proteinortho_v5.16b.tar.gz && \
+    rm -rf proteinortho_v5.16b.tar.gz
+ENV PATH=/opt/proteinortho_v5.16b/:"$PATH"
+
 VOLUME /data
 WORKDIR /data
