@@ -1,5 +1,5 @@
 ---
-title: 'microRNA CLIP pipe'
+title: 'MiCPi - the microRNA CLIP transfer pipeline'
 tags:
 - CLIP-seq
 - microRNA
