@@ -37,6 +37,6 @@ The miRNA analysis part can either treat a predefined set of miRNAs or can addit
 
 ![Scheme of the pipeline: ](miRNA_CLIP_pipe.png)
 
-Our final output comprises
+Our final output comprises a set of miRNAs, together with their target mRNAs, derived from the transfered AGO-CLIP binding region. Further we provide information about the miRNA isoforms, orthologs and genomic loci.
 
 # References
