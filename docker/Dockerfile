@@ -73,7 +73,7 @@ RUN apt update && apt install --yes --no-install-recommends git && \
     cd mirdeep2 && \
     perl install.pl && \
     perl install.pl && \
-    cd /opt && rm /var/lib/apt/lists/*
+    cd /opt && rm -rf /var/lib/apt/lists/*
 
 RUN wget http://research-pub.gene.com/gmap/src/gmap-gsnap-2018-02-12.tar.gz && \
     tar xzf gmap-gsnap-2018-02-12.tar.gz && \
