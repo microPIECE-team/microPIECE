@@ -91,6 +91,13 @@ sub check_requirements {
     } else {
 	$L->logdie("Missing parameter for --clip or file is inaccessable\n")
     }
+
+    unless (exists $opt->{adapterclip} && length($opt->{adapterclip})>0 && $opt->{adapterclip} =~ /^[ACGT]+$/i)
+    {
+	$L->logdie("Missing parameter for --adapterclip or unexpected characters provided");
+    }
+
+
 }
 
 =pod
