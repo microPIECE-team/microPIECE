@@ -56,6 +56,14 @@ GetOptions(
     'threads=i'            => \$opt->{threads}
     ) || pod2usage(1);
 
+# split clip files if required
+$opt->{clip} = [ split(",", join(",", @{$opt->{clip}})) ];
+# split rnaseq files if required
+foreach my $cond (keys %{$opt->{smallrnaseq}})
+{
+    $opt->{smallrnaseq}{$cond} = [ split(",", join(",", @{$opt->{smallrnaseq}{$cond}})) ];
+}
+
 # help
 $opt->{help} && pod2usage(1);
 
