@@ -50,8 +50,8 @@ We also provide `microPIECE` as DOCKER image. We tested the image on Ubuntu, Deb
 ## Example
 
   - **minimal workflow**
-    - speciesA genome [AAE genome](ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/204/515/GCF_002204515.2_AaegL5.0/GCF_002204515.2_AaegL5.0_genomic.fna.gz)
-    - speciesA GFF [AAE GFF](ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/204/515/GCF_002204515.2_AaegL5.0/GCF_002204515.2_AaegL5.0_genomic.gff.gz)
+    - speciesA genome [AAE genome](https://www.ncbi.nlm.nih.gov/genome/?term=aedes%20aegypti)
+    - speciesA GFF [AAE GFF](https://www.ncbi.nlm.nih.gov/genome/?term=aedes%20aegypti)
     - speicesA AGO-CLIP-sequencing library/libraries [AGO-CLIP of AAE](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE93345)
     - speciesB genome [TCA genome](ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/002/335/GCF_000002335.3_Tcas5.2/GCF_000002335.3_Tcas5.2_genomic.fna.gz)
     - speciesB GFF [TCA GFF](ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/002/335/GCF_000002335.3_Tcas5.2/GCF_000002335.3_Tcas5.2_genomic.gff.gz)
