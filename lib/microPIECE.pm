@@ -160,7 +160,26 @@ sub run_clip {
 
     $L->info("Starting CLIP step");
 
+    run_proteinortho($opt);
+
     $L->info("Finished CLIP step");
+
+}
+
+=pod
+
+Run proteinortho for ortholog detection
+
+=cut
+
+sub run_proteinortho
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    # extract proteins from annotation and genome file
+
 
 }
 
