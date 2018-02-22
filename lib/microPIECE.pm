@@ -126,6 +126,18 @@ sub run_mining {
 
     my ($opt) = @_;
 
+    my $L = Log::Log4perl::get_logger();
+
+    unless (exists $opt->{run_mining} && $opt->{run_mining})
+    {
+	$L->info("Skipping mining step due to missing parameters");
+	return;
+    }
+
+    $L->info("Starting mining step");
+
+    $L->info("Finished mining step");
+
 }
 
 =pod
@@ -138,6 +150,18 @@ sub run_clip {
 
     my ($opt) = @_;
 
+    my $L = Log::Log4perl::get_logger();
+
+    unless (exists $opt->{run_clip} && $opt->{run_clip})
+    {
+	$L->info("Skipping CLIP step due to missing parameters");
+	return;
+    }
+
+    $L->info("Starting CLIP step");
+
+    $L->info("Finished CLIP step");
+
 }
 
 =pod
@@ -149,6 +173,18 @@ Running the target prediction part of the microPIECE
 sub run_targetprediction {
 
     my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    unless (exists $opt->{run_targetprediction} && $opt->{run_targetprediction})
+    {
+	$L->info("Skipping target prediction step due to missing parameters");
+	return;
+    }
+
+    $L->info("Starting target prediction step");
+
+    $L->info("Finished target prediction step");
 
 }
 
