@@ -54,7 +54,7 @@ We also provide `microPIECE` as DOCKER image. We tested the image on Ubuntu, Deb
     - speciesA GFF [AAE GFF](ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/204/515/GCF_002204515.2_AaegL5.0/GCF_002204515.2_AaegL5.0_genomic.gff.gz)
     - speicesA AGO-CLIP-sequencing library/libraries [AGO-CLIP of AAE](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE93345)
     - speciesB genome [TCA genome](ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/002/335/GCF_000002335.3_Tcas5.2/GCF_000002335.3_Tcas5.2_genomic.fna.gz)
-    - speciesB GFF [TCA GFF] (ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/002/335/GCF_000002335.3_Tcas5.2/GCF_000002335.3_Tcas5.2_genomic.gff.gz)
+    - speciesB GFF [TCA GFF](ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/002/335/GCF_000002335.3_Tcas5.2/GCF_000002335.3_Tcas5.2_genomic.gff.gz)
     - speciesB microRNA set (mature) [TCA mature miRNAs](http://mirbase.org/cgi-bin/mirna_summary.pl?org=tca)
     
   - **full workflow** (in addition to the minimal workflow)
