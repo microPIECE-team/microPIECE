@@ -21,6 +21,18 @@ Log::Log4perl->init( \q(
 	log4perl.appender.Screen.layout.ConversionPattern = [%d{yy-MM-dd HH:mm:ss}] %m%n
 ));
 
+# parse the input parameter
+use Getopt::Long;
+use Pod::Usage;
+
+# GetOptions
+my %opt = ();
+
+GetOptions( # use %opt as defaults (demo-set)
+	    \%opt, qw(
+	)
+    ) || pod2usage(1);
+
 
 __END__
 
