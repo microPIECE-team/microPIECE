@@ -44,6 +44,8 @@ if($opt{version}){
 
 microPIECE::hello();
 
+microPIECE::check_dependencies();
+
 __END__
 
 =pod

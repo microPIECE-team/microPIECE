@@ -47,4 +47,14 @@ sub hello
 "
 }
 
+=pod
+
+Checking dependencies for the pipeline
+
+=cut
+
+sub check_dependencies {
+
+}
+
 1;
