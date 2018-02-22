@@ -97,7 +97,8 @@ sub check_requirements {
 	$L->logdie("Missing parameter for --adapterclip or unexpected characters provided");
     }
 
-
+    # we need to run clip
+    $opt->{run_clip} = 1;
 }
 
 =pod
