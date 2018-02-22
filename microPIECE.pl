@@ -24,35 +24,56 @@ use Getopt::Long;
 use Pod::Usage;
 
 # GetOptions
-my %opt = ();
+my $opt = {
+    version            => undef,
+    help               => undef,
+    genomeA            => undef,
+    genomeB            => undef,
+    annotationA        => undef,
+    annotationB        => undef,
+    clip               => [],
+    adapterclip        => undef,
+    smallrnaseq        => {},
+    adaptersmallrnaseq => undef,
+    filterncrnas       => undef,
+    config             => undef
+};
 
-GetOptions( # use %opt as defaults (demo-set)
-	    \%opt, qw(
-              version|V
-              help|h
-	)
+GetOptions(
+    'version|V'            => \$opt->{version},
+    'help|h'               => \$opt->{help},
+    'genomeA=s'            => \$opt->{genomeA},
+    'genomeB=s'            => \$opt->{genomeB},
+    'gffA|annotationA=s'   => \$opt->{annotationA},
+    'gffB|annotationB=s'   => \$opt->{annotationB},
+    'clip=s@'              => \$opt->{clip},
+    'adapterclip=s'        => \$opt->{adapterclip},
+    'smallrnaseq=s%'       => sub { push(@{$opt->{smallrnaseq}{$_[1]}}, $_[2]) },
+    'adaptersmallrnaseq=s' => \$opt->{adaptersmallrnaseq},
+    'filterncrnas=s'       => \$opt->{filterncrnas},
+    'config=s'             => \$opt->{config}
     ) || pod2usage(1);
 
 # help
-$opt{help} && pod2usage(1);
+$opt->{help} && pod2usage(1);
 
 # version
-if($opt{version}){
+if($opt->{version}){
 	print $microPIECE::VERSION->normal(),"\n";
 	exit 0;
 }
 
 microPIECE::hello();
 
-microPIECE::print_settings(\%opt);
+microPIECE::print_settings($opt);
 
 microPIECE::check_dependencies();
 
-microPIECE::run_mining(\%opt);
+microPIECE::run_mining($opt);
 
-microPIECE::run_clip(\%opt);
+microPIECE::run_clip($opt);
 
-microPIECE::run_targetprediction(\%opt);
+microPIECE::run_targetprediction($opt);
 
 __END__
 
