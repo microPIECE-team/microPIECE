@@ -66,6 +66,11 @@ sub check_requirements {
     {
 	$L->logdie("Missing parameter for --genomeA or file is inaccessable\n");
     }
+
+    unless (exists $opt->{genomeB} && -e $opt->{genomeB})
+    {
+	$L->logdie("Missing parameter for --genomeB or file is inaccessable\n");
+    }
 }
 
 =pod
