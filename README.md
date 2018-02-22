@@ -35,6 +35,17 @@ We also provide `microPIECE` as DOCKER image. We tested the image on Ubuntu, Deb
 ## Usage
 
 ## Input data
+  - minimal workflow
+    - speciesA genome
+    - speciesA GFF
+    - speicesA AGO-CLIP-sequencing library/libraries
+    - speciesB genome
+    - speciesB GFF
+    - speciesB microRNA set (mature)
+  - full workflow (in addition to the minimal workflow)
+    - speciesB non-codingRNA set (without miRNAs)
+    - speciesB microRNA set (precursor)
+    - speciesB smallRNA-sequencing library/libraries
 
 ## Example
 
