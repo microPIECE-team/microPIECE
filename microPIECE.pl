@@ -9,8 +9,6 @@ use lib "$RealBin/lib/";
 use microPIECE;
 use Log::Log4perl;
 
-microPIECE::hello();
-
 # get a logger
 my $L = Log::Log4perl::get_logger();
 Log::Log4perl->init( \q(
@@ -33,6 +31,7 @@ GetOptions( # use %opt as defaults (demo-set)
 	)
     ) || pod2usage(1);
 
+microPIECE::hello();
 
 __END__
 
