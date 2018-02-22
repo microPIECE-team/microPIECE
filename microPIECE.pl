@@ -69,7 +69,7 @@ microPIECE::hello();
 
 microPIECE::print_settings($opt);
 
-microPIECE::check_dependencies();
+microPIECE::check_requirements($opt);
 
 microPIECE::run_mining($opt);
 

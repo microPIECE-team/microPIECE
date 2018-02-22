@@ -52,11 +52,14 @@ sub hello
 
 =pod
 
-Checking dependencies for the pipeline
+Checking requirements for the pipeline
 
 =cut
 
-sub check_dependencies {
+sub check_requirements {
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
 
 }
 
