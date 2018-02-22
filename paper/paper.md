@@ -47,6 +47,6 @@ Finally, the pipeline passes the miRNA set (either from the *full* or *minimal w
 
 Depending on the provided data, the minimal output of the pipeline consists of a target prediction output from `miranda` for each library-support-level, based on the transfered CLIP regions. In case the pipeline additionally received smallRNA data, a microRNA set with known and novel miRNAs together with an expression file is saved, as well as the orthologs to other species, the genomic loci of the miRNAs and the identified isoforms.
 
-The target prediction of the 430 miRNAs on the transfered CLIP regions with three of six library-support-level from microPIECE resulted in 3010 miRNA-target interactions. Outgoing from the previously reported 2.203.593 possible microRNA-target interactions, we reduced the results to a very conservative set.
+The target prediction of the 430 miRNAs on the transfered CLIP regions with a three of six library-support-level from microPIECE resulted in 3010 miRNA-target interactions. Outgoing from the previously reported 2.203.593 possible microRNA-target interactions, we reduced the results to a very conservative set.
 
 # References
