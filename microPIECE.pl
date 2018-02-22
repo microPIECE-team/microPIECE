@@ -7,8 +7,20 @@ use FindBin qw($RealBin $Script);
 use lib "$RealBin/lib/";
 
 use microPIECE;
+use Log::Log4perl;
+
 
 hello();
+
+# get a logger
+my $L = Log::Log4perl::get_logger();
+Log::Log4perl->init( \q(
+	log4perl.rootLogger                     = INFO, Screen
+	log4perl.appender.Screen                = Log::Log4perl::Appender::Screen
+	log4perl.appender.Screen.stderr         = 1
+	log4perl.appender.Screen.layout         = PatternLayout
+	log4perl.appender.Screen.layout.ConversionPattern = [%d{yy-MM-dd HH:mm:ss}] %m%n
+));
 
 sub hello
 {
