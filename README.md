@@ -38,7 +38,7 @@ Please install the dependencies and run
 ## Example
 
 ## Changelog
-
+Version 1.0.0 is archived as *DOI* and submitted to [The Journal of Open Source Software](http://joss.theoj.org/).
 ## License
 This program is released under GPLv2. For further license information, see LICENSE.md shipped with this program.
 Copyright(c)2018 Daniel Amsel and Frank Förster (employees of Fraunhofer Institute for Molecular Biology and Applied Ecology IME) All rights reserved.
