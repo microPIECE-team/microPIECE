@@ -44,6 +44,8 @@ if($opt{version}){
 
 microPIECE::hello();
 
+microPIECE::print_settings(\%opt);
+
 microPIECE::check_dependencies();
 
 microPIECE::run_mining(\%opt);

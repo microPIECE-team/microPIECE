@@ -2,6 +2,9 @@ package microPIECE;
 
 use version 0.77; our $VERSION = version->declare("v0.9.0");
 
+use Log::Log4perl;
+use Data::Dumper;
+
 =pod
 
 Just a little welcome screen indicating our current version number
@@ -55,6 +58,21 @@ Checking dependencies for the pipeline
 
 sub check_dependencies {
 
+}
+
+=pod
+
+Print settings
+
+=cut
+
+sub print_settings {
+
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    $L->info(Dumper($opt));
 }
 
 =pod
