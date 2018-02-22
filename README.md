@@ -60,7 +60,7 @@ We also provide `microPIECE` as DOCKER image. We tested the image on Ubuntu, Deb
   - **full workflow** (in addition to the minimal workflow)
     - speciesB microRNA set (precursor) [TCA stem-loop miRNAs](http://mirbase.org/cgi-bin/mirna_summary.pl?org=tca)
     - speciesB smallRNA-sequencing library/libraries [TCA smallRNA-sequencing data](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63770)
-    - speciesB non-codingRNA set (without miRNAs - to filter smRNA-seq data) (OPTIONAL)
+    - speciesB non-codingRNA set (without miRNAs - to filter smRNA-seq data) (*OPTIONAL*)
 
     
 ## Changelog
