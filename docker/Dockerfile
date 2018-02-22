@@ -100,6 +100,17 @@ RUN wget http://cbio.mskcc.org/microrna_data/miRanda-aug2010.tar.gz && \
     make install && \
     cd /opt && rm -rf miRanda-aug2010.tar.gz miRanda-3.3a
 
+RUN apt update && apt install --yes --no-install-recommends git && \
+    mkdir gffread && cd gffread && \
+    git clone https://github.com/gpertea/gclib && \
+    cd gclib && git checkout b790ac157971c5e6da77d0c76ee9ebf26ec4a5ef && cd .. && \
+    git clone --branch v0.9.12 https://github.com/gpertea/gffread && \
+    cd gffread && \
+    make && \
+    cd /opt && rm -rf /var/lib/apt/lists/*
+
+ENV PATH=/opt/gffread/gffread/:"$PATH"
+
 RUN apt update && apt install --yes --no-install-recommends \
     liblog-log4perl-perl
 
