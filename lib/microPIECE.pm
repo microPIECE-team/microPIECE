@@ -99,4 +99,17 @@ sub run_clip {
 
 }
 
+=pod
+
+Running the target prediction part of the microPIECE
+
+=cut
+
+sub run_targetprediction {
+
+    my ($opt) = @_;
+
+}
+
+
 1;

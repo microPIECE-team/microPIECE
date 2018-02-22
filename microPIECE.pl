@@ -52,6 +52,8 @@ microPIECE::run_mining(\%opt);
 
 microPIECE::run_clip(\%opt);
 
+microPIECE::run_targetprediction(\%opt);
+
 __END__
 
 =pod
