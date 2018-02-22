@@ -81,6 +81,16 @@ sub check_requirements {
     {
 	$L->logdie("Missing parameter for --annotationB or file is inaccessable\n");
     }
+
+    if (exists $opt->{clip} && @{$opt->{clip}} > 0)
+    {
+	foreach my $clipfile (@{$opt->{clip}})
+	{
+	    $L->logdie("Missing parameter for --clip or file is inaccessable\n") unless (-e $clipfile);
+	}
+    } else {
+	$L->logdie("Missing parameter for --clip or file is inaccessable\n")
+    }
 }
 
 =pod
