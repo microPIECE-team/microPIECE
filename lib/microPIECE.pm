@@ -57,4 +57,16 @@ sub check_dependencies {
 
 }
 
+=pod
+
+Running the mining part of the microPIECE
+
+=cut
+
+sub run_mining {
+
+    my ($opt) = @_;
+
+}
+
 1;

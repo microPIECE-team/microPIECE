@@ -46,6 +46,8 @@ microPIECE::hello();
 
 microPIECE::check_dependencies();
 
+microPIECE::run_mining(\%opt);
+
 __END__
 
 =pod
