@@ -23,6 +23,8 @@ Pipeline for the transfer of AGO CLIP binding regions to improve target predicti
   - [Log::Log4perl](http://search.cpan.org/~mschilli/Log-Log4perl-1.49/lib/Log/Log4perl.pm) (1.49)
 
 ## Installation
+Please install the dependencies and run
+`git clone git@github.com:DanielAmsel/microPIECE.git`
 
 ## Docker
 
