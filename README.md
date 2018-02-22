@@ -1,5 +1,8 @@
 # microPIECE
-Pipeline for the transfer of AGO CLIP binding regions to improve target prediction of microRNAs
+
+The `microPIECE` (microRNA pipeline enhanced by CLIP experiments) takes the AGO-CLIP data from a speciesA and transfers it to a speciesB. Given a set of miRNAs from speciesB it then predicts their targets on the transfered CLIP regions.
+
+For the minimal workflow it needs a genome file, as well as its annotation file in GFF format for speciesA and speciesB. For speciesA at least one AGO-CLIP dataset is needed and speciesB needs a set of miRNAs for the target prediction. For the full workflow, a set of smallRNA-sequencing data is additionally needed and a set of non-coding RNAs can be provided as filter. The pipeline uses the smallRNA data for the mining of novel microRNAs and the completion of the given miRNA dataset, if needed. It further performs expression calculation, isoform detection, genomic loci identification and orthology determination.
 
 ## Required Software
   - [bwa](http://bio-bwa.sourceforge.net/) (0.7.12-r1039)
