@@ -76,6 +76,11 @@ sub check_requirements {
     {
 	$L->logdie("Missing parameter for --annotationA or file is inaccessable\n");
     }
+
+    unless (exists $opt->{annotationB} && -e $opt->{annotationB})
+    {
+	$L->logdie("Missing parameter for --annotationB or file is inaccessable\n");
+    }
 }
 
 =pod
