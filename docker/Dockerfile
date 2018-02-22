@@ -100,5 +100,8 @@ RUN wget http://cbio.mskcc.org/microrna_data/miRanda-aug2010.tar.gz && \
     make install && \
     cd /opt && rm -rf miRanda-aug2010.tar.gz miRanda-3.3a
 
+RUN apt update && apt install --yes --no-install-recommends \
+    liblog-log4perl-perl
+
 VOLUME /data
 WORKDIR /data
