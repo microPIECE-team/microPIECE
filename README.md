@@ -16,12 +16,11 @@ Pipeline for the transfer of AGO CLIP binding regions to improve target predicti
   - [miranda](http://34.236.212.39/microrna/getDownloads.do) (aug2010)
 
 ## Required Perl modules
-  - [Getopt::Long]
-  - [File::Temp qw(tmpnam)]
-  - [RNA::HairpinFigure qw/draw/]
-  - [Pod::Usage]
-  - [Getopt::Long]
-  - [Log::Log4perl qw(easy)]
+  - [Getopt::Long](http://search.cpan.org/dist/Getopt-Long/lib/Getopt/Long.pm) (2.5)
+  - [File::Temp](http://search.cpan.org/~dagolden/File-Temp-0.2304/lib/File/Temp.pm) (0.2304)
+  - [RNA::HairpinFigure](http://search.cpan.org/~shenwei/RNA-HairpinFigure-0.141212/lib/RNA/HairpinFigure.pm) (0.141212)
+  - [Pod::Usage](http://search.cpan.org/~marekr/Pod-Usage-1.69/lib/Pod/Usage.pm) (1.69)
+  - [Log::Log4perl](http://search.cpan.org/~mschilli/Log-Log4perl-1.49/lib/Log/Log4perl.pm) (1.49)
 
 ## Installation
 
