@@ -29,8 +29,12 @@ my %opt = ();
 GetOptions( # use %opt as defaults (demo-set)
 	    \%opt, qw(
               version|V
+              help|h
 	)
     ) || pod2usage(1);
+
+# help
+$opt{help} && pod2usage(1);
 
 # version
 if($opt{version}){
