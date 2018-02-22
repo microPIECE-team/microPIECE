@@ -36,7 +36,8 @@ my $opt = {
     smallrnaseq        => {},
     adaptersmallrnaseq => undef,
     filterncrnas       => undef,
-    config             => undef
+    config             => undef,
+    threads            => 1,
 };
 
 GetOptions(
@@ -51,7 +52,8 @@ GetOptions(
     'smallrnaseq=s%'       => sub { push(@{$opt->{smallrnaseq}{$_[1]}}, $_[2]) },
     'adaptersmallrnaseq=s' => \$opt->{adaptersmallrnaseq},
     'filterncrnas=s'       => \$opt->{filterncrnas},
-    'config=s'             => \$opt->{config}
+    'config=s'             => \$opt->{config},
+    'threads=i'            => \$opt->{threads}
     ) || pod2usage(1);
 
 # help
