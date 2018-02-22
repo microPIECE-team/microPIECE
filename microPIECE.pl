@@ -28,8 +28,15 @@ my %opt = ();
 
 GetOptions( # use %opt as defaults (demo-set)
 	    \%opt, qw(
+              version|V
 	)
     ) || pod2usage(1);
+
+# version
+if($opt{version}){
+	print $microPIECE::VERSION->normal(),"\n";
+	exit 0;
+}
 
 microPIECE::hello();
 
