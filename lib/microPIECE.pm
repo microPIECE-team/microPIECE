@@ -61,6 +61,11 @@ sub check_requirements {
 
     my $L = Log::Log4perl::get_logger();
 
+    # first we check if mandatory parameters have been specified
+    unless (exists $opt->{genomeA} && -e $opt->{genomeA})
+    {
+	$L->logdie("Missing parameter for --genomeA or file is inaccessable\n");
+    }
 }
 
 =pod
