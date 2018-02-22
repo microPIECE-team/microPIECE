@@ -48,6 +48,8 @@ microPIECE::check_dependencies();
 
 microPIECE::run_mining(\%opt);
 
+microPIECE::run_clip(\%opt);
+
 __END__
 
 =pod

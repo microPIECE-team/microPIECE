@@ -69,4 +69,16 @@ sub run_mining {
 
 }
 
+=pod
+
+Running the CLIP part of the microPIECE
+
+=cut
+
+sub run_clip {
+
+    my ($opt) = @_;
+
+}
+
 1;
