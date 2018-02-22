@@ -48,7 +48,12 @@ We also provide `microPIECE` as DOCKER image. We tested the image on Ubuntu, Deb
     - speciesB smallRNA-sequencing library/libraries
 
 ## Example
+### Testset
+Feel free to test the pipeline with our testset:
 
+`git clone git@github.com:microPIECE-team/microPIECE-testset.git`
+
+### Alternative
   - **minimal workflow**
     - speciesA genome [AAE genome : ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/204/515/GCF_002204515.2_AaegL5.0/GCF_002204515.2_AaegL5.0_genomic.fna.gz](https://tinyurl.com/yagl5mlo)
     - speciesA GFF [AAE GFF : ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/204/515/GCF_002204515.2_AaegL5.0/GCF_002204515.2_AaegL5.0_genomic.gff.gz](https://tinyurl.com/ybckl5pp)
