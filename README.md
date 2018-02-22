@@ -30,6 +30,7 @@ Please install the dependencies and run
 `git clone git@github.com:DanielAmsel/microPIECE.git`
 
 ## Docker
+We also provide `microPIECE` as DOCKER image. We tested the image on Ubuntu, Debian and MacOS. For the latter one, the `Piranha` command `make test` fails during the build, but when entering the container, the test succeds. Therefore, we temporarily excluded this statement.
 
 ## Usage
 
