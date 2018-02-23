@@ -251,8 +251,21 @@ sub run_CLIP_process
 	close(FH) || $L->logdie("Unable to close '$sorted_bed': $!");
 
 	# run bedtools getfasta
-	@cmd = ("bedtools", "getfasta", "-s", "-name", "-fi", $opt->{genomeA}, "-bed", $sorted_bed, "-fo", $fasta);
-	run_cmd($L, \@cmd);
+	@cmd = ("bedtools", "getfasta", "-s", "-name", "-fi", $opt->{genomeA}, "-bed", $sorted_bed, );
+	my $fastaoutput = run_cmd($L, \@cmd);
+
+	open(FH, ">", $fasta) || $L->logdie("Unable to open '$fasta': $!");
+	foreach my $line (split(/\n/, $fastaoutput))
+	{
+	    # bedtools
+	    if ($line =~ /^>/ && $line =~ s/\([-+]\)$//)
+	    {
+		$L->warn("Found (+/-) as last information in fasta header. Assuming addition through 'bedtools getfasta' and removing that");
+	    }
+
+	    print FH $line, "\n";
+	}
+	close(FH) || $L->logdie("Unable to close '$fasta': $!");
 
 	# convert fasta to upper case
 	@cmd = ($opt->{scriptdir}."072_fasta_uc_and_filter4annotations.pl", $fasta, ">", $fastaUC);
