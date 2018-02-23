@@ -208,9 +208,56 @@ sub run_clip {
     run_CLIP_bedtools_merge($opt);
     run_CLIP_filterbed($opt);
     run_CLIP_clip_mapper($opt);
+    run_CLIP_process($opt);
 
     $L->info("Finished CLIP step");
 
+}
+
+sub run_CLIP_process
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    my $min = 22;
+    my $max = 50;
+
+    my @inputfiles = glob("clip_merged_*of*BEDfilter_mapGFF_minLen0.bed");
+
+    foreach my $file (@inputfiles)
+    {
+	my $sorted_bed = sprintf("%s%s_min%i_max%i_sort.bed",      $opt->{basedir}, basename($file, ".bed"), $min, $max);
+	my $fasta =      sprintf("%s%s_min%i_max%i_sort.fasta",    $opt->{basedir}, basename($file, ".bed"), $min, $max);
+	my $fastaUC =    sprintf("%s%s_min%i_max%i_sort_UC.fasta", $opt->{basedir}, basename($file, ".bed"), $min, $max);
+	my @cmd = ($opt->{scriptdir}."071_bedtool_discard_sizes.pl", $file, $min, $max);
+	my $output = run_cmd($L, \@cmd);
+
+	# sort the file
+	my @dat = ();
+	foreach my $line (split(/\n/, $output))
+	{
+	    my @fields = split("\t", $line);
+	    push(@dat, \@fields);
+	}
+
+	@dat = sort { $a->[0] cmp $b->[0] || $a->[1] <=> $b->[2] } (@dat);
+
+	open(FH, ">", $sorted_bed) || $L->logdie("Unable to open '$sorted_bed': $!");
+	foreach my $fields (@dat)
+	{
+	    print FH join("\t", @{$fields}), "\n";
+	}
+	close(FH) || $L->logdie("Unable to close '$sorted_bed': $!");
+
+	# run bedtools getfasta
+	@cmd = ("bedtools", "getfasta", "-s", "-name", "-fi", $opt->{genomeA}, "-bed", $sorted_bed, "-fo", $fasta);
+	run_cmd($L, \@cmd);
+
+	# convert fasta to upper case
+	@cmd = ($opt->{scriptdir}."072_fasta_uc_and_filter4annotations.pl", $fasta, ">", $fastaUC);
+	run_cmd($L, \@cmd);
+    }
 }
 
 sub run_CLIP_clip_mapper
@@ -414,6 +461,8 @@ sub run_cmd
     {
 	chdir($currentdir);
     }
+
+    return $output;
 }
 
 =pod
