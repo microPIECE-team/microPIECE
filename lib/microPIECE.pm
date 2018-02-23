@@ -6,6 +6,7 @@ use Log::Log4perl;
 use Data::Dumper;
 use Cwd;
 use File::Path;
+use File::Basename;
 
 =pod
 
@@ -197,9 +198,24 @@ sub run_clip {
     $L->info("Starting CLIP step");
 
     run_proteinortho($opt);
+    run_CLIP_adapter_trimming($opt);
 
     $L->info("Finished CLIP step");
 
+}
+
+sub run_CLIP_adapter_trimming
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    foreach my $clipfile (@{$opt->{clip}})
+    {
+	my $outfile = $opt->{basedir}.basename($clipfile).".trim";
+	my @cmd = ("cutadapt", "-a", $opt->{adapterclip}, "-m", 20, "--trim-n", "-o", $outfile, $clipfile);
+	run_cmd($L, \@cmd);
+    }
 }
 
 =pod
