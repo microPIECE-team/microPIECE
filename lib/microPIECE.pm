@@ -219,7 +219,7 @@ sub run_CLIP_bedtools_merge
     for(my $i=0;$i<@{$opt->{clip}};$i++)
     {
 	my $sortedpiranhafile = $opt->{basedir}.basename($opt->{clip}[$i]).".piranha.sorted.bed";
-	push(@cmd, ("--input", "$i=".$sortedpiranahfile));
+	push(@cmd, ("--input", "$i=".$sortedpiranhafile));
     }
 
     run_cmd($L, \@cmd);
