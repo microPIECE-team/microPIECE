@@ -199,10 +199,21 @@ sub run_clip {
 
     run_proteinortho($opt);
     run_CLIP_adapter_trimming($opt);
+    run_CLIP_build_db($opt);
 
     $L->info("Finished CLIP step");
 
 }
+
+sub run_CLIP_build_db
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+    my @cmd = ("gmap_build", "-D", "speciesA_db", "-k", 15, "-d", "speciesA", $opt->{genomeA});
+    run_cmd($L, \@cmd);
+}
+
 
 sub run_CLIP_adapter_trimming
 {
