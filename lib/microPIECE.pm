@@ -445,6 +445,8 @@ sub run_proteinortho
     # run proteinortho
     @cmd = ("proteinortho5.pl", "-clean", "-project=microPIECE", "-cpus=".$opt->{threads}, $opt->{proteinA}, $opt->{proteinB});
     run_cmd($L, \@cmd, $opt->{out});
+
+    $opt->{proteinortho} = $opt->{basedir}."microPIECE.proteinortho";
 }
 
 sub run_cmd
