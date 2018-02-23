@@ -202,9 +202,27 @@ sub run_clip {
     run_CLIP_build_db($opt);
     run_CLIP_mapping($opt);
     run_CLIP_piranha($opt);
+    run_CLIP_bedtools_merge($opt);
 
     $L->info("Finished CLIP step");
 
+}
+
+sub run_CLIP_bedtools_merge
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    my @cmd = ($opt->{scriptdir}."046_merge_bed_files.pl", "--output", "clip_merged.bed", "--log", "merging_bed_files.log");
+
+    for(my $i=0;$i<@{$opt->{clip}};$i++)
+    {
+	my $sortedpiranhafile = $opt->{basedir}.basename($opt->{clip}[$i]).".piranha.sorted.bed";
+	push(@cmd, ("--input", "$i=".$sortedpiranahfile));
+    }
+
+    run_cmd($L, \@cmd);
 }
 
 sub run_CLIP_piranha
