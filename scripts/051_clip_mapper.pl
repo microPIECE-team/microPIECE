@@ -52,15 +52,10 @@ sub gff_parser{
 		my @gp_split	= split(" ",$gp_line);
 		next unless ($gp_split[2] eq "mRNA");
 		my $gp_info	= $gp_split[8];
-		if($gp_info =~ /;Name=/){
-			my @gp_info_split	= split(";Name=",$gp_info);
-			my $gp_info_name	= $gp_info_split[1];
-			$gp_info_name		=~ s/;.*//; #XM_...
-#			print "$gp_info_name\n";	
-			# CHR, start, stop , XM, strand
+		if($gp_info =~ /;Name=([^;]+)/){
+			my $gp_info_name	= $1;
 			my @gp_array	= ($gp_split[0],$gp_split[3],$gp_split[4],$gp_info_name,$gp_split[6]);
 			push(@{$gp_hash{$gp_split[0]}},	\@gp_array);	# {chr} = \@( \@(mrna), \@(mrna2), ...)
-#			$gp_count      += 1;
 		}
 		else{
 			print STDERR  "NO NAME FOUND IN : $gp_info\n";
