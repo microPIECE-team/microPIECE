@@ -262,8 +262,33 @@ sub run_CLIP_piranha
 	    push(@cmd, ("-p", 0.2));
 	}
 	run_cmd($L, \@cmd);
-	my @cmd = ("sort", "-k1,1", "-k2,2n", $piranhafile, ">", $sortedpiranhafile);
-	run_cmd($L, \@cmd);
+
+	# own sort routine, was originally based on a sort call,
+	# nevertheless, I want to scan for lines containing -nan from
+	# Piranha output and skip that lines, due to they will produce
+	# errors later.
+	my @dat = ();
+	open(FH, "<", $piranhafile) || $L->logdie("Unable to open '$piranhafile': $!");
+	while (<FH>)
+	{
+	    chomp;
+	    my @fields = split("\t", $_);
+	    if ($fields[-1] eq "-nan")
+	    {
+		$L->warn(sprintf("Line %d from file '%s' contained '-nan' and will be skipped", $., $piranhafile));
+	    } else {
+		push(@dat, \@fields);
+	    }
+	}
+	close(FH) || $L->logdie("Unable to close '$piranhafile': $!");
+	@dat = sort { $a->[0] cmp $b->[0] || $a->[1] <=> $b->[2] } (@dat);
+
+	open(FH, ">", $sortedpiranhafile) || $L->logdie("Unable to open '$sortedpiranhafile': $!");
+	foreach my $fields (@dat)
+	{
+	    print FH join("\t", @{$fields}), "\n";
+	}
+	close(FH) || $L->logdie("Unable to close '$sortedpiranhafile': $!");
     }
 }
 
