@@ -209,9 +209,37 @@ sub run_clip {
     run_CLIP_filterbed($opt);
     run_CLIP_clip_mapper($opt);
     run_CLIP_process($opt);
+    run_CLIP_transfer($opt);
 
     $L->info("Finished CLIP step");
 
+}
+
+sub run_CLIP_transfer
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    my @inputfiles = glob("clip_merged_*of*BEDfilter_mapGFF_minLen*_min*_max*_sort_UC.fasta");
+
+    my $file_uniqueA     = $opt->{basedir}.basename($opt->{annotationA}, ".gff")."_unique.csv";
+    my $file_uniqueA_log = $opt->{basedir}.basename($opt->{annotationA}, ".gff")."_unique.err";
+    my @cmd = ($opt->{scriptdir}."085_parse_gff_return_longest_transcript.pl", $opt->{annotationA}, ">", $file_uniqueA, "2>", $file_uniqueA_log);
+    run_cmd($L, \@cmd);
+
+    my $file_uniqueB     = $opt->{basedir}.basename($opt->{annotationB}, ".gff")."_unique.csv";
+    my $file_uniqueB_log = $opt->{basedir}.basename($opt->{annotationB}, ".gff")."_unique.err";
+    @cmd = ($opt->{scriptdir}."085_parse_gff_return_longest_transcript.pl", $opt->{annotationB}, ">", $file_uniqueB, "2>", $file_uniqueB_log);
+    run_cmd($L, \@cmd);
+
+    foreach my $file (@inputfiles)
+    {
+	my $needle_csv = $opt->{basedir}.basename($file, ".fasta")."_needle.csv";
+	my $needle_aln = $opt->{basedir}.basename($file, ".fasta")."_needle.aln";
+	@cmd = ($opt->{scriptdir}."081_map_clip_gff_needle.pl", $file_uniqueA, $opt->{proteinortho}, $file, $file_uniqueB, $opt->{genomeB}, $needle_csv, ">", $needle_aln);
+	run_cmd($L, \@cmd);
+    }
 }
 
 sub run_CLIP_process
