@@ -233,7 +233,7 @@ sub run_CLIP_bedtools_merge
 
     my $L = Log::Log4perl::get_logger();
 
-    my @cmd = ($opt->{scriptdir}."046_merge_bed_files.pl", "--output", "clip_merged.bed", "--log", "merging_bed_files.log");
+    my @cmd = ($opt->{scriptdir}."046_merge_bed_files.pl", "--output", $opt->{basedir}."clip_merged.bed", "--log", "merging_bed_files.log");
 
     for(my $i=0;$i<@{$opt->{clip}};$i++)
     {
