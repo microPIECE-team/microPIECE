@@ -38,6 +38,8 @@ my $opt = {
     filterncrnas       => undef,
     config             => undef,
     threads            => 1,
+    out                => "out",
+    overwrite          => 0,
 };
 
 GetOptions(
@@ -53,7 +55,9 @@ GetOptions(
     'adaptersmallrnaseq=s' => \$opt->{adaptersmallrnaseq},
     'filterncrnas=s'       => \$opt->{filterncrnas},
     'config=s'             => \$opt->{config},
-    'threads=i'            => \$opt->{threads}
+    'threads=i'            => \$opt->{threads},
+    'overwrite'            => \$opt->{overwrite},
+    'out=s'                => \$opt->{out}
     ) || pod2usage(1);
 
 # split clip files if required
