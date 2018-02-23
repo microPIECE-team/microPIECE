@@ -41,6 +41,7 @@ my $opt = {
     out                => "out",
     overwrite          => 0,
     scriptdir          => $RealBin."/scripts/",
+    testrun            => undef,
 };
 
 GetOptions(
@@ -58,6 +59,7 @@ GetOptions(
     'config=s'             => \$opt->{config},
     'threads=i'            => \$opt->{threads},
     'overwrite'            => \$opt->{overwrite},
+    'testrun'              => \$opt->{testrun},
     'out=s'                => \$opt->{out}
     ) || pod2usage(1);
 
