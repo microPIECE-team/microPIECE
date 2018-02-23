@@ -200,9 +200,28 @@ sub run_clip {
     run_proteinortho($opt);
     run_CLIP_adapter_trimming($opt);
     run_CLIP_build_db($opt);
+    run_CLIP_mapping($opt);
 
     $L->info("Finished CLIP step");
 
+}
+
+sub run_CLIP_mapping
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    foreach my $clipfile (@{$opt->{clip}})
+    {
+	my $trimmedfile = $opt->{basedir}.basename($clipfile).".trim";
+	my $bamfile     = $opt->{basedir}.basename($clipfile).".bam";
+	my $bedfile     = $opt->{basedir}.basename($clipfile).".bed";
+	my @cmd = ("gsnap", "-N", 1, "-B", 5, "--speed", 1, "-O", "-A", "sam", "-t", $opt->{threads}, "-D", "speciesA_db", "-d", "speciesA", $trimmedfile, "|", "samtools", "view", "-Sb", "-", "|", "samtools", "sort", "-o", $bamfile, "-");
+	run_cmd($L, \@cmd);
+	@cmd = ("bedtools", "bamtobed", "-i", $bamfile, ">", $bedfile);
+	run_cmd($L, \@cmd);
+    }
 }
 
 sub run_CLIP_build_db
