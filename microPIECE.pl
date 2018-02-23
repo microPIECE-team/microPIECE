@@ -40,6 +40,7 @@ my $opt = {
     threads            => 1,
     out                => "out",
     overwrite          => 0,
+    scriptdir          => $RealBin."/scripts/",
 };
 
 GetOptions(
@@ -82,6 +83,8 @@ microPIECE::hello();
 microPIECE::print_settings($opt);
 
 microPIECE::check_requirements($opt);
+
+microPIECE::print_settings($opt);
 
 microPIECE::run_mining($opt);
 
