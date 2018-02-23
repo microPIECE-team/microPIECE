@@ -201,9 +201,28 @@ sub run_clip {
     run_CLIP_adapter_trimming($opt);
     run_CLIP_build_db($opt);
     run_CLIP_mapping($opt);
+    run_CLIP_piranha($opt);
 
     $L->info("Finished CLIP step");
 
+}
+
+sub run_CLIP_piranha
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    foreach my $clipfile (@{$opt->{clip}})
+    {
+	my $bedfile           = $opt->{basedir}.basename($clipfile).".bed";
+	my $piranhafile       = $opt->{basedir}.basename($clipfile).".piranha.bed";
+	my $sortedpiranhafile = $opt->{basedir}.basename($clipfile).".piranha.sorted.bed";
+	my @cmd = ("Piranha", "-o", $piranhafile, "-s", $bedfile);
+	run_cmd($L, \@cmd);
+	my @cmd = ("sort", "-k1,1", "-k2,2n", $piranhafile, ">", $sortedpiranhafile);
+	run_cmd($L, \@cmd);
+    }
 }
 
 sub run_CLIP_mapping
