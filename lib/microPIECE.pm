@@ -4,6 +4,8 @@ use version 0.77; our $VERSION = version->declare("v0.9.0");
 
 use Log::Log4perl;
 use Data::Dumper;
+use Cwd;
+use File::Path;
 
 =pod
 
@@ -61,32 +63,39 @@ sub check_requirements {
 
     my $L = Log::Log4perl::get_logger();
 
+    $opt->{basedir} = getcwd."/";
+
     # first we check if mandatory parameters have been specified
     unless (exists $opt->{genomeA} && -e $opt->{genomeA})
     {
 	$L->logdie("Missing parameter for --genomeA or file is inaccessable\n");
     }
+    $opt->{genomeA} = $opt->{basedir}.$opt->{genomeA};
 
     unless (exists $opt->{genomeB} && -e $opt->{genomeB})
     {
 	$L->logdie("Missing parameter for --genomeB or file is inaccessable\n");
     }
+    $opt->{genomeB} = $opt->{basedir}.$opt->{genomeB};
 
     unless (exists $opt->{annotationA} && -e $opt->{annotationA})
     {
 	$L->logdie("Missing parameter for --annotationA or file is inaccessable\n");
     }
+    $opt->{annotationA} = $opt->{basedir}.$opt->{annotationA};
 
     unless (exists $opt->{annotationB} && -e $opt->{annotationB})
     {
 	$L->logdie("Missing parameter for --annotationB or file is inaccessable\n");
     }
+    $opt->{annotationB} = $opt->{basedir}.$opt->{annotationB};
 
     if (exists $opt->{clip} && @{$opt->{clip}} > 0)
     {
-	foreach my $clipfile (@{$opt->{clip}})
+	for( my $i=0; $i<@{$opt->{clip}}; $i++ )
 	{
-	    $L->logdie("Missing parameter for --clip or file is inaccessable\n") unless (-e $clipfile);
+	    $L->logdie("Missing parameter for --clip or file is inaccessable\n") unless (-e $opt->{clip}[$i]);
+	    $opt->{clip}[$i] = $opt->{basedir}.$opt->{clip}[$i];
 	}
     } else {
 	$L->logdie("Missing parameter for --clip or file is inaccessable\n")
@@ -96,6 +105,33 @@ sub check_requirements {
     {
 	$L->logdie("Missing parameter for --adapterclip or unexpected characters provided");
     }
+
+    if (-e $opt->{out})
+    {
+	unless ( $opt->{overwrite} )
+	{
+	    $L->error(sprintf("Output folder %s exists. Use --overwrite to overwrite it", $opt->{out}));
+	    exit;
+	} else {
+	    rmtree($opt->{out}, {error => \my $err} );
+	    if (@$err) {
+		for my $diag (@$err) {
+		    my ($file, $message) = %$diag;
+		    if ($file eq '') {
+			$L->logdie("general error: $message");
+		    }
+		    else {
+			$L->logdie("problem unlinking $file: $message");
+		    }
+		}
+	    }
+	}
+    }
+
+    mkdir($opt->{out}) || $L->logdie("Unable to create output file: $!");
+
+    $opt->{basedir} = $opt->{basedir}.$opt->{out}."/";
+    chdir($opt->{basedir});
 
     # we need to run clip
     $opt->{run_clip} = 1;
