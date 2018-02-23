@@ -217,7 +217,7 @@ sub run_CLIP_mapping
 	my $trimmedfile = $opt->{basedir}.basename($clipfile).".trim";
 	my $bamfile     = $opt->{basedir}.basename($clipfile).".bam";
 	my $bedfile     = $opt->{basedir}.basename($clipfile).".bed";
-	my @cmd = ("gsnap", "-N", 1, "-B", 5, "--speed", 1, "-O", "-A", "sam", "-t", $opt->{threads}, "-D", "speciesA_db", "-d", "speciesA", $trimmedfile, "|", "samtools", "view", "-Sb", "-", "|", "samtools", "sort", "-o", $bamfile, "-");
+	my @cmd = ("gsnap", "-N", 1, "-B", 5, "-O", "-A", "sam", "-t", $opt->{threads}, "-D", "speciesA_db", "-d", "speciesA", $trimmedfile, "|", "samtools", "view", "-Sb", "-", "|", "samtools", "sort", "-o", $bamfile, "-");
 	run_cmd($L, \@cmd);
 	@cmd = ("bedtools", "bamtobed", "-i", $bamfile, ">", $bedfile);
 	run_cmd($L, \@cmd);
