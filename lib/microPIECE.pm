@@ -204,9 +204,28 @@ sub run_clip {
     run_CLIP_piranha($opt);
     run_CLIP_bedtools_merge($opt);
     run_CLIP_filterbed($opt);
+    run_CLIP_clip_mapper($opt);
 
     $L->info("Finished CLIP step");
 
+}
+
+sub run_CLIP_clip_mapper
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    my $minlength = 0;
+
+    my @inputfiles = glob("clip_merged_*of*BEDfilter.bed");
+
+    foreach my $file (@inputfiles)
+    {
+	my $outputname = $opt->{basedir}.basename($file, ".bed")."_mapGFF_minLen0.bed";
+	my @cmd = ($opt->{scriptdir}."051_clip_mapper.pl", $file, $opt->{annotationA}, $minlength, ">", $outputname);
+	run_cmd($L, \@cmd);
+    }
 }
 
 sub run_CLIP_filterbed
