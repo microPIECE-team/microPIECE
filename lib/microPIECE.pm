@@ -215,6 +215,22 @@ sub run_proteinortho
     my $L = Log::Log4perl::get_logger();
 
     # extract proteins from annotation and genome file
+    $opt->{proteinA} = $opt->{basedir}."/"."proteinA.fa";
+    $opt->{proteinB} = $opt->{basedir}."/"."proteinB.fa";
+    my @cmd = ("gffread", $opt->{annotationA}, "-y", $opt->{proteinA}, "-F", "-g", $opt->{genomeA});
+    run_cmd($L, \@cmd);
+    @cmd = ("gffread", $opt->{annotationB}, "-y", $opt->{proteinB}, "-F", "-g", $opt->{genomeB});
+    run_cmd($L, \@cmd);
+
+    # create blast databases
+    @cmd = ("makeblastdb", "-in", $opt->{proteinA}, "-dbtype", "prot");
+    run_cmd($L, \@cmd);
+    @cmd = ("makeblastdb", "-in", $opt->{proteinB}, "-dbtype", "prot");
+    run_cmd($L, \@cmd);
+
+    # run proteinortho
+    @cmd = ("proteinortho5.pl", "-clean", "-project=microPIECE", "-cpus=".$opt->{threads}, $opt->{proteinA}, $opt->{proteinB});
+    run_cmd($L, \@cmd, $opt->{out});
 }
 
 sub run_cmd
