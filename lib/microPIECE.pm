@@ -203,10 +203,29 @@ sub run_clip {
     run_CLIP_mapping($opt);
     run_CLIP_piranha($opt);
     run_CLIP_bedtools_merge($opt);
+    run_CLIP_filterbed($opt);
 
     $L->info("Finished CLIP step");
 
 }
+
+sub run_CLIP_filterbed
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    my @cmd = ($opt->{scriptdir}."049_bed2signal.pl", $opt->{basedir}."clip_merged.bed");
+
+    my $num_fields = int(@{$opt->{clip}});
+
+    for(my $i=1;$i<=@{$opt->{clip}};$i++)
+    {
+	my $filtered_bed_out = sprintf("%sclip_merged_%dof%dBEDfilter.bed", $opt->{basedir}, $i, $num_fields);
+	run_cmd($L, [@cmd, $i, ">", $filtered_bed_out] );
+    }
+}
+
 
 sub run_CLIP_bedtools_merge
 {
