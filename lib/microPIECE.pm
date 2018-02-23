@@ -215,8 +215,35 @@ sub run_proteinortho
     my $L = Log::Log4perl::get_logger();
 
     # extract proteins from annotation and genome file
+}
 
+sub run_cmd
+{
+    my ($log, $cmd, $path) = @_;
 
+    my $currentdir = undef;
+
+    if ($path)
+    {
+	$currentdir = getcwd;
+	chdir($path);
+    }
+
+    $log->info("Calling command: ".join(" ", @{$cmd}));
+
+    my $output = qx(@{$cmd});
+
+    if ($? != 0)
+    {
+	$log->logdie("Error calling command: ".join(" ", @{$cmd}));
+    }
+
+    $log->debug("Output of command was: ".$output);
+
+    if ($currentdir)
+    {
+	chdir($currentdir);
+    }
 }
 
 =pod
