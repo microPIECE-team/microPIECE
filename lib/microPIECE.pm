@@ -253,7 +253,7 @@ sub run_targetprediction {
     {
 	my $final_output = $opt->{basedir}.basename($file)."_final_miranda_output.txt";
 
-	my @cmd = ($opt->{scriptdir}."096_mapping.pl", $opt->{mirna}, $file, $final_output);
+	my @cmd = ($opt->{scriptdir}."CLIP_mapping.pl", $opt->{mirna}, $file, $final_output);
 	run_cmd($L, \@cmd)
     }
     $L->info("Finished target prediction step");
@@ -274,12 +274,12 @@ sub run_CLIP_transfer
 
     my $file_uniqueA     = $opt->{basedir}.basename($opt->{annotationA}, ".gff")."_unique.csv";
     my $file_uniqueA_log = $opt->{basedir}.basename($opt->{annotationA}, ".gff")."_unique.err";
-    @cmd = ($opt->{scriptdir}."085_parse_gff_return_longest_transcript.pl", $opt->{annotationA}, ">", $file_uniqueA, "2>", $file_uniqueA_log);
+    @cmd = ($opt->{scriptdir}."CLIP_parse_gff_return_longest_transcript.pl", $opt->{annotationA}, ">", $file_uniqueA, "2>", $file_uniqueA_log);
     run_cmd($L, \@cmd);
 
     my $file_uniqueB     = $opt->{basedir}.basename($opt->{annotationB}, ".gff")."_unique.csv";
     my $file_uniqueB_log = $opt->{basedir}.basename($opt->{annotationB}, ".gff")."_unique.err";
-    @cmd = ($opt->{scriptdir}."085_parse_gff_return_longest_transcript.pl", $opt->{annotationB}, ">", $file_uniqueB, "2>", $file_uniqueB_log);
+    @cmd = ($opt->{scriptdir}."CLIP_parse_gff_return_longest_transcript.pl", $opt->{annotationB}, ">", $file_uniqueB, "2>", $file_uniqueB_log);
     run_cmd($L, \@cmd);
 
     foreach my $file (@inputfiles)
@@ -290,11 +290,11 @@ sub run_CLIP_transfer
 	my $bed_merged = $opt->{basedir}.basename($file, ".fasta")."_transfered_merged.bed";
 	my $final_fasta = $opt->{basedir}.basename($file, ".fasta")."_transfered_final.fasta";
 
-	@cmd = ($opt->{scriptdir}."081_map_clip_gff_needle.pl", $file_uniqueA, $opt->{proteinortho}, $file, $file_uniqueB, $opt->{mRNAB}, $needle_csv, ">", $needle_aln);
+	@cmd = ($opt->{scriptdir}."CLIP_map_clip_gff_needle.pl", $file_uniqueA, $opt->{proteinortho}, $file, $file_uniqueB, $opt->{mRNAB}, $needle_csv, ">", $needle_aln);
 	run_cmd($L, \@cmd);
 
 	# convert csv into bed file
-	@cmd = ($opt->{scriptdir}."095_csv_to_bed.pl", $needle_csv, $bed_out);
+	@cmd = ($opt->{scriptdir}."CLIP_csv_to_bed.pl", $needle_csv, $bed_out);
 	run_cmd($L, \@cmd);
 
 	# merge bed annotations
@@ -325,7 +325,7 @@ sub run_CLIP_process
 	my $sorted_bed = sprintf("%s%s_min%i_max%i_sort.bed",      $opt->{basedir}, basename($file, ".bed"), $min, $max);
 	my $fasta =      sprintf("%s%s_min%i_max%i_sort.fasta",    $opt->{basedir}, basename($file, ".bed"), $min, $max);
 	my $fastaUC =    sprintf("%s%s_min%i_max%i_sort_UC.fasta", $opt->{basedir}, basename($file, ".bed"), $min, $max);
-	my @cmd = ($opt->{scriptdir}."071_bedtool_discard_sizes.pl", $file, $min, $max);
+	my @cmd = ($opt->{scriptdir}."CLIP_bedtool_discard_sizes.pl", $file, $min, $max);
 	my $output = run_cmd($L, \@cmd);
 
 	# sort the file
@@ -363,7 +363,7 @@ sub run_CLIP_process
 	close(FH) || $L->logdie("Unable to close '$fasta': $!");
 
 	# convert fasta to upper case
-	@cmd = ($opt->{scriptdir}."072_fasta_uc_and_filter4annotations.pl", $fasta, ">", $fastaUC);
+	@cmd = ($opt->{scriptdir}."CLIP_fasta_uc_and_filter4annotations.pl", $fasta, ">", $fastaUC);
 	run_cmd($L, \@cmd);
     }
 }
@@ -381,7 +381,7 @@ sub run_CLIP_clip_mapper
     foreach my $file (@inputfiles)
     {
 	my $outputname = $opt->{basedir}.basename($file, ".bed")."_mapGFF_minLen0.bed";
-	my @cmd = ($opt->{scriptdir}."051_clip_mapper.pl", $file, $opt->{annotationA}, $minlength, ">", $outputname);
+	my @cmd = ($opt->{scriptdir}."CLIP_mapper", $file, $opt->{annotationA}, $minlength, ">", $outputname);
 	run_cmd($L, \@cmd);
     }
 }
@@ -392,7 +392,7 @@ sub run_CLIP_filterbed
 
     my $L = Log::Log4perl::get_logger();
 
-    my @cmd = ($opt->{scriptdir}."049_bed2signal.pl", $opt->{basedir}."clip_merged.bed");
+    my @cmd = ($opt->{scriptdir}."CLIP_bed2signal.pl", $opt->{basedir}."clip_merged.bed");
 
     my $num_fields = int(@{$opt->{clip}});
 
@@ -410,7 +410,7 @@ sub run_CLIP_bedtools_merge
 
     my $L = Log::Log4perl::get_logger();
 
-    my @cmd = ($opt->{scriptdir}."046_merge_bed_files.pl", "--output", $opt->{basedir}."clip_merged.bed", "--log", "merging_bed_files.log");
+    my @cmd = ($opt->{scriptdir}."CLIP_merge_bed_files.pl", "--output", $opt->{basedir}."clip_merged.bed", "--log", "merging_bed_files.log");
 
     for(my $i=0;$i<@{$opt->{clip}};$i++)
     {
