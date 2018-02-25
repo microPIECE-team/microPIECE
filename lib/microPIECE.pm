@@ -221,11 +221,15 @@ sub run_CLIP_transfer
 
     my $L = Log::Log4perl::get_logger();
 
+    $opt->{mRNAB} = $opt->{basedir}."/"."mRNAB.fa";
+    my @cmd = ("gffread", $opt->{annotationB}, "-w", $opt->{mRNAB}, "-F", "-g", $opt->{genomeB});
+    run_cmd($L, \@cmd);
+
     my @inputfiles = glob("clip_merged_*of*BEDfilter_mapGFF_minLen*_min*_max*_sort_UC.fasta");
 
     my $file_uniqueA     = $opt->{basedir}.basename($opt->{annotationA}, ".gff")."_unique.csv";
     my $file_uniqueA_log = $opt->{basedir}.basename($opt->{annotationA}, ".gff")."_unique.err";
-    my @cmd = ($opt->{scriptdir}."085_parse_gff_return_longest_transcript.pl", $opt->{annotationA}, ">", $file_uniqueA, "2>", $file_uniqueA_log);
+    @cmd = ($opt->{scriptdir}."085_parse_gff_return_longest_transcript.pl", $opt->{annotationA}, ">", $file_uniqueA, "2>", $file_uniqueA_log);
     run_cmd($L, \@cmd);
 
     my $file_uniqueB     = $opt->{basedir}.basename($opt->{annotationB}, ".gff")."_unique.csv";
@@ -237,7 +241,7 @@ sub run_CLIP_transfer
     {
 	my $needle_csv = $opt->{basedir}.basename($file, ".fasta")."_needle.csv";
 	my $needle_aln = $opt->{basedir}.basename($file, ".fasta")."_needle.aln";
-	@cmd = ($opt->{scriptdir}."081_map_clip_gff_needle.pl", $file_uniqueA, $opt->{proteinortho}, $file, $file_uniqueB, $opt->{genomeB}, $needle_csv, ">", $needle_aln);
+	@cmd = ($opt->{scriptdir}."081_map_clip_gff_needle.pl", $file_uniqueA, $opt->{proteinortho}, $file, $file_uniqueB, $opt->{mRNAB}, $needle_csv, ">", $needle_aln);
 	run_cmd($L, \@cmd);
     }
 }
