@@ -114,7 +114,7 @@ sub check_requirements {
     $opt->{run_clip} = 1;
 
     # check if we need to run the target prediction
-    if (exists $opt->{mirna} && ! -e $opt->{mirna})
+    if (exists $opt->{mirna} && defined $opt->{mirna} && ! -e $opt->{mirna})
     {
 	$L->logdie("Missing parameter for --mirna or file is inaccessable\n");
     }
