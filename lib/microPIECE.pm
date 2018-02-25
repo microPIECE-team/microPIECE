@@ -253,7 +253,7 @@ sub run_targetprediction {
     {
 	my $final_output = $opt->{basedir}.basename($file)."_final_miranda_output.txt";
 
-	my @cmd = ($opt->{scriptdir}."CLIP_mapping.pl", $opt->{mirna}, $file, $final_output);
+	my @cmd = ($opt->{scriptdir}."Targetprediction.pl", $opt->{mirna}, $file, $final_output);
 	run_cmd($L, \@cmd)
     }
     $L->info("Finished target prediction step");
