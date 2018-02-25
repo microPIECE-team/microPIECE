@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 use File::Temp qw(tmpnam);
+use FindBin qw($RealBin);
 
 my $gff_csv	= $ARGV[0];	# use to transfer XM_AAE to XP_AAE
 my $ortho_file	= $ARGV[1];	# use to transfer XP_AAE to XP_ortholog_in_TCA
@@ -61,8 +62,13 @@ foreach(sort keys %gff_hash){
 			open(CLIP,">",$tmp_clip) or die;
 			print CLIP ">$ocs_header\n$clip_hash{$ocs_header}";
 			close(CLIP);
-			system("needle -asequence $tmp_clip -bsequence $tmp_mrna  -datafile EDNACUSTOM -endweight Y -gapopen 5 -gapextend 2 -auto -aformat markx3 -outfile $tmp_needle");
-			
+
+			my $matrixdir=$RealBin."/../scripts/";
+
+			my $cmd = "needle -asequence $tmp_clip -bsequence $tmp_mrna  -datafile ".$matrixdir."EDNACUSTOM -endweight Y -gapopen 5 -gapextend 2 -auto -aformat markx3 -outfile $tmp_needle";
+			system($cmd);
+			die "Error calling needle by command '$cmd'\n" unless ($? == 0);
+
 			# parse needle output
 			# (identity,coverage,gaps,mm, tar_start, tar_stop) 
 			my $clip_seq_len	= length($clip_hash{$ocs_header});
