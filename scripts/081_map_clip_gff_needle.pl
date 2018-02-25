@@ -31,8 +31,8 @@ my $tmp_needle	= tmpnam();
 foreach(sort keys %gff_hash){
 	my $gff_xp_key		= $_;
 	my $gff_xm_key		= $gff_hash{$gff_xp_key};
-	next unless (exists $ortho_hash{$gff_xp_key});
-	# check how many clip sequences map to mRNA XM	
+	next unless (exists $ortho_hash{A2B}{$gff_xp_key});
+	# check how many clip sequences map to mRNA XM
 	my @original_clip_seqs;	# from the original dataset, collect headers
 	foreach(keys %clip_hash){
 		my $clip_key	= $_;		# XM_...-counter
@@ -47,7 +47,7 @@ foreach(sort keys %gff_hash){
 	}
 #	print "@original_clip_seqs\n";
 	next unless (scalar(@original_clip_seqs) > 0);
-	my @ortho_array	= @{$ortho_hash{$gff_xp_key}};	# XP_AME...
+	my @ortho_array	= @{$ortho_hash{A2B}{$gff_xp_key}};	# XP_AME...
 	foreach(@ortho_array){
 		my $oa_xp_id	= $_;
 		next unless (exists $gff2_hash{$oa_xp_id});
@@ -233,22 +233,50 @@ sub ortho_parser{
 	my $op_file	= $_[0];
 	my %op_hash;
 	open(OP,"<",$op_file) || die;
+
+	# first line contains the order
+	my $header = <OP>;
+	chomp($header);
+	my @headerfields = split(/\t/, $header);
+
+	# column of SpeciesA should be stored in posA,
+	# column of SpeciesB should be stored in posB,
+	my ($posA, $posB);
+	for(my $i = 0; $i < @headerfields; $i++)
+	{
+	    if ($headerfields[$i] eq "proteinA.fa")      # was the file for speciesA
+	    {
+		$posA = $i;
+	    } elsif ($headerfields[$i] eq "proteinB.fa") # was the file for speciesB
+	    {
+		$posB = $i;
+	    }
+	}
+	die ("Unable to determine columns for species A and/or species B\n") unless (defined $posA && defined $posB);
+
 	while(<OP>){
-		chomp;
-		my $op_line		= $_;
-		my @op_split		= split(" ",$op_line);
-		my $op_left		= $op_split[3];
-		my $op_right		= $op_split[4];
-		my @op_left_split	= split(",",$op_left);
-		my @op_right_split	= split(",",$op_right);
-		foreach(@op_right_split){
-			if(not exists $op_hash{$_}){
-				$op_hash{$_}	= \@op_left_split;
-			}
-			else{
-				print STDERR "$_ already exists!\n";
-			}
+	    chomp;
+	    my @fields = split(/\t/, $_);
+
+	    my @op_speciesA		= split(",", $fields[$posA]);
+	    my @op_speciesB		= split(",", $fields[$posB]);
+
+	    foreach my $proteinA (@op_speciesA){
+		if(exists $op_hash{A2B}{$proteinA}){
+		    print STDERR "Entry for protein $proteinA of species A already exists, but will add the new\n";
 		}
+
+		push(@{$op_hash{A2B}{$proteinA}}, @op_speciesB);
+	    }
+
+	    foreach my $proteinB (@op_speciesB){
+		if(exists $op_hash{B2A}{$proteinB}){
+		    print STDERR "Entry for protein $proteinB of species B already exists, but will add the new\n";
+		}
+
+		push(@{$op_hash{B2A}{$proteinB}}, @op_speciesA);
+	    }
+
 	}
 	close(OP) || die;
 	return(\%op_hash);
