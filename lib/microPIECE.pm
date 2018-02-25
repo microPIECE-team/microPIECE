@@ -241,7 +241,23 @@ sub run_CLIP_transfer
     {
 	my $needle_csv = $opt->{basedir}.basename($file, ".fasta")."_needle.csv";
 	my $needle_aln = $opt->{basedir}.basename($file, ".fasta")."_needle.aln";
+	my $bed_out = $opt->{basedir}.basename($file, ".fasta")."_transfered.bed";
+	my $bed_merged = $opt->{basedir}.basename($file, ".fasta")."_transfered_merged.bed";
+	my $final_fasta = $opt->{basedir}.basename($file, ".fasta")."_transfered_final.fasta";
+
 	@cmd = ($opt->{scriptdir}."081_map_clip_gff_needle.pl", $file_uniqueA, $opt->{proteinortho}, $file, $file_uniqueB, $opt->{mRNAB}, $needle_csv, ">", $needle_aln);
+	run_cmd($L, \@cmd);
+
+	# convert csv into bed file
+	@cmd = ($opt->{scriptdir}."095_csv_to_bed.pl", $needle_csv, $bed_out);
+	run_cmd($L, \@cmd);
+
+	# merge bed annotations
+	@cmd = ("bedtools", "merge", "-i", $bed_out, "-c", 4, "-o", "collapse", ">", $bed_merged);
+	run_cmd($L, \@cmd);
+
+	# convert merged bed into sequences based on transcripts
+	@cmd = ("bedtools", "getfasta", "-name", "-fi", $opt->{mRNAB}, "-bed", $bed_merged, "-fo", $final_fasta);
 	run_cmd($L, \@cmd);
     }
 }
