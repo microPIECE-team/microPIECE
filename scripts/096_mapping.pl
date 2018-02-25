@@ -48,7 +48,7 @@ foreach my $mir_header (keys %mir_hash){
 }
 
 #output
-open (OUT,">",$prediction_out) || die;
+open (OUT,">",$prediction_out) || die "$!";
 print OUT "query_miRNA\ttarget_mRNA\tscore\tkcal/mol\tQuery-aln_start\tQuery-aln_end\tSubject-aln_start\tSubject_aln-End\tAl-Len\tSubject-Identity\tQuery-Identity\n";
 foreach my $th_key (keys %tar_hash){
 	my @th_array	= @{$tar_hash{$th_key}};
@@ -56,7 +56,7 @@ foreach my $th_key (keys %tar_hash){
 		print OUT "@{$_}\n";
 	}
 }
-close(OUT) || die;
+close(OUT) || die "$!";
 
 
 
