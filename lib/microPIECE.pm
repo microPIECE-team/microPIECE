@@ -110,6 +110,22 @@ sub check_requirements {
 	$L->logdie("Missing parameter for --adapterclip or unexpected characters provided");
     }
 
+    # we need to run clip
+    $opt->{run_clip} = 1;
+
+    # check if we need to run the target prediction
+    if (exists $opt->{mirna} && ! -e $opt->{mirna})
+    {
+	$L->logdie("Missing parameter for --mirna or file is inaccessable\n");
+    }
+    $opt->{mirna} = $opt->{basedir}.$opt->{mirna};
+
+    # we need to run the targetprediction
+    if (($opt->{run_clip} && $opt->{mirna}) || ($opt->{run_clip} && $opt->{run_mining}))
+    {
+	$opt->{run_targetprediction} = 1;
+    }
+
     if (-e $opt->{out})
     {
 	unless ( $opt->{overwrite} )
@@ -137,8 +153,6 @@ sub check_requirements {
     $opt->{basedir} = $opt->{basedir}.$opt->{out}."/";
     chdir($opt->{basedir});
 
-    # we need to run clip
-    $opt->{run_clip} = 1;
 }
 
 =pod
@@ -215,6 +229,37 @@ sub run_clip {
 
 }
 
+=pod
+
+Running the target prediction part of the microPIECE
+
+=cut
+
+sub run_targetprediction {
+
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    unless (exists $opt->{run_targetprediction} && $opt->{run_targetprediction})
+    {
+	$L->info("Skipping target prediction step due to missing parameters");
+	return;
+    }
+
+    $L->info("Starting target prediction step");
+
+    foreach my $file (@{$opt->{seq4prediction}})
+    {
+	my $final_output = $opt->{basedir}.basename($file)."_final_miranda_output.txt";
+
+	my @cmd = ($opt->{scriptdir}."096_mapping.pl", $opt->{mirna}, $file, $final_output);
+	run_cmd($L, \@cmd)
+    }
+    $L->info("Finished target prediction step");
+
+}
+
 sub run_CLIP_transfer
 {
     my ($opt) = @_;
@@ -259,6 +304,8 @@ sub run_CLIP_transfer
 	# convert merged bed into sequences based on transcripts
 	@cmd = ("bedtools", "getfasta", "-name", "-fi", $opt->{mRNAB}, "-bed", $bed_merged, "-fo", $final_fasta);
 	run_cmd($L, \@cmd);
+
+	push(@{$opt->{seq4prediction}}, $final_fasta);
     }
 }
 
@@ -526,30 +573,6 @@ sub run_cmd
     }
 
     return $output;
-}
-
-=pod
-
-Running the target prediction part of the microPIECE
-
-=cut
-
-sub run_targetprediction {
-
-    my ($opt) = @_;
-
-    my $L = Log::Log4perl::get_logger();
-
-    unless (exists $opt->{run_targetprediction} && $opt->{run_targetprediction})
-    {
-	$L->info("Skipping target prediction step due to missing parameters");
-	return;
-    }
-
-    $L->info("Starting target prediction step");
-
-    $L->info("Finished target prediction step");
-
 }
 
 

@@ -42,6 +42,7 @@ my $opt = {
     overwrite          => 0,
     scriptdir          => $RealBin."/scripts/",
     testrun            => undef,
+    mirna              => undef,
 };
 
 GetOptions(
@@ -60,7 +61,8 @@ GetOptions(
     'threads=i'            => \$opt->{threads},
     'overwrite'            => \$opt->{overwrite},
     'testrun'              => \$opt->{testrun},
-    'out=s'                => \$opt->{out}
+    'out=s'                => \$opt->{out},
+    'mirna=s'              => \$opt->{mirna},
     ) || pod2usage(1);
 
 # split clip files if required
