@@ -4,7 +4,7 @@ LABEL maintainer="frank.foerster@ime.fraunhofer.de" \
       description="Container for the microPIECE package" \
       version="0.1"
 
-RUN sed -i '/multiverse/s/^[[:space:]]*#*//' /etc/apt/sources.list
+RUN sed -i '/^#.*universe/s/$/ multiverse/' /etc/apt/sources.list
 
 RUN apt update && \
     apt install \
