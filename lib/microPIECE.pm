@@ -218,8 +218,40 @@ sub run_mining {
 
     $L->info("Starting mining step");
 
+    run_mining_clipping($opt);
+
     $L->info("Finished mining step");
 
+}
+
+sub run_mining_clipping
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    my $minlen = 17;
+    my @cmd = ("cutadapt", "--trim-n", "--minimum-length", $minlen);
+    if ($opt->{adaptersmallrnaseq3})
+    {
+	push(@cmd, ("--adapter", $opt->{adaptersmallrnaseq3}))
+    }
+    if ($opt->{adaptersmallrnaseq5})
+    {
+	push(@cmd, ("--front", $opt->{adaptersmallrnaseq5}))
+    }
+
+    foreach my $condition (keys %{$opt->{smallrnaseq}})
+    {
+	foreach my $file (@{$opt->{smallrnaseq}{$condition}})
+	{
+	    my @cmd2run = @cmd;
+	    my $outfile = $opt->{basedir}.basename($file, (".fq", ".fastq"))."_trimmed.fq";
+	    push(@cmd2run, ($file, "-o", $outfile));
+	    run_cmd($L, \@cmd2run);
+	    push(@{$opt->{mining}{trimmed}{$condition}}, $outfile);
+	}
+    }
 }
 
 =pod
