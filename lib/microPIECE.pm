@@ -11,6 +11,7 @@ use Cwd;
 use File::Path;
 use File::Basename;
 use File::Spec;
+use File::Temp qw/ :POSIX /;
 
 =pod
 
@@ -158,6 +159,9 @@ sub check_requirements {
 	}
     }
 
+    # check for filter file
+    check_files($opt, "filterncrnas");
+
     ##############################################################
     #
     #  Check settings for target prediction
@@ -250,9 +254,68 @@ sub run_mining {
     $L->info("Starting mining step");
 
     run_mining_clipping($opt);
+    run_mining_filtering($opt);
 
     $L->info("Finished mining step");
 
+}
+
+sub run_mining_filtering
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    unless ($opt->{filterncrnas})
+    {
+	# nothing to do, therefore skip the step
+	$L->info("Filtering step was skipped, due to missing --filterncrnas parameter");
+	$opt->{mining}{filtered} = $opt->{mining}{trimmed};
+	return;
+    }
+
+    my @cmd = ("bwa", "index", $opt->{filterncrnas});
+    run_cmd($L, \@cmd);
+
+    $L->logdie("Something went completly wrong") unless (exists $opt->{mining} && $opt->{mining}{trimmed});
+    my $tempbwaout = tmpnam();
+    my $tempsamout = tmpnam();
+    my $tempsamfilteredout = tmpnam();
+    my $tempsamsortedout = tmpnam();
+    foreach my $condition (keys %{$opt->{mining}{trimmed}})
+    {
+	foreach my $file (@{$opt->{mining}{trimmed}{$condition}})
+	{
+	    # new filename will be
+	    my $filtered_fq = $opt->{basedir}.basename($file, (".fq", ".fastq"))."_filtered.fq";
+
+	    # map to filter file
+	    my @cmd = ("bwa", "aln", "-n", 1, "-o", 0,
+		       "-e", 0, "-k", 1, "-t", $opt->{threads},
+		       "-f", $tempbwaout, $opt->{filterncrnas}, $file);
+	    run_cmd($L, \@cmd);
+	    # convert to sam
+	    @cmd = ("bwa", "samse", "-f", $tempsamout, $opt->{filterncrnas}, $tempbwaout, $file);
+	    run_cmd($L, \@cmd);
+	    # filter sam
+	    @cmd = ("samtools", "view",
+		    "--threads", $opt->{threads},
+		    "-b", "-o", $tempsamfilteredout, "-f", 4, $tempsamout);
+	    run_cmd($L, \@cmd);
+	    # sort sam
+	    @cmd = ("samtools", "sort",
+		    "--threads", $opt->{threads},
+		    "-o", $tempsamsortedout, $tempsamfilteredout);
+	    run_cmd($L, \@cmd);
+	    # extract fastqs
+	    @cmd = ("bedtools", "bamtofastq", "-i", $tempsamsortedout, "-fq", $filtered_fq);
+	    run_cmd($L, \@cmd);
+
+	    push(@{$opt->{mining}{filtered}{$condition}}, $filtered_fq);
+	}
+    }
+
+    return;
 }
 
 sub run_mining_clipping
