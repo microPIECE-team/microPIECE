@@ -110,6 +110,7 @@ RUN apt update && apt install --yes --no-install-recommends \
     libipc-run-perl \
     libipc-run3-perl \
     libdevel-cover-perl \
+    libwww-perl \
     && \
     rm -rf /var/lib/apt/lists/*
 
