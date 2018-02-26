@@ -163,6 +163,14 @@ sub check_requirements {
     # check for filter file
     check_files($opt, "filterncrnas");
 
+    unless ($opt->{run_mining} &&
+	    exists $opt->{speciesBtag} &&
+	    defined $opt->{speciesBtag} &&
+	    length($opt->{speciesBtag})>0)
+    {
+	$L->logdie("Parameter --speciesBtag need to be speciefied for mining");
+    }
+
     ##############################################################
     #
     #  Check settings for target prediction
@@ -257,9 +265,26 @@ sub run_mining {
     run_mining_clipping($opt);
     run_mining_filtering($opt);
     run_mining_downloads($opt);
+    run_mining_mirbase_files($opt);
 
     $L->info("Finished mining step");
 
+}
+
+sub run_mining_mirbase_files
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    my @cmd = ($opt->{scriptdir}."011_mirbase_files.pl",
+	       "-species", $opt->{speciesBtag},
+	       "-precursor_file", $opt->{mining}{download}{hairpin},
+	       "-mature", $opt->{mining}{download}{mature},
+	       "-organism", $opt->{mining}{download}{organisms},
+	       "-out", "./");
+    run_cmd($L, \@cmd);
+}
 
 sub run_mining_downloads
 {

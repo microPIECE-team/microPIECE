@@ -30,19 +30,19 @@ my %tca_mature					= %{$tca_mature_ref};
 
 my %other_animal_mature				= %{$other_animal_mature};
 
-open(TMP,">","$out"."tca_mature_mirbase.fa") || die;
+open(TMP,">","$out"."mature_mirbase.fa") || die;
 foreach(keys %tca_mature){
 	print TMP "$_\n$tca_mature{$_}\n";
 }
 close(TMP) || die;
 
-open(TMP,">","$out"."tca_precursor_mirbase.fa") || die;
+open(TMP,">","$out"."precursor_mirbase.fa") || die;
 foreach(keys %tca_precursor){
 	print TMP "$_\n$tca_precursor{$_}\n";
 }
 close(TMP) || die;
 
-open(TMP,">","$out"."mature.fa-no-tca.fa") || die;
+open(TMP,">","$out"."mature.fa-no-speciesB.fa") || die;
 foreach(keys %other_animal_mature){
 	print TMP "$_\n$other_animal_mature{$_}\n";
 }

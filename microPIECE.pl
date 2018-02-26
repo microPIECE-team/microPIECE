@@ -46,6 +46,7 @@ my $opt = {
     scriptdir          => $RealBin."/scripts/",
     testrun            => undef,
     mirna              => undef,
+    speciesBtag        => undef,
 };
 
 GetOptions(
@@ -67,6 +68,7 @@ GetOptions(
     'testrun'              => \$opt->{testrun},
     'out=s'                => \$opt->{out},
     'mirna=s'              => \$opt->{mirna},
+    'speciesBtag=s'        => \$opt->{speciesBtag},
     ) || pod2usage(1);
 
 # split clip files if required
