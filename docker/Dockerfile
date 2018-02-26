@@ -78,7 +78,7 @@ RUN apt update && apt install --yes --no-install-recommends git && \
 RUN wget http://research-pub.gene.com/gmap/src/gmap-gsnap-2018-02-12.tar.gz && \
     tar xzf gmap-gsnap-2018-02-12.tar.gz && \
     cd gmap-2018-02-12 && \
-    ./configure --disable-avx --disable-sse2 && \
+    ./configure --disable-simd && \
     make && \
     make check && \
     make install && \
