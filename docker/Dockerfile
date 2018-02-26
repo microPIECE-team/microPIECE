@@ -75,14 +75,8 @@ RUN apt update && apt install --yes --no-install-recommends git && \
     perl install.pl && \
     cd /opt && rm -rf /var/lib/apt/lists/*
 
-RUN wget http://research-pub.gene.com/gmap/src/gmap-gsnap-2018-02-12.tar.gz && \
-    tar xzf gmap-gsnap-2018-02-12.tar.gz && \
-    cd gmap-2018-02-12 && \
-    ./configure --disable-simd && \
-    make && \
-    make check && \
-    make install && \
-    cd /opt && rm -rf gmap-gsnap-2018-02-12.tar.gz gmap-2018-02-12
+RUN apt update && apt install --yes --no-install-recommends gmap && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN apt update && apt install --yes --no-install-recommends git && \
     git clone https://github.com/lpantano/seqbuster.git && \
