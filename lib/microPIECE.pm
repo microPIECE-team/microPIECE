@@ -112,6 +112,20 @@ sub check_requirements {
     # we need to run clip
     $opt->{run_clip} = 1;
 
+    # check if we should run mining
+    if (exists $opt->{smallrnaseq} && (keys %{$opt->{smallrnaseq}}) > 0)
+    {
+	foreach my $condition (keys %{$opt->{smallrnaseq}})
+	{
+	    for( my $i=0; $i<@{$opt->{smallrnaseq}{$condition}}; $i++ )
+	    {
+		my $file = $opt->{smallrnaseq}{$condition}[$i];
+		$L->logdie("Missing parameter for --smallrnaseq or file '$file' is inaccessable\n") unless (-e $file);
+		$opt->{smallrnaseq}{$condition}[$i] = File::Spec->rel2abs($file);
+	    }
+	}
+    }
+
     # check if we need to run the target prediction
     check_files($opt, "mirna");
 
