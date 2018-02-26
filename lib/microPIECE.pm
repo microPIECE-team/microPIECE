@@ -126,6 +126,25 @@ sub check_requirements {
 	}
     }
 
+    # we need to run clip
+    $opt->{run_mining} = 1 if ((keys %{$opt->{smallrnaseq}}) > 0);
+
+    foreach my $adapter (qw(adaptersmallrnaseq5 adaptersmallrnaseq3))
+    {
+	unless (exists $opt->{$adapter} && defined ($opt->{$adapter}))
+	{
+	    if ($opt->{run_mining})
+	    {
+		$L->info(sprintf("No adapter sequence provided via --%s parameter, therefore this side will not be clipped\n", $adapter));
+	    }
+	    next;
+	}
+	if ((length($opt->{$adapter})>0) && $opt->{$adapter} =~ /[^ACGT]/i)
+	{
+	    $L->logdie(sprintf("Missing parameter --%s contains unexpected characters\n",$adapter));
+	}
+    }
+
     # check if we need to run the target prediction
     check_files($opt, "mirna");
 
