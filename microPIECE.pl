@@ -85,9 +85,7 @@ if($opt->{version}){
 }
 
 microPIECE::hello();
-
 STDOUT->flush();
-microPIECE::print_settings($opt);
 
 microPIECE::check_requirements($opt);
 
