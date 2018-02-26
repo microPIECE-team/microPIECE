@@ -89,6 +89,12 @@ sub check_requirements {
 
     $opt->{basedir} = getcwd."/";
 
+    ##############################################################
+    #
+    #  Check settings for CLIP
+    #
+    ##############################################################
+
     # first we check if mandatory parameters have been specified
     check_files($opt, qw(genomeA genomeB annotationA annotationB));
 
@@ -112,6 +118,12 @@ sub check_requirements {
     # we need to run clip
     $opt->{run_clip} = 1;
 
+    ##############################################################
+    #
+    #  Check settings for mining
+    #
+    ##############################################################
+
     # check if we should run mining
     if (exists $opt->{smallrnaseq} && (keys %{$opt->{smallrnaseq}}) > 0)
     {
@@ -126,9 +138,10 @@ sub check_requirements {
 	}
     }
 
-    # we need to run clip
+    # we need to run mining
     $opt->{run_mining} = 1 if ((keys %{$opt->{smallrnaseq}}) > 0);
 
+    # check for adapter sequences
     foreach my $adapter (qw(adaptersmallrnaseq5 adaptersmallrnaseq3))
     {
 	unless (exists $opt->{$adapter} && defined ($opt->{$adapter}))
@@ -145,6 +158,12 @@ sub check_requirements {
 	}
     }
 
+    ##############################################################
+    #
+    #  Check settings for target prediction
+    #
+    ##############################################################
+
     # check if we need to run the target prediction
     check_files($opt, "mirna");
 
@@ -153,6 +172,12 @@ sub check_requirements {
     {
 	$opt->{run_targetprediction} = 1;
     }
+
+    ##############################################################
+    #
+    #  Check output directory
+    #
+    ##############################################################
 
     if (-e $opt->{out})
     {
@@ -177,6 +202,12 @@ sub check_requirements {
     }
 
     mkdir($opt->{out}) || $L->logdie("Unable to create output file: $!");
+
+    ##############################################################
+    #
+    #  Switch into output directory
+    #
+    ##############################################################
 
     $opt->{basedir} = $opt->{basedir}.$opt->{out}."/";
     chdir($opt->{basedir});
