@@ -10,6 +10,7 @@ use Data::Dumper;
 use Cwd;
 use File::Path;
 use File::Basename;
+use File::Spec;
 
 =pod
 
@@ -56,6 +57,25 @@ sub hello
 "
 }
 
+sub check_files
+{
+    my $opt = shift;
+    my @fileparameter = @_;
+
+    foreach my $param (@fileparameter)
+    {
+	my $L = Log::Log4perl::get_logger();
+	next unless (exists $opt->{$param} && defined $opt->{$param});
+	if (-e $opt->{$param})
+	{
+	    $opt->{$param} = File::Spec->rel2abs($opt->{$param});
+	} else {
+	    $L->logdie(sprintf("Missing parameter for --%s or file '%s' is inaccessable\n", $param, $opt->{$param}));
+	}
+
+    }
+}
+
 =pod
 
 Checking requirements for the pipeline
@@ -70,39 +90,18 @@ sub check_requirements {
     $opt->{basedir} = getcwd."/";
 
     # first we check if mandatory parameters have been specified
-    unless (exists $opt->{genomeA} && -e $opt->{genomeA})
-    {
-	$L->logdie("Missing parameter for --genomeA or file is inaccessable\n");
-    }
-    $opt->{genomeA} = $opt->{basedir}.$opt->{genomeA};
-
-    unless (exists $opt->{genomeB} && -e $opt->{genomeB})
-    {
-	$L->logdie("Missing parameter for --genomeB or file is inaccessable\n");
-    }
-    $opt->{genomeB} = $opt->{basedir}.$opt->{genomeB};
-
-    unless (exists $opt->{annotationA} && -e $opt->{annotationA})
-    {
-	$L->logdie("Missing parameter for --annotationA or file is inaccessable\n");
-    }
-    $opt->{annotationA} = $opt->{basedir}.$opt->{annotationA};
-
-    unless (exists $opt->{annotationB} && -e $opt->{annotationB})
-    {
-	$L->logdie("Missing parameter for --annotationB or file is inaccessable\n");
-    }
-    $opt->{annotationB} = $opt->{basedir}.$opt->{annotationB};
+    check_files($opt, qw(genomeA genomeB annotationA annotationB));
 
     if (exists $opt->{clip} && @{$opt->{clip}} > 0)
     {
 	for( my $i=0; $i<@{$opt->{clip}}; $i++ )
 	{
-	    $L->logdie("Missing parameter for --clip or file is inaccessable\n") unless (-e $opt->{clip}[$i]);
-	    $opt->{clip}[$i] = $opt->{basedir}.$opt->{clip}[$i];
+	    my $file = $opt->{clip}[$i];
+	    $L->logdie("Missing parameter for --clip or file '$file' is inaccessable\n") unless (-e $file);
+	    $opt->{clip}[$i] = File::Spec->rel2abs($file);
 	}
     } else {
-	$L->logdie("Missing parameter for --clip or file is inaccessable\n")
+	$L->logdie("Missing parameter for --clip\n");
     }
 
     unless (exists $opt->{adapterclip} && length($opt->{adapterclip})>0 && $opt->{adapterclip} =~ /^[ACGT]+$/i)
@@ -114,11 +113,7 @@ sub check_requirements {
     $opt->{run_clip} = 1;
 
     # check if we need to run the target prediction
-    if (exists $opt->{mirna} && defined $opt->{mirna} && ! -e $opt->{mirna})
-    {
-	$L->logdie("Missing parameter for --mirna or file is inaccessable\n");
-    }
-    $opt->{mirna} = $opt->{basedir}.$opt->{mirna};
+    check_files($opt, "mirna");
 
     # we need to run the targetprediction
     if (($opt->{run_clip} && $opt->{mirna}) || ($opt->{run_clip} && $opt->{run_mining}))
