@@ -266,8 +266,27 @@ sub run_mining {
     run_mining_filtering($opt);
     run_mining_downloads($opt);
     run_mining_mirbase_files($opt);
+    run_mining_mirdeep2($opt);
 
     $L->info("Finished mining step");
+
+}
+
+sub run_mining_mirdeep2
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    my @cmd=("remove_white_space_in_id.pl", $opt->{genomeB});
+    my $genome_without_whitespace = run_cmd($L, \@cmd);
+
+    # convert files from mirbase_files subroutine
+    foreach my $file (qw(mature_mirbase.fa precursor_mirbase.fa mature.fa-no-speciesB.fa))
+    {
+	@cmd=("remove_white_space_in_id.pl", $file);
+	my $output = run_cmd($L, \@cmd);
+    }
 
 }
 
