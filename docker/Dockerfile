@@ -112,7 +112,12 @@ RUN apt update && apt install --yes --no-install-recommends git && \
 ENV PATH=/opt/gffread/gffread/:"$PATH"
 
 RUN apt update && apt install --yes --no-install-recommends \
-    liblog-log4perl-perl
+    liblog-log4perl-perl \
+    libipc-run-perl \
+    libipc-run3-perl \
+    libdevel-cover-perl \
+    && \
+    rm -rf /var/lib/apt/lists/*
 
 VOLUME /data
 WORKDIR /data
