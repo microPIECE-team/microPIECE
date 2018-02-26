@@ -6,6 +6,8 @@ use warnings;
 use FindBin qw($RealBin $Script);
 use lib "$RealBin/lib/";
 
+use IO::Handle;
+
 use microPIECE;
 use Log::Log4perl;
 
@@ -84,6 +86,7 @@ if($opt->{version}){
 
 microPIECE::hello();
 
+STDOUT->flush();
 microPIECE::print_settings($opt);
 
 microPIECE::check_requirements($opt);
