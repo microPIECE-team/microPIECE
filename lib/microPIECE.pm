@@ -12,6 +12,7 @@ use File::Path;
 use File::Basename;
 use File::Spec;
 use File::Temp qw/ :POSIX /;
+use IO::Uncompress::Gunzip qw(gunzip $GunzipError);
 
 =pod
 
@@ -255,9 +256,34 @@ sub run_mining {
 
     run_mining_clipping($opt);
     run_mining_filtering($opt);
+    run_mining_downloads($opt);
 
     $L->info("Finished mining step");
 
+
+sub run_mining_downloads
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    my %filelist = (
+	organisms => "organisms.txt.gz",
+	mature    => "mature.fa.gz",
+	hairpin   => "hairpin.fa.gz"
+	);
+
+    foreach my $key(sort keys %filelist)
+    {
+	my $file = $filelist{$key};
+	my @cmd=("wget", "ftp://mirbase.org/pub/mirbase/CURRENT/".$file);
+	run_cmd($L, \@cmd);
+	# decompress the file
+	my $output = basename($file, ".gz");
+	my $status = gunzip $file => $output || $L->logdie("gunzip failed: $GunzipError");
+
+	$opt->{mining}{download}{$key} = $output;
+    }
 }
 
 sub run_mining_filtering
