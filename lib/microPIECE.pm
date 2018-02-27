@@ -322,7 +322,7 @@ sub run_mining_downloads
     foreach my $key(sort keys %filelist)
     {
 	my $file = $filelist{$key};
-	my @cmd=("wget", "ftp://mirbase.org/pub/mirbase/CURRENT/".$file);
+	my @cmd=("wget", "--quiet", "ftp://mirbase.org/pub/mirbase/CURRENT/".$file);
 	run_cmd($L, \@cmd);
 	# decompress the file
 	my $output = basename($file, ".gz");
