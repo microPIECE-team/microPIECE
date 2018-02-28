@@ -274,6 +274,22 @@ sub run_mining {
 
 }
 
+sub run_mining_rna2dna
+{
+    my ($inseq) = @_;
+
+    my @lines = split(/\n/, ${$inseq});
+
+    for(my $i=0; $i<@lines; $i++)
+    {
+	next if ($lines[$i] =~ /^>/);
+
+	$lines[$i] =~ tr/Uu/Tt/;   # convert [Uu]->[Tt]
+    }
+
+    ${$inseq} = join("\n", @lines);
+}
+
 sub run_mining_mirdeep2
 {
     my ($opt) = @_;
