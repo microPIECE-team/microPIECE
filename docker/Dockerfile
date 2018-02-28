@@ -123,5 +123,7 @@ RUN apt update && apt install --yes --no-install-recommends \
     && \
     rm -rf /var/lib/apt/lists/*
 
+RUN mkdir /opt/mirdeep2/bin/indexes && chmod a+rwX /opt/mirdeep2/bin/indexes
+
 VOLUME /data
 WORKDIR /data
