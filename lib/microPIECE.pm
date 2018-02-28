@@ -156,7 +156,7 @@ sub check_requirements {
 	}
 	if ((length($opt->{$adapter})>0) && $opt->{$adapter} =~ /[^ACGT]/i)
 	{
-	    $L->logdie(sprintf("Missing parameter --%s contains unexpected characters\n",$adapter));
+	    $L->logdie(sprintf("Parameter --%s contains unexpected characters\n",$adapter));
 	}
     }
 
