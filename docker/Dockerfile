@@ -73,13 +73,15 @@ RUN apt update && apt install --yes --no-install-recommends git && \
     cd mirdeep2 && \
     perl install.pl && \
     perl install.pl && \
+    mkdir /opt/mirdeep2/bin/indexes && \
+    chmod a+rwX /opt/mirdeep2/bin/indexes && \
     cd /opt && rm -rf /var/lib/apt/lists/*
 
 RUN wget http://research-pub.gene.com/gmap/src/gmap-gsnap-2018-02-12.tar.gz && \
     tar xzf gmap-gsnap-2018-02-12.tar.gz && \
     cd gmap-2018-02-12 && \
-    for i in none sse2 ssse3 sse41 sse42 avx2; \
-      do
+    for i in none sse2 ssse3 sse41 sse42 avx2 avx512; \
+      do \
          ./configure --with-simd-level="$i" && \
          make && \
          make install; \
@@ -122,8 +124,6 @@ RUN apt update && apt install --yes --no-install-recommends \
     libwww-perl \
     && \
     rm -rf /var/lib/apt/lists/*
-
-RUN mkdir /opt/mirdeep2/bin/indexes && chmod a+rwX /opt/mirdeep2/bin/indexes
 
 VOLUME /data
 WORKDIR /data
