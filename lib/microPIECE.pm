@@ -296,16 +296,97 @@ sub run_mining_mirdeep2
 
     my $L = Log::Log4perl::get_logger();
 
+    my $genome_wo_whitespace = $opt->{basedir}."genome_without_whitespace.fa";
+    my %files_from_mirbase = ();
+
     my @cmd=("remove_white_space_in_id.pl", $opt->{genomeB});
     my $genome_without_whitespace = run_cmd($L, \@cmd);
+    # write it to its own file
+    open(FH, ">", $genome_wo_whitespace) || $L->logdie("Unable to open file '$genome_wo_whitespace' for writing: $!");
+    print FH $genome_without_whitespace;
+    close(FH) || $L->logdie("Unable to close file '$genome_wo_whitespace' after writing: $!");
+    # save some memory
+    $genome_without_whitespace = "";
 
     # convert files from mirbase_files subroutine
     foreach my $file (qw(mature_mirbase.fa precursor_mirbase.fa mature.fa-no-speciesB.fa))
     {
 	@cmd=("remove_white_space_in_id.pl", $file);
 	my $output = run_cmd($L, \@cmd);
+	# convert to DNA
+	run_mining_rna2dna(\$output);
+	# write it into a file
+	my $new_filename = basename($file, ".fa")."_wo_whitespace.fa";
+	open(FH, ">", $new_filename) || $L->logdie("Unable to open file '$new_filename' for writing: $!");
+	print FH $output;
+	close(FH) || $L->logdie("Unable to close file '$new_filename' after writing: $!");
+
+	if (-s $new_filename > 0)
+	{
+	    # assume content
+	    $files_from_mirbase{$file} = $new_filename;
+	} else {
+	    # assume not given and there none
+	    $files_from_mirbase{$file} = "none";
+	}
     }
 
+    # create a bowtie index
+    my $genome_index = "genome4mirdeep2";
+    @cmd = ("bowtie-build", $genome_wo_whitespace, $genome_index);
+    run_cmd($L, \@cmd);
+
+    # run through all short read files and concat the output in a single fasta file
+    my $tempfasta = tmpnam();
+    foreach my $condition (keys %{$opt->{mining}{filtered}})
+    {
+	foreach my $file (@{$opt->{mining}{filtered}{$condition}})
+	{
+	    # convert to fasta
+	    my @cmd = ("fastq2fasta.pl", $file);
+	    my $output = run_cmd($L, \@cmd);
+	    # write to tempfasta
+	    open(FH, ">>", $tempfasta) || $L->logdie("Unable to open file '$tempfasta' for writing: $!");
+	    print FH $output;
+	    close(FH) || $L->logdie("Unable to close file '$tempfasta' after writing: $!");
+	}
+    }
+
+    my $tempfasta_wo_whitespace = tmpnam();
+    my $tempfasta_wo_whitespace_collapsed = tmpnam();
+    my $temparf = tmpnam();
+
+    # remove whitespaces
+    @cmd=("remove_white_space_in_id.pl", $tempfasta);
+    my $output = run_cmd($L, \@cmd);
+    # write to tempfasta_wo_whitespace
+    open(FH, ">", $tempfasta_wo_whitespace) || $L->logdie("Unable to open file '$tempfasta_wo_whitespace' for writing: $!");
+    print FH $output;
+    close(FH) || $L->logdie("Unable to close file '$tempfasta_wo_whitespace' after writing: $!");
+
+    # collapse reads
+    @cmd=("collapse_reads_md.pl", $tempfasta_wo_whitespace, $opt->{speciesB_tag});
+    $output = run_cmd($L, \@cmd);
+    # write to tempfasta_wo_whitespace_collapsed
+    open(FH, ">", $tempfasta_wo_whitespace_collapsed) || $L->logdie("Unable to open file '$tempfasta_wo_whitespace_collapsed' for writing: $!");
+    print FH $output;
+    close(FH) || $L->logdie("Unable to close file '$tempfasta_wo_whitespace_collapsed' after writing: $!");
+
+    # map to genome
+    @cmd = ("mapper.pl", $tempfasta_wo_whitespace_collapsed, "-c", "-q", "-n", "-l", 17, "-p", $genome_index, "-t", $temparf);
+    run_cmd($L, \@cmd);
+
+    # run mirdeep
+    @cmd = ("miRDeep2.pl", $tempfasta_wo_whitespace_collapsed, $genome_wo_whitespace, $temparf, $files_from_mirbase{'mature_mirbase.fa'}, $files_from_mirbase{'mature.fa-no-speciesB.fa'}, $files_from_mirbase{'precursor_mirbase.fa'}, "-P");
+    run_cmd($L, \@cmd);
+
+    # save output
+    my @csv_files = grep { /result_/ } (glob("*.csv"));
+    unless (@csv_files == 1)
+    {
+	$L->logdie("Found multiple *.csv files instead of a single: ".join(", ", map {"'$_'"} (@csv_files)));
+    }
+    rename $csv_files[0], "mirdeep_output.csv" || $L->logdie("Unable to rename mirdeep output file");
 }
 
 sub run_mining_mirbase_files
