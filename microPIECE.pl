@@ -58,7 +58,7 @@ my $opt = {
 #	--clip			:= Comma-separated CLIP-seq .fastq files
 	#	--clip con1_rep1_clip.fq,con1_rep2_clip.fq,con2_clip.fq
 	#	OR
-	#	--clip ron1_rep1_clip.fq --clip con1_rep2_clip.fq --clip con2_clip.fq
+	#	--clip con1_rep1_clip.fq --clip con1_rep2_clip.fq --clip con2_clip.fq
 #	--adapterclip		:= Sequencing-adapter of CLIP reads
 #	--smallrnaseq		:= Comma-separated smallRNA-seq .fastq files, initialized with 'condition='
 	#	--smallrnaseq con1=A.fastq,B.fastq --smallrnaseq con2=C.fq
