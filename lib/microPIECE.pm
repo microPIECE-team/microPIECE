@@ -403,7 +403,9 @@ sub run_mining_mirdeep2
     {
 	$L->logdie("Found multiple *.csv files instead of a single: ".join(", ", map {"'$_'"} (@csv_files)));
     }
-    rename $csv_files[0], "mirdeep_output.csv" || $L->logdie("Unable to rename mirdeep output file");
+
+    $opt->{mirdeep_output} = "mirdeep_output.csv";
+    rename $csv_files[0], $opt->{mirdeep_output} || $L->logdie("Unable to rename mirdeep output file");
 }
 
 sub run_mining_mirbase_files
