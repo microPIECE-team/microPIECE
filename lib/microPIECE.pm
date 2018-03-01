@@ -295,6 +295,7 @@ sub run_mining_mirdeep2
     my ($opt) = @_;
 
     my $L = Log::Log4perl::get_logger();
+    # miRDeep2 needs fasta headers without whitespaces and provides this script for that purpose
 
     my $genome_wo_whitespace = $opt->{basedir}."genome_without_whitespace.fa";
     my %files_from_mirbase = ();
@@ -394,7 +395,13 @@ sub run_mining_mirbase_files
     my ($opt) = @_;
 
     my $L = Log::Log4perl::get_logger();
-
+    # -species	 	:= 3letter code of desired species(b)
+    # -precursor_file 	:= hairpin.fasta from miRBase.org
+    # -mature 		:= mature.fasta from miRBase.org
+    # -organism 	:= organism.txt from miRBase.org
+    # -out 		:= output folder
+    # This script separates the miRBase files into groups of multifasta files that either belong to the speciesB or not.
+    # In every case, it filters the microRNAs so that only metazoan are included.
     my @cmd = ($opt->{scriptdir}."011_mirbase_files.pl",
 	       "-species", $opt->{speciesB_tag},
 	       "-precursor_file", $opt->{mining}{download}{hairpin},
@@ -429,6 +436,8 @@ sub run_mining_downloads
     }
 }
 
+# If a set of ncRNAs (with exception of miRNAs, of course) is provided, 
+# the smallRNA reads are filtered against those ncRNAs to exclude unwanted fragments.
 sub run_mining_filtering
 {
     my ($opt) = @_;
@@ -459,6 +468,10 @@ sub run_mining_filtering
 	    my $filtered_fq = $opt->{basedir}.basename($file, (".fq", ".fastq"))."_filtered.fq";
 
 	    # map to filter file
+	    # -n 1 := edit distance of 1
+	    # -o 0 := no gap opens
+	    # -e 0 := no gap extensions
+	    # -k 1 := max 1 difference in the seed
 	    my @cmd = ("bwa", "aln", "-n", 1, "-o", 0,
 		       "-e", 0, "-k", 1, "-t", $opt->{threads},
 		       "-f", $tempbwaout, $opt->{filterncrnas}, $file);
@@ -494,6 +507,8 @@ sub run_mining_clipping
     my $L = Log::Log4perl::get_logger();
 
     my $minlen = 17;
+    # --trim-n		:= trim N's at the read ends
+    # --minimum-length	:= minimal read length of 17 nt
     my @cmd = ("cutadapt", "--trim-n", "--minimum-length", $minlen);
     if ($opt->{adaptersmallrnaseq3})
     {
@@ -803,6 +818,10 @@ sub run_CLIP_mapping
 	my $trimmedfile = $opt->{basedir}.basename($clipfile).".trim";
 	my $bamfile     = $opt->{basedir}.basename($clipfile).".bam";
 	my $bedfile     = $opt->{basedir}.basename($clipfile).".bed";
+	# -N 1		:= look for splice sites
+	# -B 5		:= batch mode 5, allocate positions, genome and suffix array
+	# -O		:= ordered output 
+	# -A sam 	:= output format
 	my @cmd = ("gsnap", "-N", 1, "-B", 5, "-O", "-A", "sam", "-t", $opt->{threads}, "-D", "speciesA_db", "-d", "speciesA", $trimmedfile, "|", "samtools", "view", "-Sb", "-", "|", "samtools", "sort", "-o", $bamfile, "-");
 	run_cmd($L, \@cmd);
 	@cmd = ("bedtools", "bamtobed", "-i", $bamfile, ">", $bedfile);
@@ -815,6 +834,7 @@ sub run_CLIP_build_db
     my ($opt) = @_;
 
     my $L = Log::Log4perl::get_logger();
+    # -k 15 := kmer size 15 for genome index
     my @cmd = ("gmap_build", "-D", "speciesA_db", "-k", 15, "-d", "speciesA", $opt->{genomeA});
     run_cmd($L, \@cmd);
 }
@@ -829,6 +849,8 @@ sub run_CLIP_adapter_trimming
     foreach my $clipfile (@{$opt->{clip}})
     {
 	my $outfile = $opt->{basedir}.basename($clipfile).".trim";
+	# -m 20		:= min length of read
+	# --trim-n	:= trim terminal Ns of reads
 	my @cmd = ("cutadapt", "-a", $opt->{adapterclip}, "-m", 20, "--trim-n", "-o", $outfile, $clipfile);
 	run_cmd($L, \@cmd);
     }

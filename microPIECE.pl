@@ -48,7 +48,31 @@ my $opt = {
     mirna              => undef,
     speciesB_tag       => undef,
 };
-
+# INPUT PARAMETERS:
+#	--version|-v		:= version of this pipeline
+#	--help|-h		:= prints a helpful help message
+#	--genomeA		:= Genome of the species with the CLIP data
+#	--genomeB		:= Genome of the species where we want to predict the miRNA targets
+#	--gffA			:= GFF annotation of speciesA
+#	--gffB			:= GFF annotation of speciesB
+#	--clip			:= Comma-separated CLIP-seq .fastq files
+	#	--clip con1_rep1_clip.fq,con1_rep2_clip.fq,con2_clip.fq
+	#	OR
+	#	--clip con1_rep1_clip.fq --clip con1_rep2_clip.fq --clip con2_clip.fq
+#	--adapterclip		:= Sequencing-adapter of CLIP reads
+#	--smallrnaseq		:= Comma-separated smallRNA-seq .fastq files, initialized with 'condition='
+	#	--smallrnaseq con1=A.fastq,B.fastq --smallrnaseq con2=C.fq
+	#	OR
+	#	--smallrnaseq con1=A.fastq --smallrnaseq con1=B.fastq --smallrnaseq con2=C.fq
+#	--adaptersmallrnaseq5	:= 5' adapter of smallRNA-seq reads
+#	--adaptersmallrnaseq3	:= 3' adapter of smallRNA-seq reads
+#	--filterncrnas		:= Multi-fasta file of ncRNAs to filter smallRNA-seq reads
+#	--threads		:= Number of threads to be used
+#	--overwrite		:= set this parameter to overwrite existing files 
+#	--testrun		:= sets this pipeline to testmode (accounting for small testset in piranha)
+#	--out			:= output folder
+#	--mirnas		:= miRNA set, if set, mining is disabled and this set is used for prediction
+#	--speciesBtag		:= 3letter code of speciesB
 GetOptions(
     'version|V'            => \$opt->{version},
     'help|h'               => \$opt->{help},
