@@ -4,18 +4,24 @@ use warnings;
 use Getopt::Long;
 my $csv_file;
 my $cutoff;
+my $mature_file;
+my $hairpin_file;
+my $species;
 
 GetOptions(
-	"csv=s"		=> \$csv_file,
-	"cutoff=i" 	=> \$cutoff) || die;
-	# cutoff score included
+    "csv=s"        => \$csv_file,
+    "cutoff=i"     => \$cutoff,
+    "matureout=s"  => \$mature_file,
+    "hairpinout=s" => \$hairpin_file,
+    "species=s"    => \$species,
+) || die;
 
-# get novel miRNAs above threshold
+die "Need to specify --csv file\n" unless (defined $csv_file);
+die "Need to specify --cutoff cutoffscore\n" unless (defined $cutoff);
+die "Need to specify --matureout file\n" unless (defined $mature_file);
+die "Need to specify --hairpinout file\n" unless (defined $hairpin_file);
+die "Need to specify --species three-letter-species-code\n" unless (defined $species);
 
-my $mature_file	= $csv_file;
-$mature_file	=~ s/\.csv$/-mature.fa/;
-my $hairpin_file= $csv_file;
-$hairpin_file	=~s /\.csv$/-hairpin.fa/;
 
 my %novel_hash	= %{&parse_mirdeep($csv_file,$cutoff)};
 
