@@ -4,7 +4,7 @@ use warnings;
 use Getopt::Long;
 my $mirdeep_csv;
 my $mature_fasta;
-my $precursor_copies;
+my $precursor_copies = "";
 
 GetOptions(
 	"mirdeep_out=s"		=>\$mirdeep_csv,
