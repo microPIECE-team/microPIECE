@@ -270,9 +270,24 @@ sub run_mining {
     run_mining_mirbase_files($opt);
     run_mining_mirdeep2($opt);
     run_mining_complete($opt);
+    run_mining_mirdeep2fasta($opt);
 
     $L->info("Finished mining step");
 
+}
+
+sub run_mining_mirdeep2fasta
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    my $opt->{novel_mature} = "novel_mature.fa";
+    my $opt->{novel_hairpin} = "novel_hairpin.fa";
+
+    my @cmd = ($opt->{scriptdir}."041_curated_mirdeep2fasta.pl", "--csv", $opt->{mirdeep_output}, "--cutoff", 10, "--matureout", $opt->{novel_mature}, "--hairpinout", $opt->{novel_hairpin}, "--species", $opt->{speciesB_tag});
+    run_cmd($L, \@cmd);
+);
 }
 
 sub run_mining_complete
