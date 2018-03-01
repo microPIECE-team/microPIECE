@@ -46,7 +46,7 @@ my $opt = {
     scriptdir          => $RealBin."/scripts/",
     testrun            => undef,
     mirna              => undef,
-    speciesBtag        => undef,
+    speciesB_tag       => undef,
 };
 # INPUT PARAMETERS:
 #	--version|-v		:= version of this pipeline
@@ -92,7 +92,7 @@ GetOptions(
     'testrun'              => \$opt->{testrun},
     'out=s'                => \$opt->{out},
     'mirna=s'              => \$opt->{mirna},
-    'speciesBtag=s'        => \$opt->{speciesBtag},
+    'speciesB=s'           => \$opt->{speciesB_tag},
     ) || pod2usage(1);
 
 # split clip files if required
