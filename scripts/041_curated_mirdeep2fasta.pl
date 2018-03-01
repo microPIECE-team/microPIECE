@@ -23,11 +23,11 @@ die "Need to specify --hairpinout file\n" unless (defined $hairpin_file);
 die "Need to specify --species three-letter-species-code\n" unless (defined $species);
 
 
+# get novel miRNAs above threshold
 my %novel_hash	= %{&parse_mirdeep($csv_file,$cutoff)};
 
-
-open(MATURE,">",$mature_file) || die;
-open(HAIRPIN,">",$hairpin_file) || die;
+open(MATURE,">",$mature_file) || die "$!";
+open(HAIRPIN,">",$hairpin_file) || die "$!";
 
 foreach(keys %novel_hash){
 	my $novel_count	= $_;
@@ -51,23 +51,22 @@ foreach(keys %novel_hash){
 		$mature3p=$mature;
 	}
 	else{
-		print STDERR "mature and star sequence have the same position on hairpin\n"; # should never happen
-		die;
+		die("mature and star sequence have the same position on hairpin\n"); # should never happen
 	}	
 
 	$mature5p	=~ s/U/T/g;
 	$mature3p	=~ s/U/T/g;
 	$hairpin	=~ s/U/T/g;
 
-	my $header	= ">tca-new-$novel_count";
+	my $header	= sprintf(">%s-new-%d", $species, $novel_count);
 
 	print HAIRPIN "$header\n$hairpin\n";
 	print MATURE "$header-5p\n$mature5p\n$header-3p\n$mature3p\n";
 }
 #close(CSV) || die;
 
-close(MATURE) || die;
-close(HAIRPIN)|| die;
+close(MATURE) || die "$!";
+close(HAIRPIN)|| die "$!";
 
 
 ###########################################################################
