@@ -37,7 +37,7 @@ install:
     - wget -O /tmp/bedtools.tar.gz https://github.com/arq5x/bedtools2/releases/download/v2.27.1/bedtools-2.27.1.tar.gz && cd /tmp && tar xzf bedtools.tar.gz && cd bedtools2 && make
     - wget -O /tmp/proteinortho.tar.gz http://www.bioinf.uni-leipzig.de/Software/proteinortho/proteinortho_v5.16b.tar.gz && tar xzf proteinortho.tar.gz
     - mkdir /tmp/xa2multi; wget -O /tmp/xa2multi/xa2multi.pl https://raw.githubusercontent.com/lh3/bwa/master/xa2multi.pl && chmod +x /tmp/xa2multi/xa2multi.pl
-    - wget -O /tmp/piranha-1.2.1.tar.gz wget http://smithlabresearch.org/downloads/piranha-1.2.1.tar.gz && cd /tmp/ && tar xzf piranha-1.2.1.tar.gz && cd piranha-1.2.1 && ./configure && make all
+    - wget -O /tmp/piranha-1.2.1.tar.gz http://smithlabresearch.org/downloads/piranha-1.2.1.tar.gz && cd /tmp/ && tar xzf piranha-1.2.1.tar.gz && cd piranha-1.2.1 && ./configure && make all
     - git clone https://github.com/rajewsky-lab/mirdeep2.git /tmp/mirdeep2 && cd /tmp/mirdeep2 && perl install.pl && perl install.pl && mkdir -p /bin/indexes && chmod a+rwX bin/indexes
     - pip install --user --upgrade cutadapt
     - wget -O /tmp/gmap.tar.gz http://research-pub.gene.com/gmap/src/gmap-gsnap-2018-02-12.tar.gz && cd /tmp/ && tar xzf gmap.tar.gz && cd gmap-2018-02-12 && ./configure --with-simd-level=sse2 && make
