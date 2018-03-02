@@ -29,10 +29,11 @@ addons:
     - tree
 before_install:
     - export PATH=$TRAVIS_BUILD_DIR:/tmp/gffread/gffread:/tmp/miRanda-3.3a/src:/tmp/gmap-2018-02-12/src:$HOME/.local/bin:/tmp/mirdeep2/bin:/tmp/samtools-1.4.1/:/tmp/bedtools2/bin/:/tmp/proteinortho_v5.16b/:/tmp/xa2multi/:/tmp/piranha-1.2.1/src/progs/:$PATH
+    - mkdir -p /tmp/perl5
     - export PERL_MB_OPT="--install_base /tmp/perl5"
     - export PERL_MM_OPT="INSTALL_BASE=/tmp/perl5"
     - export PERL5LIB=/tmp/mirdeep2/lib/perl5:/tmp/perl5:$PERL5LIB
-    - tree /tmp/perl
+    - tree /tmp/perl5
     - git clone git://github.com/haarg/perl-travis-helper
     - source perl-travis-helper/init
     - build-perl
