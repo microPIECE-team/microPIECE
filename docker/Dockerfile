@@ -125,5 +125,11 @@ RUN apt update && apt install --yes --no-install-recommends \
     && \
     rm -rf /var/lib/apt/lists/*
 
+RUN apt update && apt install --yes --no-install-recommends \
+    cpanminus && \
+    cpanm RNA::HairpinFigure \
+    && \
+    rm -rf /var/lib/apt/lists/*
+
 VOLUME /data
 WORKDIR /data
