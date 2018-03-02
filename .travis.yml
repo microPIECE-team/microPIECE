@@ -26,6 +26,7 @@ addons:
     - liblog-log4perl-perl
     - libipc-run-perl
     - libipc-run3-perl
+    - tree
 before_install:
     - export PATH=$TRAVIS_BUILD_DIR:/tmp/miRanda-3.3a/src:/tmp/gmap-2018-02-12/src:$HOME/.local/bin:/tmp/mirdeep2/bin:/tmp/samtools-1.4.1/:/tmp/bedtools2/bin/:/tmp/proteinortho_v5.16b/:/tmp/xa2multi/:/tmp/piranha-1.2.1/src/progs/:$PATH
     - export PERL_MB_OPT="--install_base /tmp/perl5"
