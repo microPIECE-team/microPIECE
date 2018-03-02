@@ -105,20 +105,11 @@ __END__
 
 =pod
 
+=head1 NAME
+
+microPIECE - microRNA pipeline enhanced by CLIP experiments
+
 =head1 SYNOPSIS
-
-full run
-
-./microPIECE.pl \
-  --genomeA <speciesA_genome.fa> \
-  --genomeB <speciesB_genome.fa> \
-  --annotationA <speciesA_genome.gff> \
-  --annotationB <speciesB_genome.gff> \
-  --clip <ago_clip_seq.fastq> \
-  --smallrnaseq <condition_name>=<smallRNA.fastq> \
-  --speciesB <speciesB_3_lettercode>
-
-or reduced run
 
 ./microPIECE.pl \
   --genomeA <speciesA_genome.fa> \
@@ -127,9 +118,40 @@ or reduced run
   --annotationB <speciesB_genome.gff> \
   --clip <ago_clip_seq.fastq> \
   --mirnas <mature_miRNAs.fa> \
-  --speciesB <speciesB_3_lettercode>
 
-=head1 INPUT PARAMETERS:
+=head1 DESCRIPTION
+
+The microPIECE (microRNA pipeline enhanced by CLIP experiments) 
+takes the AGO-CLIP data from a speciesA and transfers it to a speciesB. 
+Given a set of miRNAs from speciesB it then predicts their targets on the transfered CLIP regions.
+
+For the minimal workflow it needs a genome file, as well as its annotation file in GFF format for speciesA and speciesB. 
+For speciesA at least one AGO-CLIP dataset is needed and speciesB needs a set of miRNAs for the target prediction.
+For the full workflow, a set of smallRNA-sequencing data is additionally needed and a set of non-coding RNAs can be 
+provided as filter. The pipeline uses the smallRNA data for the mining of novel microRNAs and the completion of 
+the given miRNA dataset, if needed. It further performs expression calculation, isoform detection, genomic loci 
+identification and orthology determination.
+
+=head1 EXAMPLE
+
+./microPIECE.pl   \
+  --genomeA testset/NC_035109.1_reduced_AAE_genome.fa  \
+  --genomeB testset/NC_007416.3_reduced_TCA_genome.fa   \
+  --annotationA testset/NC_035109.1_reduced_AAE_genome.gff   \
+  --annotationB testset/NC_007416.3_reduced_TCA_genome.gff   \
+  --clip testset/SRR5163632_aae_clip_reduced.fastq,testset/SRR5163633_aae_clip_reduced.fastq,testset/SRR5163634_aae_clip_reduced.fastq   \
+  --clip testset/SRR5163635_aae_clip_reduced.fastq,testset/SRR5163636_aae_clip_reduced.fastq,testset/SRR5163637_aae_clip_reduced.fastq --adapterclip GTGTCAGTCACTTCCAGCGG  \
+  --overwrite \
+  --smallrnaseq a=testset/tca_smallRNAseq_rna_contaminated.fastq \
+  --adaptersmallrnaseq3=TGGAATTCTCGGGTGCCAAGG \
+  --adaptersmallrnaseq5 GTTCAGAGTTCTACAGTCCGACGATC \
+  --filterncrnas testset/TCA_all_ncRNA_but_miR.fa \
+  --speciesB tca 2>&1 | tee out.log
+
+=head1 HISTORY
+1.0.0 - March, 2nd 2018 : Initial release - no known bugs.
+
+=head2 INPUT PARAMETERS:
 
 =over 4
 
