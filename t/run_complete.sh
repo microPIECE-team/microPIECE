@@ -1,6 +1,6 @@
 #!/bin/bash
 cd /opt/microPIECE
-perl -MDevel::Cover=-db,coverage,statement,branch,condition,path,subroutine,time /opt/microPIECE/microPIECE.pl \
+perl -MDevel::Cover=-coverage,statement,branch,condition,path,subroutine,time /opt/microPIECE/microPIECE.pl \
    --genomeA /tmp/microPIECE-testset/NC_035109.1_reduced_AAE_genome.fa \
    --genomeB /tmp/microPIECE-testset/NC_007416.3_reduced_TCA_genome.fa \
    --annotationA /tmp/microPIECE-testset/NC_035109.1_reduced_AAE_genome.gff \
