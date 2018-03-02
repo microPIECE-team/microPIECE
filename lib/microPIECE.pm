@@ -271,9 +271,69 @@ sub run_mining {
     run_mining_mirdeep2($opt);
     run_mining_complete($opt);
     run_mining_mirdeep2fasta($opt);
+    run_mining_quantification($opt);
 
     $L->info("Finished mining step");
 
+}
+
+sub run_mining_quantification
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    # build an index for mapping
+    my @cmd = ("bwa", "index", $opt->{final_mature});
+    run_cmd($L, \@cmd);
+
+    # map the filtered short read libraries
+    my $temp_sai = tmpnam();
+    my $temp_sam = tmpnam();
+    my $temp_sam_mapped_only = tmpnam();
+    my @config_file_content = ();
+
+    foreach my $condition (keys %{$opt->{mining}{filtered}})
+    {
+	$opt->{mining}{quantification}{$condition} = [];
+	foreach my $file (@{$opt->{mining}{filtered}{$condition}})
+	{
+	    my @cmd = ("bwa", "aln", "-n", 1, "-o", 0, "-e", 0, "-k", 1, "-t", $opt->{threads}, "-f", $temp_sai, $opt->{final_mature}, $file);
+	    run_cmd($L, \@cmd);
+
+	    # convert sai to sam
+	    @cmd = ("bwa", "samse", "-f", $temp_sam, $opt->{final_mature}, $temp_sai, $file);
+	    run_cmd($L, \@cmd);
+
+	    # remove unmapped reads
+	    @cmd = ("samtools", "view", "-F", 4, "-o", $temp_sam_mapped_only, $temp_sam);
+	    run_cmd($L, \@cmd);
+
+	    # expand multimappings
+	    @cmd = ($opt->{scriptdir}."xa2multi.pl", $temp_sam_mapped_only);
+	    my $final_sam_content = run_cmd($L, \@cmd);
+
+	    # store the final output
+	    my $final_filename = $file."_mapped.sam";
+	    push($opt->{mining}{quantification}{$condition}, $final_filename);
+	    push(@config_file_content, join("\t", $final_filename, $condition)."\n");
+
+	    open(FH, ">", $final_filename) || $L->logdie("Unable to open file '$final_filename': $!");
+	    print FH $final_sam_content;
+	    close(FH) || $L->logdie("Unable to close file '$final_filename': $!");
+	}
+    }
+
+    # write the config file
+    my $config_file = "062_s2d_cfg";
+    open(FH, ">", $config_file) || $L->logdie("Unable to open file '$config_file': $!");
+    print FH @config_file_content;
+    close(FH) || $L->logdie("Unable to close file '$config_file': $!");
+
+    # run the quantification analysis
+    $opt->{mining_quantification_result} = "miRNA_expression.csv";
+    @cmd = ($opt->{scriptdir}."061_sam2de.pl", "--cfg", $config_file, "--mature_file", $opt->{final_mature}, "--out", $opt->{mining_quantification_result});
+    run_cmd($L, \@cmd);
 }
 
 sub run_mining_mirdeep2fasta

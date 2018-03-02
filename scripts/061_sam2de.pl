@@ -6,9 +6,17 @@ use Getopt::Long;
 # sam file to DE.csv file for R script 
 my $cfg_file;
 my $mature_mir_file;
+my $outfile;
+
 GetOptions(
-	"cfg=s"		=> \$cfg_file,
-	"mature_file=s"	=> \$mature_mir_file) || die;
+    "cfg=s"		=> \$cfg_file,
+    "mature_file=s"	=> \$mature_mir_file,
+    "out=s"             => \$outfile,
+    ) || die;
+
+die "Need to specify a config file via --cfg\n" unless (defined $cfg_file);
+die "Need to specify a mature_file file via --mature_file\n" unless (defined $mature_mir_file);
+die "Need to specify an output file via --out\n" unless (defined $outfile);
 
 # output : rpm; condition; microRNA
 
@@ -17,7 +25,9 @@ my %sam_hash		= %{&read_cfg($cfg_file)};	#{rep_name}	= \@(sam1,sam2,sam3,sam4)
 my %mir_hash		= %{&read_fasta($mature_mir_file)};	# {mirID} = 0;
 my @mir_hash_keys	= keys %mir_hash;
 
-print "rpm;condition;miRNA\n";
+open(FH, ">", $outfile) || die("Unable to open file '$outfile': $!\n");
+
+print FH "rpm;condition;miRNA\n";
 
 foreach(keys %sam_hash){	# {condition} = \@(rep1,rep2,rep3,rep4)
 	my $sh_condition	= $_;
@@ -59,9 +69,11 @@ foreach(keys %sam_hash){	# {condition} = \@(rep1,rep2,rep3,rep4)
 	#	print "$crm_mirID | $crm_RPM_sum | $crm_RPM_mean\n";
 	}
 	foreach(@mir_hash_keys){
-		print "$con_rpm_mir_hash{$_};$sh_condition;$_\n";
+		print FH "$con_rpm_mir_hash{$_};$sh_condition;$_\n";
 	}	
 }
+
+close(FH) || die("Unable to close file '$outfile': $!\n");
 
 # {mirID}	= 0;
 sub read_fasta{
