@@ -17,7 +17,8 @@ before_install:
 install:
     - cpanm Devel::Cover Devel::Cover::Report::Coveralls 
 script:
-    - docker run --env PERL5OPT=-MDevel::Cover=-coverage,statement,branch,condition,path,subroutine -it --rm -v $PWD:/opt/microPIECE -v /tmp/microPIECE-testset:/tmp/microPIECE-testset micropiece/micropiece /opt/microPIECE/t/run_travis.sh
+    - docker run -it --rm -v $PWD:/opt/microPIECE -v /tmp/microPIECE-testset:/tmp/microPIECE-testset micropiece/micropiece /opt/microPIECE/t/run_clip.sh
+    - docker run -it --rm -v $PWD:/opt/microPIECE -v /tmp/microPIECE-testset:/tmp/microPIECE-testset micropiece/micropiece /opt/microPIECE/t/run_complete.sh
 after_success:
     - export PERL5OPT=""
     - cover -ignore_re=lib

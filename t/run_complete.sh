@@ -1,6 +1,6 @@
 #!/bin/bash
 
-perl microPIECE.pl \
+perl -MDevel::Cover=-db,coverage,statement,branch,condition,path,subroutine,time /opt/microPIECE/microPIECE.pl \
    --genomeA /tmp/microPIECE-testset/NC_035109.1_reduced_AAE_genome.fa \
    --genomeB /tmp/microPIECE-testset/NC_007416.3_reduced_TCA_genome.fa \
    --annotationA /tmp/microPIECE-testset/NC_035109.1_reduced_AAE_genome.gff \
@@ -12,4 +12,5 @@ perl microPIECE.pl \
    --adaptersmallrnaseq3=TGGAATTCTCGGGTGCCAAGG \
    --adaptersmallrnaseq5 GTTCAGAGTTCTACAGTCCGACGATC \
    --filterncrnas /tmp/microPIECE-testset/TCA_all_ncRNA_but_miR.fa \
-   --speciesB tca
+   --speciesB tca \
+   --out complete
