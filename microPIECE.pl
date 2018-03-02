@@ -105,6 +105,30 @@ __END__
 
 =pod
 
+=head1 SYNOPSIS
+
+full run
+
+./microPIECE.pl \
+  --genomeA <speciesA_genome.fa> \
+  --genomeB <speciesB_genome.fa> \
+  --annotationA <speciesA_genome.gff> \
+  --annotationB <speciesB_genome.gff> \
+  --clip <ago_clip_seq.fastq> \
+  --smallrnaseq <condition_name>=<smallRNA.fastq> \
+  --speciesB <speciesB_3_lettercode>
+
+or reduced run
+
+./microPIECE.pl \
+  --genomeA <speciesA_genome.fa> \
+  --genomeB <speciesB_genome.fa> \
+  --annotationA <speciesA_genome.gff> \
+  --annotationB <speciesB_genome.gff> \
+  --clip <ago_clip_seq.fastq> \
+  --mirnas <mature_miRNAs.fa> \
+  --speciesB <speciesB_3_lettercode>
+
 =head1 INPUT PARAMETERS:
 
 =over 4
