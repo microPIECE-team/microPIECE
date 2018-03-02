@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 use File::Temp qw(tmpnam);
+use FindBin qw($RealBin);
 
 my $gff_csv	= $ARGV[0];	# use to transfer XM_AAE to XP_AAE
 my $ortho_file	= $ARGV[1];	# use to transfer XP_AAE to XP_ortholog_in_TCA
@@ -31,8 +32,8 @@ my $tmp_needle	= tmpnam();
 foreach(sort keys %gff_hash){
 	my $gff_xp_key		= $_;
 	my $gff_xm_key		= $gff_hash{$gff_xp_key};
-	next unless (exists $ortho_hash{$gff_xp_key});
-	# check how many clip sequences map to mRNA XM	
+	next unless (exists $ortho_hash{A2B}{$gff_xp_key});
+	# check how many clip sequences map to mRNA XM
 	my @original_clip_seqs;	# from the original dataset, collect headers
 	foreach(keys %clip_hash){
 		my $clip_key	= $_;		# XM_...-counter
@@ -47,7 +48,7 @@ foreach(sort keys %gff_hash){
 	}
 #	print "@original_clip_seqs\n";
 	next unless (scalar(@original_clip_seqs) > 0);
-	my @ortho_array	= @{$ortho_hash{$gff_xp_key}};	# XP_AME...
+	my @ortho_array	= @{$ortho_hash{A2B}{$gff_xp_key}};	# XP_AME...
 	foreach(@ortho_array){
 		my $oa_xp_id	= $_;
 		next unless (exists $gff2_hash{$oa_xp_id});
@@ -61,21 +62,26 @@ foreach(sort keys %gff_hash){
 			open(CLIP,">",$tmp_clip) or die;
 			print CLIP ">$ocs_header\n$clip_hash{$ocs_header}";
 			close(CLIP);
-			system("needle -asequence $tmp_clip -bsequence $tmp_mrna  -datafile EDNACUSTOM -endweight Y -gapopen 5 -gapextend 2 -auto -aformat markx3 -outfile $tmp_needle");
-			
+
+			my $matrixdir=$RealBin."/../scripts/";
+
+			my $cmd = "needle -asequence $tmp_clip -bsequence $tmp_mrna  -datafile ".$matrixdir."EDNACUSTOM -endweight Y -gapopen 5 -gapextend 2 -auto -aformat markx3 -outfile $tmp_needle";
+			system($cmd);
+			die "Error calling needle by command '$cmd'\n" unless ($? == 0);
+
 			# parse needle output
-			# (identity,coverage,gaps,mm, tar_start, tar_stop) 
+			# (identity,coverage,gaps,mm, tar_start, tar_stop)
 			my $clip_seq_len	= length($clip_hash{$ocs_header});
 			my @needle_array	= @{&parse_needle($tmp_needle,$clip_seq_len)};
 			next unless (@needle_array);
 			# ($pn_qry_header,$pn_tar_header,sprintf("%.3f",$pn_ident),sprintf("%.3f",$pn_coverage),$pn_qry_len,$pn_tar_seq_len,$pn_gaps,$pn_mm,$pn_match_nt,$pn_start,$pn_stop,$pn_tar_seq_clean)
-			print OUT "$gff_xm_key;$gff_xp_key\t||\t$oa_xp_id;$oa_xm_id\t||\t@needle_array\n"; 
-			
+			print OUT "$gff_xm_key;$gff_xp_key\t||\t$oa_xp_id;$oa_xm_id\t||\t@needle_array\n";
+
 		}
-		
+
 	}
-	# parse XP to XM for TCA as soon as csv of gff exists 
-	#XM_original  ; XP_original	(clipheader-1,clipheader-2,..)	
+	# parse XP to XM for TCA as soon as csv of gff exists
+	#XM_original  ; XP_original	(clipheader-1,clipheader-2,..)
 }
 close(OUT) || die;
 
@@ -85,8 +91,8 @@ close(OUT) || die;
 sub parse_needle{
 	my $pn_file	= $_[0];
 	my $pn_qry_len	= $_[1];
-	my $pn_ident	= 0;		# matching nts / qry_len * 100 
-	my $pn_coverage	= 0;		
+	my $pn_ident	= 0;		# matching nts / qry_len * 100
+	my $pn_coverage	= 0;
 	my $pn_qry_gaps	= 0;		# count internal query gaps
 	my $pn_tar_gaps	= 0;		# count internal target gaps
 	my $pn_tot_gaps	= 0;		# total gaps = sum of qry and tar gaps
@@ -95,7 +101,7 @@ sub parse_needle{
 	my $pn_stop	= 0;		# stop pos on target
 
 	my $pn_match_nt		= 0;
-	my $pn_aln_len;	
+	my $pn_aln_len;
 
 	my @pn_array;		#(pn_ident, pn_coverage, pn_gaps, pn_mm, pn_start, pn_stop, pn_tarseq)
 	my $pn_count_header	= 0;
@@ -131,18 +137,18 @@ sub parse_needle{
 	}
 	close(PN) || die;
 
-		
+
 
 	print "$pn_qry_header\t:\t$pn_qry_seq\n";
 	print "$pn_tar_header\t:\t$pn_tar_seq\n";
-	#################################################	
-	#cut off 5' and 3' - 
-	# start stop pos 
+	#################################################
+	#cut off 5' and 3' -
+	# start stop pos
 	my $pn_aln_len_seq	= $pn_qry_seq;
 	$pn_aln_len_seq		=~ s/(^-*)//;
 	$pn_start		= length($1);
 	$pn_aln_len_seq		=~ s/(-*$)//;
-	$pn_aln_len		= length($pn_aln_len_seq);	
+	$pn_aln_len		= length($pn_aln_len_seq);
 	$pn_stop		= $pn_start+$pn_aln_len-1;
 	#COVERAGE
 #	my $pn_aln_len_seq_clean= $pn_aln_len_seq;
@@ -175,7 +181,7 @@ sub parse_needle{
 		}
 		if($i==$pn_stop){
 			$pn_tar_stop = $pn_tar_pos;
-		}	
+		}
 	}
 
 
@@ -192,7 +198,7 @@ sub parse_needle{
 		if($_ eq "-"){
 			$pn_tar_gaps +=1;
 		}
-	}	
+	}
 	# for output
 	my $pn_tar_seq_clean	= $pn_tar_seq_sub;
 	$pn_tar_seq_clean	=~s/-//g;
@@ -226,29 +232,58 @@ sub parse_needle{
 
 
 
-# {XP_AAE1}	= \@(XP_TCA1,...)	
+# {XP_AAE1}	= \@(XP_TCA1,...)
 # {XP_right1}	= \@XP_left
 # Species       Genes   Alg.-Conn.      GCF_000002335.3_Tcas5.2_protein.faa     GCF_000004015.4_AaegL3_protein.faa
 sub ortho_parser{
 	my $op_file	= $_[0];
 	my %op_hash;
+
 	open(OP,"<",$op_file) || die;
+
+	# first line contains the order
+	my $header = <OP>;
+	chomp($header);
+	my @headerfields = split(/\t/, $header);
+
+	# column of SpeciesA should be stored in posA,
+	# column of SpeciesB should be stored in posB,
+	my ($posA, $posB);
+	for(my $i = 0; $i < @headerfields; $i++)
+	{
+	    if ($headerfields[$i] eq "proteinA.fa")      # was the file for speciesA
+	    {
+		$posA = $i;
+	    } elsif ($headerfields[$i] eq "proteinB.fa") # was the file for speciesB
+	    {
+		$posB = $i;
+	    }
+	}
+	die ("Unable to determine columns for species A and/or species B\n") unless (defined $posA && defined $posB);
+
 	while(<OP>){
-		chomp;
-		my $op_line		= $_;
-		my @op_split		= split(" ",$op_line);
-		my $op_left		= $op_split[3];
-		my $op_right		= $op_split[4];
-		my @op_left_split	= split(",",$op_left);
-		my @op_right_split	= split(",",$op_right);
-		foreach(@op_right_split){
-			if(not exists $op_hash{$_}){
-				$op_hash{$_}	= \@op_left_split;
-			}
-			else{
-				print STDERR "$_ already exists!\n";
-			}
+	    chomp;
+	    my @fields = split(/\t/, $_);
+
+	    my @op_speciesA		= split(",", $fields[$posA]);
+	    my @op_speciesB		= split(",", $fields[$posB]);
+
+	    foreach my $proteinA (@op_speciesA){
+		if(exists $op_hash{A2B}{$proteinA}){
+		    print STDERR "Entry for protein $proteinA of species A already exists, but will add the new\n";
 		}
+
+		push(@{$op_hash{A2B}{$proteinA}}, @op_speciesB);
+	    }
+
+	    foreach my $proteinB (@op_speciesB){
+		if(exists $op_hash{B2A}{$proteinB}){
+		    print STDERR "Entry for protein $proteinB of species B already exists, but will add the new\n";
+		}
+
+		push(@{$op_hash{B2A}{$proteinB}}, @op_speciesA);
+	    }
+
 	}
 	close(OP) || die;
 	return(\%op_hash);
@@ -258,7 +293,7 @@ sub ortho_parser{
 sub GFF_parser{
 	my $gp_file	= $_[0];
 	my %gp_hash;	# {xp}	= xm
-	
+
 	open(GP,"<",$gp_file) || die;
 	while(<GP>){
 		chomp;
@@ -305,4 +340,3 @@ sub fasta_parser{
         close(FP) || die;
         return(\%fp_hash);
 }
-
