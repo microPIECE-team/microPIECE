@@ -1,9 +1,12 @@
-FROM ubuntu
+ARG micropiece_version=master
+ARG ubuntu_version=xenial
+
+FROM ubuntu:${ubuntu_version}
 
 LABEL maintainer="frank.foerster@ime.fraunhofer.de" \
       description="Container for the microPIECE package" \
       version="0.1"
-
+      
 RUN apt update && \
     apt install \
        --yes \
@@ -130,6 +133,14 @@ RUN apt update && apt install --yes --no-install-recommends \
     cpanm RNA::HairpinFigure \
     && \
     rm -rf /var/lib/apt/lists/*
+    
+RUN apt update && apt install --yes --no-install-recommends git && \
+    git clone --branch ${micropiece_version} https://github.com/microPIECE-team/microPIECE && \
+    rm -rf /opt/microPIECE/.git \
+    && \
+    cd /opt && rm -rf /var/lib/apt/lists/*
+ENV PATH=/opt/microPIECE/:"$PATH"
+
 
 VOLUME /data
 WORKDIR /data
