@@ -15,7 +15,7 @@ addons:
     - ncbi-blast+
     - python-cutadapt
     - emboss 
-    - openjdk-8-jre-headless
+    - oracle-java8-installer
     - git
     - zlib1g-dev
     - libncurses5-dev
