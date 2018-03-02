@@ -137,7 +137,7 @@ RUN apt update && apt install --yes --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
     
 RUN apt update && apt install --yes --no-install-recommends git && \
-    git clone --branch ${micropiece_version} https://github.com/microPIECE-team/microPIECE && \
+    git clone --branch ${micropiece_version} https://github.com/microPIECE-team/microPIECE.git && \
     rm -rf /opt/microPIECE/.git \
     && \
     cd /opt && rm -rf /var/lib/apt/lists/*
