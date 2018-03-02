@@ -54,7 +54,7 @@ install:
     - export PERL5OPT=-MDevel::Cover=-coverage,statement,branch,condition,path,subroutine
     - git clone https://github.com/microPIECE-team/microPIECE-testset.git /tmp/microPIECE-testset
 script:
-    - travis_wait 60 t/run_travis.sh
+    - t/run_travis.sh
 after_success:
     - export PERL5OPT=""
     - cover -ignore_re=lib
