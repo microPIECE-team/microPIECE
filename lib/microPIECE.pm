@@ -287,6 +287,42 @@ sub run_mining_mirdeep2fasta
 
     my @cmd = ($opt->{scriptdir}."041_curated_mirdeep2fasta.pl", "--csv", $opt->{mirdeep_output}, "--cutoff", 10, "--matureout", $opt->{novel_mature}, "--hairpinout", $opt->{novel_hairpin}, "--species", $opt->{speciesB_tag});
     run_cmd($L, \@cmd);
+
+    # combine novel and known mature sequences and ensure DNA nucleotides
+    $opt->{final_mature} = "mature_combined_mirbase_novel.fa";
+    open(OUT, ">", $opt->{final_mature}) || $L->logdie("Unable to open file '$opt->{final_mature}' for writing: $!");
+    foreach my $file ($opt->{novel_mature}, "mature_mirbase.fa")
+    {
+	open(FH, "<", $file) || $L->logdie("Unable to open file '$file': $!");
+	while(<FH>)
+	{
+	    if ($_ !~ /^>/)
+	    {
+		$_ =~ tr/Uu/Tt/;
+	    }
+	    print OUT $_;
+	}
+	close(FH) || $L->logdie("Unable to close file '$file': $!");
+    }
+    close(OUT) || $L->logdie("Unable to close file '$opt->{final_mature}' after writing: $!");
+
+    # combine novel and known hairpin sequences and ensure DNA nucleotides
+    $opt->{final_hairpin} = "hairpin_combined_mirbase_novel.fa";
+    open(OUT, ">", $opt->{final_hairpin}) || $L->logdie("Unable to open file '$opt->{final_hairpin}' for writing: $!");
+    foreach my $file ($opt->{novel_hairpin}, "precursor_mirbase.fa")
+    {
+	open(FH, "<", $file) || $L->logdie("Unable to open file '$file': $!");
+	while(<FH>)
+	{
+	    if ($_ !~ /^>/)
+	    {
+		$_ =~ tr/Uu/Tt/;
+	    }
+	    print OUT $_;
+	}
+	close(FH) || $L->logdie("Unable to close file '$file': $!");
+    }
+    close(OUT) || $L->logdie("Unable to close file '$opt->{final_hairpin}' after writing: $!");
 }
 
 sub run_mining_complete
