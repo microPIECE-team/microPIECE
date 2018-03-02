@@ -22,7 +22,7 @@ addons:
     - libbz2-dev
     - liblzma-dev 
 before_install:
-    - export PATH=$TRAVIS_BUILD_DIR:/tmp/samtools-1.4.1/:/tmp/bedtools2/bin/:$PATH
+    - export PATH=$TRAVIS_BUILD_DIR:/tmp/samtools-1.4.1/:/tmp/bedtools2/bin/:/tmp/proteinortho_v5.16b/:$PATH
     - git clone git://github.com/haarg/perl-travis-helper
     - source perl-travis-helper/init
     - build-perl
@@ -31,6 +31,7 @@ install:
     - cpanm Graph Log::Log4perl IPC::Run3 Devel::Cover Devel::Cover::Report::Coveralls
     - wget -O /tmp/samtools-1.4.1.tar.bz2 https://github.com/samtools/samtools/releases/download/1.4.1/samtools-1.4.1.tar.bz2 && cd /tmp && tar xjf samtools-1.4.1.tar.bz2 && cd samtools-1.4.1 && ./configure && make && cd ..
     - wget -O /tmp/bedtools.tar.gz https://github.com/arq5x/bedtools2/releases/download/v2.27.1/bedtools-2.27.1.tar.gz && cd /tmp && tar xzf bedtools.tar.gz && cd bedtools2 && make
+    - wget -O /tmp/proteinortho.tar.gz http://www.bioinf.uni-leipzig.de/Software/proteinortho/proteinortho_v5.16b.tar.gz && tar xzf proteinortho.tar.gz
     - cd $TRAVIS_BUILD_DIR
     - export PERL5OPT=-MDevel::Cover=-coverage,statement,branch,condition,path,subroutine
 script:
