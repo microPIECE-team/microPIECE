@@ -53,8 +53,9 @@ install:
     - mkdir -p /tmp/gffread && cd /tmp/gffread && git clone https://github.com/gpertea/gclib && cd gclib && git checkout b790ac157971c5e6da77d0c76ee9ebf26ec4a5ef && cd .. && git clone --branch v0.9.12 https://github.com/gpertea/gffread && cd gffread && make
     - cd $TRAVIS_BUILD_DIR
     - export PERL5OPT=-MDevel::Cover=-coverage,statement,branch,condition,path,subroutine
+    - git clone https://github.com/microPIECE-team/microPIECE-testset.git /tmp/microPIECE-testset
 script:
-    - travis_wait 60 true
+    - travis_wait 60 t/run_travis.sh
 after_success:
     - export PERL5OPT=""
     - cover -ignore_re=lib
