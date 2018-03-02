@@ -8,8 +8,4 @@ perl microPIECE.pl \
    --clip /tmp/microPIECE-testset/SRR5163632_aae_clip_reduced.fastq,/tmp/microPIECE-testset/SRR5163633_aae_clip_reduced.fastq,/tmp/microPIECE-testset/SRR5163634_aae_clip_reduced.fastq \
    --clip /tmp/microPIECE-testset/SRR5163635_aae_clip_reduced.fastq,/tmp/microPIECE-testset/SRR5163636_aae_clip_reduced.fastq,/tmp/microPIECE-testset/SRR5163637_aae_clip_reduced.fastq \
    --adapterclip GTGTCAGTCACTTCCAGCGG \
-   --smallrnaseq a=/tmp/microPIECE-testset/tca_smallRNAseq_rna_contaminated.fastq \
-   --adaptersmallrnaseq3=TGGAATTCTCGGGTGCCAAGG \
-   --adaptersmallrnaseq5 GTTCAGAGTTCTACAGTCCGACGATC \
-   --filterncrnas /tmp/microPIECE-testset/TCA_all_ncRNA_but_miR.fa \
-   --speciesB tca
+   --mirna /tmp/microPIECE-testset/tca_known_mirs.fa
