@@ -28,7 +28,7 @@ addons:
     - libipc-run3-perl
     - tree
 before_install:
-    - export PATH=$TRAVIS_BUILD_DIR:/tmp/miRanda-3.3a/src:/tmp/gmap-2018-02-12/src:$HOME/.local/bin:/tmp/mirdeep2/bin:/tmp/samtools-1.4.1/:/tmp/bedtools2/bin/:/tmp/proteinortho_v5.16b/:/tmp/xa2multi/:/tmp/piranha-1.2.1/src/progs/:$PATH
+    - export PATH=$TRAVIS_BUILD_DIR:/tmp/gffread/gffread:/tmp/miRanda-3.3a/src:/tmp/gmap-2018-02-12/src:$HOME/.local/bin:/tmp/mirdeep2/bin:/tmp/samtools-1.4.1/:/tmp/bedtools2/bin/:/tmp/proteinortho_v5.16b/:/tmp/xa2multi/:/tmp/piranha-1.2.1/src/progs/:$PATH
     - export PERL_MB_OPT="--install_base /tmp/perl5"
     - export PERL_MM_OPT="INSTALL_BASE=/tmp/perl5"
     - export PERL5LIB=/tmp/mirdeep2/lib/perl5:/tmp/perl5:$PERL5LIB
@@ -48,6 +48,7 @@ install:
     - pip install --user --upgrade cutadapt
     - wget -O /tmp/gmap.tar.gz http://research-pub.gene.com/gmap/src/gmap-gsnap-2018-02-12.tar.gz && cd /tmp/ && tar xzf gmap.tar.gz && cd gmap-2018-02-12 && ./configure --with-simd-level=sse2 && make
     - wget -O /tmp/miRanda-aug2010.tar.gz http://cbio.mskcc.org/microrna_data/miRanda-aug2010.tar.gz && cd /tmp && tar xzf miRanda-aug2010.tar.gz && cd miRanda-3.3a && ./configure && make
+    - mkdir -p /tmp/gffread && cd /tmp/gffread && git clone https://github.com/gpertea/gclib && cd gclib && git checkout b790ac157971c5e6da77d0c76ee9ebf26ec4a5ef && cd .. && git clone --branch v0.9.12 https://github.com/gpertea/gffread && cd gffread && make
     - cd $TRAVIS_BUILD_DIR
     - export PERL5OPT=-MDevel::Cover=-coverage,statement,branch,condition,path,subroutine
 script:
