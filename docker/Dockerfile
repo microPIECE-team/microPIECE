@@ -1,7 +1,7 @@
-ARG micropiece_version=master
 ARG ubuntu_version=xenial
-
 FROM ubuntu:${ubuntu_version}
+
+ARG micropiece_version=master
 
 LABEL maintainer="frank.foerster@ime.fraunhofer.de" \
       description="Container for the microPIECE package" \
@@ -137,10 +137,9 @@ RUN apt update && apt install --yes --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
     
 RUN apt update && apt install --yes --no-install-recommends git && \
+    git clone --branch ${micropiece_version} https://github.com/microPIECE-team/microPIECE.git && \
+    rm -rf /opt/microPIECE/.git && \
     rm -rf /var/lib/apt/lists/*
-
-RUN git clone --branch ${micropiece_version} https://github.com/microPIECE-team/microPIECE.git && \
-    rm -rf /opt/microPIECE/.git
 ENV PATH=/opt/microPIECE/:"$PATH"
 
 
