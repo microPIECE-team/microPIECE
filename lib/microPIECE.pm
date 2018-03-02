@@ -1081,7 +1081,7 @@ sub run_cmd
 	chdir($path);
     }
 
-    $log->info("Calling command: ".join(" ", @{$cmd}));
+    my $redirection = "";
 
     my $stdout = "";
     my $stderr = "";
@@ -1089,12 +1089,17 @@ sub run_cmd
     if (defined $outfile)
     {
 	$param_stdout = $outfile;
+	$redirection .= " >$outfile";
     }
     my $param_stderr = \$stderr;
     if (defined $errfile)
     {
-	$param_stdout = $errfile;
+	$param_stderr = $errfile;
+	$redirection .= " 2>$errfile";
     }
+
+    $log->info("Calling command: ".join(" ", @{$cmd}, $redirection));
+
     run3($cmd, undef, $param_stdout, $param_stderr);
     #$stdout = qx(@{$cmd});
 
