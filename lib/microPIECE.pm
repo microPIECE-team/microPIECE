@@ -182,6 +182,13 @@ sub check_requirements {
     # check if we need to run the target prediction
     check_files($opt, "mirna");
 
+    # if the mirna option is given, we will skip the mining process
+    if ($opt->{mirna})
+    {
+	$L->info("Due to a provided miRNA database (--mirna parameter) we will skip the mining process");
+	$opt->{run_mining} = 0;
+    }
+
     # we need to run the targetprediction
     if (($opt->{run_clip} && $opt->{mirna}) || ($opt->{run_clip} && $opt->{run_mining}))
     {
@@ -275,6 +282,7 @@ sub run_mining {
 
     run_mining_genomicposition($opt);
 
+    $opt->{mirna} = $opt->{final_mature};
     $L->info("Finished mining step");
 }
 
