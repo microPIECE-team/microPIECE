@@ -13,7 +13,6 @@ addons:
     - bowtie
     - bowtie2
     - ncbi-blast+
-    - python-cutadapt
     - emboss 
     - oracle-java8-installer
     - git
