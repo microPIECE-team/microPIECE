@@ -14,6 +14,8 @@ use File::Spec;
 use File::Temp qw/ :POSIX /;
 use IO::Uncompress::Gunzip qw(gunzip $GunzipError);
 
+use IPC::Run3;
+
 =pod
 
 Just a little welcome screen indicating our current version number
@@ -297,7 +299,7 @@ sub run_mining_genomicposition
     run_cmd($L, \@cmd);
 
     # run the blast
-    @cmd = ("blastn", "-query", $opt->{final_hairpin}, "-db", $opt->{genomeB}, "-num_threads", $opt->{threads}, "-dust", "no", "-soft_masking", "false", "-outfmt", '"6 qseqid sseqid pident length qlen mismatch gapopen qstart qend sstart send evalue bitscore"');
+    @cmd = ("blastn", "-query", $opt->{final_hairpin}, "-db", $opt->{genomeB}, "-num_threads", $opt->{threads}, "-dust", "no", "-soft_masking", "false", "-outfmt", '6 qseqid sseqid pident length qlen mismatch gapopen qstart qend sstart send evalue bitscore');
     my $blastoutput = run_cmd($L, \@cmd);
 
     # filter the hits and store them
@@ -354,7 +356,7 @@ sub run_mining_quantification
 
 	    # store the final output
 	    my $final_filename = $file."_mapped.sam";
-	    push($opt->{mining}{quantification}{$condition}, $final_filename);
+	    push(@{$opt->{mining}{quantification}{$condition}}, $final_filename);
 	    push(@config_file_content, join("\t", $final_filename, $condition)."\n");
 
 	    open(FH, ">", $final_filename) || $L->logdie("Unable to open file '$final_filename': $!");
@@ -603,7 +605,7 @@ sub run_mining_downloads
     }
 }
 
-# If a set of ncRNAs (with exception of miRNAs, of course) is provided, 
+# If a set of ncRNAs (with exception of miRNAs, of course) is provided,
 # the smallRNA reads are filtered against those ncRNAs to exclude unwanted fragments.
 sub run_mining_filtering
 {
@@ -779,13 +781,13 @@ sub run_CLIP_transfer
 
     my $file_uniqueA     = $opt->{basedir}.basename($opt->{annotationA}, ".gff")."_unique.csv";
     my $file_uniqueA_log = $opt->{basedir}.basename($opt->{annotationA}, ".gff")."_unique.err";
-    @cmd = ($opt->{scriptdir}."CLIP_parse_gff_return_longest_transcript.pl", $opt->{annotationA}, ">", $file_uniqueA, "2>", $file_uniqueA_log);
-    run_cmd($L, \@cmd);
+    @cmd = ($opt->{scriptdir}."CLIP_parse_gff_return_longest_transcript.pl", $opt->{annotationA});
+    run_cmd($L, \@cmd, undef, $file_uniqueA, $file_uniqueA_log);
 
     my $file_uniqueB     = $opt->{basedir}.basename($opt->{annotationB}, ".gff")."_unique.csv";
     my $file_uniqueB_log = $opt->{basedir}.basename($opt->{annotationB}, ".gff")."_unique.err";
-    @cmd = ($opt->{scriptdir}."CLIP_parse_gff_return_longest_transcript.pl", $opt->{annotationB}, ">", $file_uniqueB, "2>", $file_uniqueB_log);
-    run_cmd($L, \@cmd);
+    @cmd = ($opt->{scriptdir}."CLIP_parse_gff_return_longest_transcript.pl", $opt->{annotationB});
+    run_cmd($L, \@cmd, undef, $file_uniqueB, $file_uniqueB_log);
 
     foreach my $file (@inputfiles)
     {
@@ -795,16 +797,16 @@ sub run_CLIP_transfer
 	my $bed_merged = $opt->{basedir}.basename($file, ".fasta")."_transfered_merged.bed";
 	my $final_fasta = $opt->{basedir}.basename($file, ".fasta")."_transfered_final.fasta";
 
-	@cmd = ($opt->{scriptdir}."CLIP_map_clip_gff_needle.pl", $file_uniqueA, $opt->{proteinortho}, $file, $file_uniqueB, $opt->{mRNAB}, $needle_csv, ">", $needle_aln);
-	run_cmd($L, \@cmd);
+	@cmd = ($opt->{scriptdir}."CLIP_map_clip_gff_needle.pl", $file_uniqueA, $opt->{proteinortho}, $file, $file_uniqueB, $opt->{mRNAB}, $needle_csv);
+	run_cmd($L, \@cmd, undef, $needle_aln);
 
 	# convert csv into bed file
 	@cmd = ($opt->{scriptdir}."CLIP_csv_to_bed.pl", $needle_csv, $bed_out);
 	run_cmd($L, \@cmd);
 
 	# merge bed annotations
-	@cmd = ("bedtools", "merge", "-i", $bed_out, "-c", 4, "-o", "collapse", ">", $bed_merged);
-	run_cmd($L, \@cmd);
+	@cmd = ("bedtools", "merge", "-i", $bed_out, "-c", 4, "-o", "collapse");
+	run_cmd($L, \@cmd, undef, $bed_merged);
 
 	# convert merged bed into sequences based on transcripts
 	@cmd = ("bedtools", "getfasta", "-name", "-fi", $opt->{mRNAB}, "-bed", $bed_merged, "-fo", $final_fasta);
@@ -868,8 +870,8 @@ sub run_CLIP_process
 	close(FH) || $L->logdie("Unable to close '$fasta': $!");
 
 	# convert fasta to upper case
-	@cmd = ($opt->{scriptdir}."CLIP_fasta_uc_and_filter4annotations.pl", $fasta, ">", $fastaUC);
-	run_cmd($L, \@cmd);
+	@cmd = ($opt->{scriptdir}."CLIP_fasta_uc_and_filter4annotations.pl", $fasta);
+	run_cmd($L, \@cmd, undef, $fastaUC);
     }
 }
 
@@ -886,8 +888,8 @@ sub run_CLIP_clip_mapper
     foreach my $file (@inputfiles)
     {
 	my $outputname = $opt->{basedir}.basename($file, ".bed")."_mapGFF_minLen0.bed";
-	my @cmd = ($opt->{scriptdir}."CLIP_mapper.pl", $file, $opt->{annotationA}, $minlength, ">", $outputname);
-	run_cmd($L, \@cmd);
+	my @cmd = ($opt->{scriptdir}."CLIP_mapper.pl", $file, $opt->{annotationA}, $minlength);
+	run_cmd($L, \@cmd, undef, $outputname);
     }
 }
 
@@ -904,7 +906,7 @@ sub run_CLIP_filterbed
     for(my $i=1;$i<=@{$opt->{clip}};$i++)
     {
 	my $filtered_bed_out = sprintf("%sclip_merged_%dof%dBEDfilter.bed", $opt->{basedir}, $i, $num_fields);
-	run_cmd($L, [@cmd, $i, ">", $filtered_bed_out] );
+	run_cmd($L, [@cmd, $i], undef, $filtered_bed_out);
     }
 }
 
@@ -980,6 +982,9 @@ sub run_CLIP_mapping
 
     my $L = Log::Log4perl::get_logger();
 
+    my $gsnap_output = tmpnam();
+    my $samtools_output = tmpnam();
+
     foreach my $clipfile (@{$opt->{clip}})
     {
 	my $trimmedfile = $opt->{basedir}.basename($clipfile).".trim";
@@ -987,12 +992,20 @@ sub run_CLIP_mapping
 	my $bedfile     = $opt->{basedir}.basename($clipfile).".bed";
 	# -N 1		:= look for splice sites
 	# -B 5		:= batch mode 5, allocate positions, genome and suffix array
-	# -O		:= ordered output 
+	# -O		:= ordered output
 	# -A sam 	:= output format
-	my @cmd = ("gsnap", "-N", 1, "-B", 5, "-O", "-A", "sam", "-t", $opt->{threads}, "-D", "speciesA_db", "-d", "speciesA", $trimmedfile, "|", "samtools", "view", "-Sb", "-", "|", "samtools", "sort", "-o", $bamfile, "-");
+
+	my @cmd = ("gsnap", "-N", 1, "-B", 5, "-O", "-A", "sam", "-t", $opt->{threads}, "-D", "speciesA_db", "-d", "speciesA", $trimmedfile);
+	run_cmd($L, \@cmd, undef, $gsnap_output);
+
+	@cmd = ("samtools", "view", "-Sb", $gsnap_output);
+	run_cmd($L, \@cmd, undef, $samtools_output);
+
+	@cmd = ("samtools", "sort", "-o", $bamfile, $samtools_output);
 	run_cmd($L, \@cmd);
-	@cmd = ("bedtools", "bamtobed", "-i", $bamfile, ">", $bedfile);
-	run_cmd($L, \@cmd);
+
+	@cmd = ("bedtools", "bamtobed", "-i", $bamfile);
+	run_cmd($L, \@cmd, undef, $bedfile);
     }
 }
 
@@ -1058,7 +1071,7 @@ sub run_proteinortho
 
 sub run_cmd
 {
-    my ($log, $cmd, $path) = @_;
+    my ($log, $cmd, $path, $outfile, $errfile) = @_;
 
     my $currentdir = undef;
 
@@ -1070,21 +1083,35 @@ sub run_cmd
 
     $log->info("Calling command: ".join(" ", @{$cmd}));
 
-    my $output = qx(@{$cmd});
+    my $stdout = "";
+    my $stderr = "";
+    my $param_stdout = \$stdout;
+    if (defined $outfile)
+    {
+	$param_stdout = $outfile;
+    }
+    my $param_stderr = \$stderr;
+    if (defined $errfile)
+    {
+	$param_stdout = $errfile;
+    }
+    run3($cmd, undef, $param_stdout, $param_stderr);
+    #$stdout = qx(@{$cmd});
 
     if ($? != 0)
     {
-	$log->logdie("Error calling command: ".join(" ", @{$cmd}));
+	$log->logdie("Error calling command: ".join(" ", @{$cmd})."STDERR: $stderr");
     }
 
-    $log->debug("Output of command was: ".$output);
+    $log->debug("Output of command was: ".$stdout);
+    $log->debug("Output of command was: ".$stderr);
 
     if ($currentdir)
     {
 	chdir($currentdir);
     }
 
-    return $output;
+    return $stdout;
 }
 
 
