@@ -273,7 +273,38 @@ sub run_mining {
     run_mining_mirdeep2fasta($opt);
     run_mining_quantification($opt);
 
+    run_mining_genomicposition($opt);
+
     $L->info("Finished mining step");
+}
+
+sub run_mining_genomicposition
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    # build a blast database
+    my @cmd = ("makeblastdb", "-in", $opt->{genomeB}, "-dbtype", "nucl");
+    run_cmd($L, \@cmd);
+
+    # run the blast
+    @cmd = ("blastn", "-query", $opt->{final_hairpin}, "-db", $opt->{genomeB}, "-num_threads", $opt->{threads}, "-dust", "no", "-soft_masking", "false", "-outfmt", '"6 qseqid sseqid pident length qlen mismatch gapopen qstart qend sstart send evalue bitscore"');
+    my $blastoutput = run_cmd($L, \@cmd);
+
+    # filter the hits and store them
+    $opt->{mining}{genomic_location} = "miRNA_genomic_position.csv";
+    open(FH, ">", $opt->{mining}{genomic_location}) || $L->logdie("Unable to open file '$opt->{mining}{genomic_location}': $!");
+    foreach my $line (split(/\n/, $blastoutput))
+    {
+	my @fields = split(/\t/, $line);
+
+	next unless ($fields[2] == 100                 # 100% identity
+		     && $fields[3] == $fields[4]);     # hit over complete length
+	print FH $line, "\n";
+    }
+    close(FH) || $L->logdie("Unable to close file '$opt->{mining}{genomic_location}': $!");
+
 
 }
 
