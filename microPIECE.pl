@@ -149,25 +149,38 @@ identification and orthology determination.
   --speciesB tca 2>&1 | tee out.log
 
 =head1 OUTPUT
-Output data
 
-#### mature miRNA set
-`mature_combined_mirbase_novel.fa` := mature microRNA set, containing novels and miRBase-completed (if mined), together with the known miRNAs from miRBase
+=head2 Output data
 
-#### precursor miRNA set
-`hairpin_combined_mirbase_novel.fa` := precursor microRNA set, containing novels (if mined), together with the known miRNAs from miRBase
+=head3 mature miRNA set
 
-#### mature miRNA expression per condition
-`miRNA_expression.csv` := Semicolon-separated file : `rpm;condition;miRNA`
+mature_combined_mirbase_novel.fa:= 
+mature microRNA set, containing novels and miRBase-completed (if mined), together with the known miRNAs from miRBase
 
-#### miRDeep2 mining result in HTML
-`result_02_03_2018_t_09_30_01.html`:= the standard output HTML file of miRDeep2
+=head3 precursor miRNA set
 
-#### all library support-level target predictions
-`*_miranda_output.txt` := miranda output, reduced to the lines, starting with `>` only
+hairpin_combined_mirbase_novel.fa := 
+precursor microRNA set, containing novels (if mined), together with the known miRNAs from miRBase
 
-#### all library support-level CLIP transfer .bed files
-`*transfered_merged.bed` := bed-file of the transferred CLIP-regions in speciesB transcriptome
+=head3 mature miRNA expression per condition
+
+miRNA_expression.csv := 
+Semicolon-separated file --> rpm;condition;miRNA
+
+=head3 miRDeep2 mining result in HTML
+
+result_02_03_2018_t_09_30_01.html := 
+the standard output HTML file of miRDeep2
+
+=head3 all library support-level target predictions
+
+*_miranda_output.txt := 
+miranda output, reduced to the lines, starting with > only
+
+=head3 all library support-level CLIP transfer .bed files
+
+*transfered_merged.bed := 
+bed-file of the transferred CLIP-regions in speciesB transcriptome
 
 
 =head1 HISTORY
