@@ -1,78 +1,132 @@
-# tca_miRNA_data_generation
-All stuff which is required to generate data for Daniels miRNA project
+# microPIECE
 
-## How to run
-### First, we run the microRNA pipeline
-`mkdir -p scripts/miRNA/data/000_raw_smRNA/`<br />
-Copy smallRNA sequencing raw fastq files into the folder and run the pipeline with <br />
-`scripts/miRNA/run_all.sh`<br />
-### Second, we do the RNA-seq analysis
+The `microPIECE` (**micro**RNA **pi**peline **e**nhanced by **C**LIP **e**xperiments) takes the AGO-CLIP data from a *speciesA* and transfers it to a *speciesB*. Given a set of miRNAs from *speciesB* it then predicts their targets on the transfered CLIP regions.
 
-### Third, we perform the CLIP transfer
+For the minimal workflow it needs a genome file, as well as its annotation file in GFF format for *speciesA* and *speciesB*. For *speciesA* at least one AGO-CLIP dataset is needed and *speciesB* needs a set of miRNAs for the target prediction. For the full workflow, a set of smallRNA-sequencing data is additionally needed and a set of non-coding RNAs can be provided as filter. The pipeline uses the smallRNA data for the mining of novel microRNAs and the completion of the given miRNA dataset, if needed. It further performs expression calculation, isoform detection, genomic loci identification and orthology determination.
 
+## Required Software
+  - [bwa](http://bio-bwa.sourceforge.net/) (0.7.12-r1039)
+  - [samtools](http://samtools.sourceforge.net/) (1.4.1)
+  - [bedtools](http://bedtools.readthedocs.io/en/latest/) (2.27.1)
+  - [bowtie](http://bowtie-bio.sourceforge.net/index.shtml) (1.1.2)
+  - [miRDeep2](https://www.mdc-berlin.de/research/research_teams/systems_biology_of_gene_regulatory_elements/projects/miRDeep/documentation) (2.0.0.8)
+  - [miraligner](https://github.com/lpantano/seqcluster) (1.2.4a)
+  - [NCBI-BLAST+](https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs&DOC_TYPE=Download) (2.2.31+)
+  - [Proteinortho](https://www.bioinf.uni-leipzig.de/Software/proteinortho/) (5.16b) 
+  - [Cutadapt](https://github.com/marcelm/cutadapt) (1.9.1)
+  - [gmap/gsnap](http://research-pub.gene.com/gmap/) (2018-02-12)
+  - [Piranha](http://smithlabresearch.org/software/piranha/) (1.2.1)
+  - [miranda](http://34.236.212.39/microrna/getDownloads.do) (aug2010)
 
-# Script details
-### 005_getFiles.sh
-Download all files needed for AGO CLIP transfer of AAE to TCA.
-Needs fastq-dump from the NCBI SRA Toolkit
-https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software
+## Required Perl modules
+  - [Getopt::Long](http://search.cpan.org/dist/Getopt-Long/lib/Getopt/Long.pm) (2.5)
+  - [File::Temp](http://search.cpan.org/~dagolden/File-Temp-0.2304/lib/File/Temp.pm) (0.2304)
+  - [RNA::HairpinFigure](http://search.cpan.org/~shenwei/RNA-HairpinFigure-0.141212/lib/RNA/HairpinFigure.pm) (0.141212)
+  - [Pod::Usage](http://search.cpan.org/~marekr/Pod-Usage-1.69/lib/Pod/Usage.pm) (1.69)
+  - [Log::Log4perl](http://search.cpan.org/~mschilli/Log-Log4perl-1.49/lib/Log/Log4perl.pm) (1.49)
 
-### 010_proteinortho.sh
-Computes the orthologous proteins of AAE and TCA
-Needs ProteinOrtho and BLAST+
-https://www.bioinf.uni-leipzig.de/Software/proteinortho/
-ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/
+## Installation
+Please install the dependencies and run
+`git clone git@github.com:microPIECE-team/microPIECE.git`
 
-### 020_trimming.sh
-Trimming of the AGO CLIP sequencing data
-Needs cutadapt
-https://github.com/marcelm/cutadapt
+## Docker
+We also provide `microPIECE` as DOCKER image. We tested the image on Ubuntu, Debian and MacOS. For the latter one, the `Piranha` command `make test` fails during the build, but when entering the container, the test succeds. Therefore, we temporarily excluded this statement.
 
-### 025_build_db.sh
-Builds the GSNAP database out of the AAE genome
-Needs gmap-gsnap
-http://research-pub.gene.com/gmap/
-
-### 030_clip_mapping.sh
-Mapping of the AGO CIP reads against the AAE genome
-Needs gmap-gsnap, samtools and bedtools
-http://research-pub.gene.com/gmap/
-http://samtools.sourceforge.net/
-http://bedtools.readthedocs.io/en/latest/
-
-### 040_piranha.sh
-Peak Calling of AGO binding regions
-Needs Piranha
-http://smithlabresearch.org/software/piranha/
-
-### 045_bedtools_merge.sh
-Merges Peaks, result should stay the same
-Needs Bedtools
-http://bedtools.readthedocs.io/en/latest/
-
-### 050_clip2gff.sh
-Maps the Peak regions to the mRNAs of AAE
-
-### 060_intersect.sh
-Merges the replicates
-Needs Bedtools
-http://bedtools.readthedocs.io/en/latest/
-
-### 070_process.sh
-Merges the two conditions
-Needs Bedtools
-http://bedtools.readthedocs.io/en/latest/
-
-### 080_transfer.sh
-Extraction of the longest transcripts for each gene from the GFF files of AAE and TCA
-Transfer of the AAE CLIP regions to the orthologous longest transcripts from TCA
-Needs needle from the EMBOSS package
-ftp://emboss.open-bio.org/pub/EMBOSS/
+```
+docker pull micropiece/micropiece
+cd /tmp
+git clone git@github.com:greatfireball/tca_miRNA_data_generation.git micropiece
+cd micropiece
+git checkout single_script
+git clone git@github.com:microPIECE-team/microPIECE-testset.git testset
+docker run -it --rm -u $(id -u):$(id -g) -v $PWD:/data -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro micropiece/micropiece
+# und dann im Container:
+./microPIECE.pl   \
+  --genomeA testset/NC_035109.1_reduced_AAE_genome.fa  \
+  --genomeB testset/NC_007416.3_reduced_TCA_genome.fa   \
+  --annotationA testset/NC_035109.1_reduced_AAE_genome.gff   \
+  --annotationB testset/NC_007416.3_reduced_TCA_genome.gff   \
+  --clip testset/SRR5163632_aae_clip_reduced.fastq,testset/SRR5163633_aae_clip_reduced.fastq,testset/SRR5163634_aae_clip_reduced.fastq   \
+  --clip testset/SRR5163635_aae_clip_reduced.fastq,testset/SRR5163636_aae_clip_reduced.fastq,testset/SRR5163637_aae_clip_reduced.fastq --adapterclip GTGTCAGTCACTTCCAGCGG  \
+  --overwrite \
+  --smallrnaseq a=testset/tca_smallRNAseq_rna_contaminated.fastq \
+  --adaptersmallrnaseq3=TGGAATTCTCGGGTGCCAAGG \
+  --adaptersmallrnaseq5 GTTCAGAGTTCTACAGTCCGACGATC \
+  --filterncrnas testset/TCA_all_ncRNA_but_miR.fa \
+  --speciesB tca 2>&1 | tee out.log
+```
 
 
-### 090_tarpred.sh
-Extracts the transfered CLIP regions in fasta format and predicts the miRNA targets
-Needs bedtools and miranda
-http://bedtools.readthedocs.io/en/latest/
-http://34.236.212.39/microrna/getDownloads.do
+## Usage
+```
+# INPUT PARAMETERS:
+	--version|-v := version of this pipeline
+	--help|-h := prints a helpful help message
+
+--genomeA := Genome of the species with the CLIP data
+--genomeB := Genome of the species where we want to predict the miRNA targets
+--gffA := GFF annotation of speciesA
+--gffB := GFF annotation of speciesB
+--clip := Comma-separated CLIP-seq .fastq files
+
+ --clip con1_rep1_clip.fq,con1_rep2_clip.fq,con2_clip.fq
+ OR
+ --clip ron1_rep1_clip.fq --clip con1_rep2_clip.fq --clip con2_clip.fq
+    
+--adapterclip := Sequencing-adapter of CLIP reads
+--smallrnaseq := Comma-separated smallRNA-seq .fastq files, initialized with 'condition='
+
+ --smallrnaseq con1=A.fastq,B.fastq --smallrnaseq con2=C.fq
+ OR
+ --smallrnaseq con1=A.fastq --smallrnaseq con1=B.fastq --smallrnaseq con2=C.fq
+    
+--adaptersmallrnaseq5 := 5' adapter of smallRNA-seq reads
+--adaptersmallrnaseq3 := 3' adapter of smallRNA-seq reads
+--filterncrnas := Multi-fasta file of ncRNAs to filter smallRNA-seq reads
+--threads := Number of threads to be used
+--overwrite := set this parameter to overwrite existing files 
+--testrun := sets this pipeline to testmode (accounting for small testset in piranha)
+--out := output folder
+--mirnas := miRNA set, if set, mining is disabled and this set is used for prediction
+--speciesBtag := 3letter code of speciesB
+```
+## Input data
+  - minimal workflow
+    - speciesA genome
+    - speciesA GFF
+    - speicesA AGO-CLIP-sequencing library/libraries
+    - speciesB genome
+    - speciesB GFF
+    - speciesB microRNA set (mature)
+  - full workflow (in addition to the minimal workflow)
+    - speciesB non-codingRNA set (without miRNAs)
+    - speciesB microRNA set (precursor)
+    - speciesB smallRNA-sequencing library/libraries
+
+## Example
+### Testset
+Feel free to test the pipeline with our testset:
+
+`git clone git@github.com:microPIECE-team/microPIECE-testset.git`
+
+### Alternative
+  - **minimal workflow**
+    - speciesA genome [AAE genome : ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/204/515/GCF_002204515.2_AaegL5.0/GCF_002204515.2_AaegL5.0_genomic.fna.gz](https://tinyurl.com/yagl5mlo)
+    - speciesA GFF [AAE GFF : ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/204/515/GCF_002204515.2_AaegL5.0/GCF_002204515.2_AaegL5.0_genomic.gff.gz](https://tinyurl.com/ybckl5pp)
+    - speicesA AGO-CLIP-sequencing library/libraries [AGO-CLIP of AAE](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE93345)
+    - speciesB genome [TCA genome : ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/002/335/GCF_000002335.3_Tcas5.2/GCF_000002335.3_Tcas5.2_genomic.fna.gz](https://tinyurl.com/y7844w3t)
+    - speciesB GFF [TCA GFF : ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/002/335/GCF_000002335.3_Tcas5.2/GCF_000002335.3_Tcas5.2_genomic.gff.gz](https://tinyurl.com/ybj35n7j)
+    - speciesB microRNA set (mature) [TCA mature miRNAs](http://mirbase.org/cgi-bin/mirna_summary.pl?org=tca)
+    
+  - **full workflow** (in addition to the minimal workflow)
+    - speciesB microRNA set (precursor) [TCA stem-loop miRNAs](http://mirbase.org/cgi-bin/mirna_summary.pl?org=tca)
+    - speciesB smallRNA-sequencing library/libraries [TCA smallRNA-sequencing data](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63770)
+    - speciesB non-codingRNA set (without miRNAs - to filter smRNA-seq data) (*OPTIONAL*)
+
+    
+## Changelog
+Version 1.0.0 is archived as *DOI* and submitted to [The Journal of Open Source Software](http://joss.theoj.org/).
+## License
+This program is released under GPLv2. For further license information, see LICENSE.md shipped with this program.
+Copyright(c)2018 Daniel Amsel and Frank Förster (employees of Fraunhofer Institute for Molecular Biology and Applied Ecology IME) All rights reserved.
 
