@@ -20,7 +20,6 @@ addons:
     - libncurses5-dev
     - libbz2-dev
     - liblzma-dev 
-    - bamtools
     - libgsl-dev
 before_install:
     - export PATH=$TRAVIS_BUILD_DIR:/tmp/mirdeep2/bin:/tmp/samtools-1.4.1/:/tmp/bedtools2/bin/:/tmp/proteinortho_v5.16b/:/tmp/xa2multi/:/tmp/piranha-1.2.1/src/progs/:$PATH
