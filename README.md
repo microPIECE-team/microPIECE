@@ -35,11 +35,10 @@ We also provide `microPIECE` as DOCKER image. We tested the image on Ubuntu, Deb
 ```
 docker pull micropiece/micropiece
 cd /tmp
-git clone git@github.com:greatfireball/tca_miRNA_data_generation.git micropiece
+git clone git@github.com:microPIECE-team/microPIECE.git micropiece
 cd micropiece
-git checkout single_script
 git clone git@github.com:microPIECE-team/microPIECE-testset.git testset
-docker run -it --rm -u $(id -u):$(id -g) -v $PWD:/data -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro micropiece/micropiece
+docker run -it --rm -v $PWD:/data micropiece/micropiece
 # und dann im Container:
 ./microPIECE.pl   \
   --genomeA testset/NC_035109.1_reduced_AAE_genome.fa  \
