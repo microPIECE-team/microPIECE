@@ -390,14 +390,14 @@ sub run_mining_mirdeep2fasta
 
     my $L = Log::Log4perl::get_logger();
 
-    $opt->{novel_mature} = "novel_mature.fa";
-    $opt->{novel_hairpin} = "novel_hairpin.fa";
+    $opt->{novel_mature} = getcwd()."/"."novel_mature.fa";
+    $opt->{novel_hairpin} = getcwd()."/"."novel_hairpin.fa";
 
     my @cmd = ($opt->{scriptdir}."041_curated_mirdeep2fasta.pl", "--csv", $opt->{mirdeep_output}, "--cutoff", 10, "--matureout", $opt->{novel_mature}, "--hairpinout", $opt->{novel_hairpin}, "--species", $opt->{speciesB_tag});
     run_cmd($L, \@cmd);
 
     # combine novel and known mature sequences and ensure DNA nucleotides
-    $opt->{final_mature} = "mature_combined_mirbase_novel.fa";
+    $opt->{final_mature} = getcwd()."/"."mature_combined_mirbase_novel.fa";
     open(OUT, ">", $opt->{final_mature}) || $L->logdie("Unable to open file '$opt->{final_mature}' for writing: $!");
     foreach my $file ($opt->{novel_mature}, "mature_mirbase.fa")
     {
@@ -415,7 +415,7 @@ sub run_mining_mirdeep2fasta
     close(OUT) || $L->logdie("Unable to close file '$opt->{final_mature}' after writing: $!");
 
     # combine novel and known hairpin sequences and ensure DNA nucleotides
-    $opt->{final_hairpin} = "hairpin_combined_mirbase_novel.fa";
+    $opt->{final_hairpin} = getcwd()."/"."hairpin_combined_mirbase_novel.fa";
     open(OUT, ">", $opt->{final_hairpin}) || $L->logdie("Unable to open file '$opt->{final_hairpin}' for writing: $!");
     foreach my $file ($opt->{novel_hairpin}, "precursor_mirbase.fa")
     {
@@ -442,7 +442,7 @@ sub run_mining_complete
     my @cmd = ($opt->{scriptdir}."021_parse_miRDeep2_output.pl", "-mirdeep_out", $opt->{mirdeep_output}, "-mature_fasta", "mature_mirbase.fa");
     my $output = run_cmd($L, \@cmd);
 
-    my $mirbase_completed = "mature_mirbase_completed.fa";
+    my $mirbase_completed = getcwd()."/"."mature_mirbase_completed.fa";
     open(FH, ">", $mirbase_completed) || $L->logdie("Unable to open file '$mirbase_completed': $!");
     print FH $output;
     close(FH) || $L->logdie("Unable to close file '$mirbase_completed': $!");
