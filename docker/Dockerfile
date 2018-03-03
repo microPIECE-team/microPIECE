@@ -3,11 +3,13 @@ FROM micropiece/micropiece-dockerbase:${baseimage_version}
 
 ARG micropiece_version=master
 ARG VCS_REF
+ARG BUILD_DATE
 
 LABEL maintainer="frank.foerster@ime.fraunhofer.de" \
       description="Container for the microPIECE package" \
       version="1.0" \
       org.label-schema.vcs-ref=$VCS_REF \
+      org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.vcs-url="https://github.com/microPIECE-team/microPIECE"
 
 RUN apt update && apt install --yes --no-install-recommends git && \
