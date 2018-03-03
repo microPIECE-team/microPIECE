@@ -471,7 +471,7 @@ sub run_mining_mirdeep2
     my $L = Log::Log4perl::get_logger();
     # miRDeep2 needs fasta headers without whitespaces and provides this script for that purpose
 
-    my $genome_wo_whitespace = $opt->{basedir}."genome_without_whitespace.fa";
+    my $genome_wo_whitespace = getcwd()."/"."genome_without_whitespace.fa";
     my %files_from_mirbase = ();
 
     my @cmd=("remove_white_space_in_id.pl", $opt->{genomeB});
@@ -641,7 +641,7 @@ sub run_mining_filtering
 	foreach my $file (@{$opt->{mining}{trimmed}{$condition}})
 	{
 	    # new filename will be
-	    my $filtered_fq = $opt->{basedir}.basename($file, (".fq", ".fastq"))."_filtered.fq";
+	    my $filtered_fq = getcwd()."/".basename($file, (".fq", ".fastq"))."_filtered.fq";
 
 	    # map to filter file
 	    # -n 1 := edit distance of 1
@@ -700,7 +700,7 @@ sub run_mining_clipping
 	foreach my $file (@{$opt->{smallrnaseq}{$condition}})
 	{
 	    my @cmd2run = @cmd;
-	    my $outfile = $opt->{basedir}.basename($file, (".fq", ".fastq"))."_trimmed.fq";
+	    my $outfile = getcwd()."/".basename($file, (".fq", ".fastq"))."_trimmed.fq";
 	    push(@cmd2run, ($file, "-o", $outfile));
 	    run_cmd($L, \@cmd2run);
 	    push(@{$opt->{mining}{trimmed}{$condition}}, $outfile);
@@ -776,7 +776,7 @@ sub run_targetprediction {
 
     foreach my $file (@{$opt->{seq4prediction}})
     {
-	my $final_output = $opt->{basedir}.basename($file)."_final_miranda_output.txt";
+	my $final_output = getcwd()."/".basename($file)."_final_miranda_output.txt";
 
 	my @cmd = ($opt->{scriptdir}."Targetprediction.pl", $opt->{mirna}, $file, $final_output);
 	run_cmd($L, \@cmd)
@@ -793,29 +793,29 @@ sub run_CLIP_transfer
 
     my $L = Log::Log4perl::get_logger();
 
-    $opt->{mRNAB} = $opt->{basedir}."/"."mRNAB.fa";
+    $opt->{mRNAB} = getcwd()."/"."mRNAB.fa";
     my @cmd = ("gffread", $opt->{annotationB}, "-w", $opt->{mRNAB}, "-F", "-g", $opt->{genomeB});
     run_cmd($L, \@cmd);
 
     my @inputfiles = glob("clip_merged_*of*BEDfilter_mapGFF_minLen*_min*_max*_sort_UC.fasta");
 
-    my $file_uniqueA     = $opt->{basedir}.basename($opt->{annotationA}, ".gff")."_unique.csv";
-    my $file_uniqueA_log = $opt->{basedir}.basename($opt->{annotationA}, ".gff")."_unique.err";
+    my $file_uniqueA     = getcwd()."/".basename($opt->{annotationA}, ".gff")."_unique.csv";
+    my $file_uniqueA_log = getcwd()."/".basename($opt->{annotationA}, ".gff")."_unique.err";
     @cmd = ($opt->{scriptdir}."CLIP_parse_gff_return_longest_transcript.pl", $opt->{annotationA});
     run_cmd($L, \@cmd, undef, $file_uniqueA, $file_uniqueA_log);
 
-    my $file_uniqueB     = $opt->{basedir}.basename($opt->{annotationB}, ".gff")."_unique.csv";
-    my $file_uniqueB_log = $opt->{basedir}.basename($opt->{annotationB}, ".gff")."_unique.err";
+    my $file_uniqueB     = getcwd()."/".basename($opt->{annotationB}, ".gff")."_unique.csv";
+    my $file_uniqueB_log = getcwd()."/".basename($opt->{annotationB}, ".gff")."_unique.err";
     @cmd = ($opt->{scriptdir}."CLIP_parse_gff_return_longest_transcript.pl", $opt->{annotationB});
     run_cmd($L, \@cmd, undef, $file_uniqueB, $file_uniqueB_log);
 
     foreach my $file (@inputfiles)
     {
-	my $needle_csv = $opt->{basedir}.basename($file, ".fasta")."_needle.csv";
-	my $needle_aln = $opt->{basedir}.basename($file, ".fasta")."_needle.aln";
-	my $bed_out = $opt->{basedir}.basename($file, ".fasta")."_transfered.bed";
-	my $bed_merged = $opt->{basedir}.basename($file, ".fasta")."_transfered_merged.bed";
-	my $final_fasta = $opt->{basedir}.basename($file, ".fasta")."_transfered_final.fasta";
+	my $needle_csv =  getcwd()."/".basename($file, ".fasta")."_needle.csv";
+	my $needle_aln =  getcwd()."/".basename($file, ".fasta")."_needle.aln";
+	my $bed_out =     getcwd()."/".basename($file, ".fasta")."_transfered.bed";
+	my $bed_merged =  getcwd()."/".basename($file, ".fasta")."_transfered_merged.bed";
+	my $final_fasta = getcwd()."/".basename($file, ".fasta")."_transfered_final.fasta";
 
 	@cmd = ($opt->{scriptdir}."CLIP_map_clip_gff_needle.pl", $file_uniqueA, $opt->{proteinortho}, $file, $file_uniqueB, $opt->{mRNAB}, $needle_csv);
 	run_cmd($L, \@cmd, undef, $needle_aln);
@@ -849,9 +849,9 @@ sub run_CLIP_process
 
     foreach my $file (@inputfiles)
     {
-	my $sorted_bed = sprintf("%s%s_min%i_max%i_sort.bed",      $opt->{basedir}, basename($file, ".bed"), $min, $max);
-	my $fasta =      sprintf("%s%s_min%i_max%i_sort.fasta",    $opt->{basedir}, basename($file, ".bed"), $min, $max);
-	my $fastaUC =    sprintf("%s%s_min%i_max%i_sort_UC.fasta", $opt->{basedir}, basename($file, ".bed"), $min, $max);
+	my $sorted_bed = sprintf("%s%s_min%i_max%i_sort.bed",      getcwd()."/", basename($file, ".bed"), $min, $max);
+	my $fasta =      sprintf("%s%s_min%i_max%i_sort.fasta",    getcwd()."/", basename($file, ".bed"), $min, $max);
+	my $fastaUC =    sprintf("%s%s_min%i_max%i_sort_UC.fasta", getcwd()."/", basename($file, ".bed"), $min, $max);
 	my @cmd = ($opt->{scriptdir}."CLIP_bedtool_discard_sizes.pl", $file, $min, $max);
 	my $output = run_cmd($L, \@cmd);
 
@@ -907,7 +907,7 @@ sub run_CLIP_clip_mapper
 
     foreach my $file (@inputfiles)
     {
-	my $outputname = $opt->{basedir}.basename($file, ".bed")."_mapGFF_minLen0.bed";
+	my $outputname = getcwd()."/".basename($file, ".bed")."_mapGFF_minLen0.bed";
 	my @cmd = ($opt->{scriptdir}."CLIP_mapper.pl", $file, $opt->{annotationA}, $minlength);
 	run_cmd($L, \@cmd, undef, $outputname);
     }
@@ -919,13 +919,13 @@ sub run_CLIP_filterbed
 
     my $L = Log::Log4perl::get_logger();
 
-    my @cmd = ($opt->{scriptdir}."CLIP_bed2signal.pl", $opt->{basedir}."clip_merged.bed");
+    my @cmd = ($opt->{scriptdir}."CLIP_bed2signal.pl", getcwd()."/"."clip_merged.bed");
 
     my $num_fields = int(@{$opt->{clip}});
 
     for(my $i=1;$i<=@{$opt->{clip}};$i++)
     {
-	my $filtered_bed_out = sprintf("%sclip_merged_%dof%dBEDfilter.bed", $opt->{basedir}, $i, $num_fields);
+	my $filtered_bed_out = sprintf("%sclip_merged_%dof%dBEDfilter.bed", getcwd()."/", $i, $num_fields);
 	run_cmd($L, [@cmd, $i], undef, $filtered_bed_out);
     }
 }
@@ -937,11 +937,11 @@ sub run_CLIP_bedtools_merge
 
     my $L = Log::Log4perl::get_logger();
 
-    my @cmd = ($opt->{scriptdir}."CLIP_merge_bed_files.pl", "--output", $opt->{basedir}."clip_merged.bed", "--log", "merging_bed_files.log");
+    my @cmd = ($opt->{scriptdir}."CLIP_merge_bed_files.pl", "--output", getcwd()."/"."clip_merged.bed", "--log", "merging_bed_files.log");
 
     for(my $i=0;$i<@{$opt->{clip}};$i++)
     {
-	my $sortedpiranhafile = $opt->{basedir}.basename($opt->{clip}[$i]).".piranha.sorted.bed";
+	my $sortedpiranhafile = getcwd()."/".basename($opt->{clip}[$i]).".piranha.sorted.bed";
 	push(@cmd, ("--input", basename($opt->{clip}[$i])."=".$sortedpiranhafile));
     }
 
@@ -956,9 +956,9 @@ sub run_CLIP_piranha
 
     foreach my $clipfile (@{$opt->{clip}})
     {
-	my $bedfile           = $opt->{basedir}.basename($clipfile).".bed";
-	my $piranhafile       = $opt->{basedir}.basename($clipfile).".piranha.bed";
-	my $sortedpiranhafile = $opt->{basedir}.basename($clipfile).".piranha.sorted.bed";
+	my $bedfile           = getcwd()."/".basename($clipfile).".bed";
+	my $piranhafile       = getcwd()."/".basename($clipfile).".piranha.bed";
+	my $sortedpiranhafile = getcwd()."/".basename($clipfile).".piranha.sorted.bed";
 	my @cmd = ("Piranha", "-o", $piranhafile, "-s", $bedfile);
 	if (exists $opt->{testrun} && $opt->{testrun})
 	{
@@ -1007,9 +1007,9 @@ sub run_CLIP_mapping
 
     foreach my $clipfile (@{$opt->{clip}})
     {
-	my $trimmedfile = $opt->{basedir}.basename($clipfile).".trim";
-	my $bamfile     = $opt->{basedir}.basename($clipfile).".bam";
-	my $bedfile     = $opt->{basedir}.basename($clipfile).".bed";
+	my $trimmedfile = getcwd()."/".basename($clipfile).".trim";
+	my $bamfile     = getcwd()."/".basename($clipfile).".bam";
+	my $bedfile     = getcwd()."/".basename($clipfile).".bed";
 	# -N 1		:= look for splice sites
 	# -B 5		:= batch mode 5, allocate positions, genome and suffix array
 	# -O		:= ordered output
@@ -1048,7 +1048,7 @@ sub run_CLIP_adapter_trimming
 
     foreach my $clipfile (@{$opt->{clip}})
     {
-	my $outfile = $opt->{basedir}.basename($clipfile).".trim";
+	my $outfile = getcwd()."/".basename($clipfile).".trim";
 	# -m 20		:= min length of read
 	# --trim-n	:= trim terminal Ns of reads
 	my @cmd = ("cutadapt", "-a", $opt->{adapterclip}, "-m", 20, "--trim-n", "-o", $outfile, $clipfile);
@@ -1069,8 +1069,8 @@ sub run_proteinortho
     my $L = Log::Log4perl::get_logger();
 
     # extract proteins from annotation and genome file
-    $opt->{proteinA} = $opt->{basedir}."/"."proteinA.fa";
-    $opt->{proteinB} = $opt->{basedir}."/"."proteinB.fa";
+    $opt->{proteinA} = getcwd()."/"."proteinA.fa";
+    $opt->{proteinB} = getcwd()."/"."proteinB.fa";
     my @cmd = ("gffread", $opt->{annotationA}, "-y", $opt->{proteinA}, "-F", "-g", $opt->{genomeA});
     run_cmd($L, \@cmd);
     @cmd = ("gffread", $opt->{annotationB}, "-y", $opt->{proteinB}, "-F", "-g", $opt->{genomeB});
@@ -1086,7 +1086,7 @@ sub run_proteinortho
     @cmd = ("proteinortho5.pl", "-clean", "-project=microPIECE", "-cpus=".$opt->{threads}, $opt->{proteinA}, $opt->{proteinB});
     run_cmd($L, \@cmd, $opt->{out});
 
-    $opt->{proteinortho} = $opt->{basedir}."microPIECE.proteinortho";
+    $opt->{proteinortho} = getcwd()."/"."microPIECE.proteinortho";
 }
 
 sub run_cmd
