@@ -273,6 +273,11 @@ sub run_mining {
 
     $L->info("Starting mining step");
 
+    my $currentdir = getcwd;
+    my $new_folder = "mining";
+    mkdir($new_folder) || $L->logdie("Unable to create folder '$new_folder': $!");
+    chdir($new_folder);
+
     run_mining_clipping($opt);
     run_mining_filtering($opt);
     run_mining_downloads($opt);
@@ -286,6 +291,8 @@ sub run_mining {
 
     $opt->{mirna} = $opt->{final_mature};
     $L->info("Finished mining step");
+
+    chdir($currentdir);
 }
 
 sub run_mining_genomicposition
@@ -721,6 +728,11 @@ sub run_clip {
 
     $L->info("Starting CLIP step");
 
+    my $currentdir = getcwd;
+    my $new_folder = "clip";
+    mkdir($new_folder) || $L->logdie("Unable to create folder '$new_folder': $!");
+    chdir($new_folder);
+
     run_proteinortho($opt);
     run_CLIP_adapter_trimming($opt);
     run_CLIP_build_db($opt);
@@ -732,8 +744,9 @@ sub run_clip {
     run_CLIP_process($opt);
     run_CLIP_transfer($opt);
 
-    $L->info("Finished CLIP step");
+    chdir($currentdir);
 
+    $L->info("Finished CLIP step");
 }
 
 =pod
@@ -756,6 +769,11 @@ sub run_targetprediction {
 
     $L->info("Starting target prediction step");
 
+    my $currentdir = getcwd;
+    my $new_folder = "targetprediction";
+    mkdir($new_folder) || $L->logdie("Unable to create folder '$new_folder': $!");
+    chdir($new_folder);
+
     foreach my $file (@{$opt->{seq4prediction}})
     {
 	my $final_output = $opt->{basedir}.basename($file)."_final_miranda_output.txt";
@@ -763,8 +781,10 @@ sub run_targetprediction {
 	my @cmd = ($opt->{scriptdir}."Targetprediction.pl", $opt->{mirna}, $file, $final_output);
 	run_cmd($L, \@cmd)
     }
-    $L->info("Finished target prediction step");
 
+    chdir($currentdir);
+
+    $L->info("Finished target prediction step");
 }
 
 sub run_CLIP_transfer
