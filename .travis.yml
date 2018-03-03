@@ -22,5 +22,5 @@ script:
     - docker run -it --rm -v $PWD:/opt/microPIECE -v /tmp/microPIECE-testset:/tmp/microPIECE-testset micropiece/micropiece chmod -R a+wrX /opt/microPIECE/cover_db
 after_success:
     - export PERL5OPT=""
-    - cover -ignore_re=lib
-    - cover -ignore_re=lib -report coveralls
+    - cover
+    - cover -report coveralls
