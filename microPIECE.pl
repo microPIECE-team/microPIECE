@@ -68,7 +68,7 @@ GetOptions(
     'testrun'              => \$opt->{testrun},
     'out=s'                => \$opt->{out},
     'mirna=s'              => \$opt->{mirna},
-    'speciesB=s'           => \$opt->{speciesB_tag},
+    'speciesBtag=s'           => \$opt->{speciesB_tag},
     ) || pod2usage(1);
 
 # split clip files if required
