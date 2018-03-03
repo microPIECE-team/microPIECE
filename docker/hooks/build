@@ -1,8 +1,10 @@
 #!/bin/bash
 BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-VCS_REF=$SOURCE_COMMIT
+VCS_REF=SOURCE_COMMIT
 VCS_REF=$(echo ${VCS_REF} | cut -b 1-7)
 
 docker build \
-       --build-arg micropiece_version=$SOURCE_BRANCH,VCS_REF=${VCS_REF},BUILD_DATE=${BUILD_DATE} \
+       --build-arg BRANCH=$SOURCE_BRANCH \
+       --build-arg VCS_REF=${VCS_REF} \
+       --build-arg BUILD_DATE=${BUILD_DATE} \
        -t $IMAGE_NAME .
