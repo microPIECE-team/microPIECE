@@ -226,7 +226,7 @@ sub check_requirements {
 	}
     }
 
-    mkdir($opt->{out}) || $L->logdie("Unable to create output file: $!");
+    mkdir($opt->{out}) || $L->logdie("Unable to create output folder: $!");
 
     ##############################################################
     #
