@@ -5,7 +5,7 @@ ARG micropiece_version=master
 ARG VCS_REF
 ARG BUILD_DATE
 
-RUN echo "VCS_REF: "${VCS_REF}", BUILD_DATE: "${BUILD_DATE}", micropiece_version: "$(micropiece_version)
+RUN echo "VCS_REF: "${VCS_REF}", BUILD_DATE: "${BUILD_DATE}", micropiece_version: "${micropiece_version}
 
 LABEL maintainer="frank.foerster@ime.fraunhofer.de" \
       description="Container for the microPIECE package" \
