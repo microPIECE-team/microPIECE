@@ -10,6 +10,7 @@ use Data::Dumper;
 use Cwd;
 use File::Path;
 use File::Basename;
+use File::Copy;
 use File::Spec;
 use File::Temp qw/ :POSIX /;
 use IO::Uncompress::Gunzip qw(gunzip $GunzipError);
@@ -273,6 +274,11 @@ sub run_mining {
 
     $L->info("Starting mining step");
 
+    my $currentdir = getcwd;
+    my $new_folder = "mining";
+    mkdir($new_folder) || $L->logdie("Unable to create folder '$new_folder': $!");
+    chdir($new_folder);
+
     run_mining_clipping($opt);
     run_mining_filtering($opt);
     run_mining_downloads($opt);
@@ -286,6 +292,8 @@ sub run_mining {
 
     $opt->{mirna} = $opt->{final_mature};
     $L->info("Finished mining step");
+
+    chdir($currentdir);
 }
 
 sub run_mining_genomicposition
@@ -372,7 +380,7 @@ sub run_mining_quantification
     close(FH) || $L->logdie("Unable to close file '$config_file': $!");
 
     # run the quantification analysis
-    $opt->{mining_quantification_result} = "miRNA_expression.csv";
+    $opt->{mining_quantification_result} = getcwd()."/"."miRNA_expression.csv";
     @cmd = ($opt->{scriptdir}."061_sam2de.pl", "--cfg", $config_file, "--mature_file", $opt->{final_mature}, "--out", $opt->{mining_quantification_result});
     run_cmd($L, \@cmd);
 }
@@ -383,14 +391,14 @@ sub run_mining_mirdeep2fasta
 
     my $L = Log::Log4perl::get_logger();
 
-    $opt->{novel_mature} = "novel_mature.fa";
-    $opt->{novel_hairpin} = "novel_hairpin.fa";
+    $opt->{novel_mature} = getcwd()."/"."novel_mature.fa";
+    $opt->{novel_hairpin} = getcwd()."/"."novel_hairpin.fa";
 
     my @cmd = ($opt->{scriptdir}."041_curated_mirdeep2fasta.pl", "--csv", $opt->{mirdeep_output}, "--cutoff", 10, "--matureout", $opt->{novel_mature}, "--hairpinout", $opt->{novel_hairpin}, "--species", $opt->{speciesB_tag});
     run_cmd($L, \@cmd);
 
     # combine novel and known mature sequences and ensure DNA nucleotides
-    $opt->{final_mature} = "mature_combined_mirbase_novel.fa";
+    $opt->{final_mature} = getcwd()."/"."mature_combined_mirbase_novel.fa";
     open(OUT, ">", $opt->{final_mature}) || $L->logdie("Unable to open file '$opt->{final_mature}' for writing: $!");
     foreach my $file ($opt->{novel_mature}, "mature_mirbase.fa")
     {
@@ -408,7 +416,7 @@ sub run_mining_mirdeep2fasta
     close(OUT) || $L->logdie("Unable to close file '$opt->{final_mature}' after writing: $!");
 
     # combine novel and known hairpin sequences and ensure DNA nucleotides
-    $opt->{final_hairpin} = "hairpin_combined_mirbase_novel.fa";
+    $opt->{final_hairpin} = getcwd()."/"."hairpin_combined_mirbase_novel.fa";
     open(OUT, ">", $opt->{final_hairpin}) || $L->logdie("Unable to open file '$opt->{final_hairpin}' for writing: $!");
     foreach my $file ($opt->{novel_hairpin}, "precursor_mirbase.fa")
     {
@@ -435,7 +443,7 @@ sub run_mining_complete
     my @cmd = ($opt->{scriptdir}."021_parse_miRDeep2_output.pl", "-mirdeep_out", $opt->{mirdeep_output}, "-mature_fasta", "mature_mirbase.fa");
     my $output = run_cmd($L, \@cmd);
 
-    my $mirbase_completed = "mature_mirbase_completed.fa";
+    my $mirbase_completed = getcwd()."/"."mature_mirbase_completed.fa";
     open(FH, ">", $mirbase_completed) || $L->logdie("Unable to open file '$mirbase_completed': $!");
     print FH $output;
     close(FH) || $L->logdie("Unable to close file '$mirbase_completed': $!");
@@ -464,7 +472,7 @@ sub run_mining_mirdeep2
     my $L = Log::Log4perl::get_logger();
     # miRDeep2 needs fasta headers without whitespaces and provides this script for that purpose
 
-    my $genome_wo_whitespace = $opt->{basedir}."genome_without_whitespace.fa";
+    my $genome_wo_whitespace = getcwd()."/"."genome_without_whitespace.fa";
     my %files_from_mirbase = ();
 
     my @cmd=("remove_white_space_in_id.pl", $opt->{genomeB});
@@ -555,8 +563,18 @@ sub run_mining_mirdeep2
 	$L->logdie("Found multiple *.csv files instead of a single: ".join(", ", map {"'$_'"} (@csv_files)));
     }
 
-    $opt->{mirdeep_output} = "mirdeep_output.csv";
+    $opt->{mirdeep_output} = getcwd()."/"."mirdeep_output.csv";
     rename $csv_files[0], $opt->{mirdeep_output} || $L->logdie("Unable to rename mirdeep output file");
+
+    my @html_files = grep { /result_/ } (glob("*.html"));
+    unless (@html_files == 1)
+    {
+	$L->logdie("Found multiple *.html files instead of a single: ".join(", ", map {"'$_'"} (@html_files)));
+    }
+
+    $opt->{mirdeep_output_html} = getcwd()."/"."mirdeep_output.html";
+    rename $html_files[0], $opt->{mirdeep_output_html} || $L->logdie("Unable to rename mirdeep output html file");
+
 }
 
 sub run_mining_mirbase_files
@@ -634,7 +652,7 @@ sub run_mining_filtering
 	foreach my $file (@{$opt->{mining}{trimmed}{$condition}})
 	{
 	    # new filename will be
-	    my $filtered_fq = $opt->{basedir}.basename($file, (".fq", ".fastq"))."_filtered.fq";
+	    my $filtered_fq = getcwd()."/".basename($file, (".fq", ".fastq"))."_filtered.fq";
 
 	    # map to filter file
 	    # -n 1 := edit distance of 1
@@ -693,7 +711,7 @@ sub run_mining_clipping
 	foreach my $file (@{$opt->{smallrnaseq}{$condition}})
 	{
 	    my @cmd2run = @cmd;
-	    my $outfile = $opt->{basedir}.basename($file, (".fq", ".fastq"))."_trimmed.fq";
+	    my $outfile = getcwd()."/".basename($file, (".fq", ".fastq"))."_trimmed.fq";
 	    push(@cmd2run, ($file, "-o", $outfile));
 	    run_cmd($L, \@cmd2run);
 	    push(@{$opt->{mining}{trimmed}{$condition}}, $outfile);
@@ -721,6 +739,11 @@ sub run_clip {
 
     $L->info("Starting CLIP step");
 
+    my $currentdir = getcwd;
+    my $new_folder = "clip";
+    mkdir($new_folder) || $L->logdie("Unable to create folder '$new_folder': $!");
+    chdir($new_folder);
+
     run_proteinortho($opt);
     run_CLIP_adapter_trimming($opt);
     run_CLIP_build_db($opt);
@@ -732,8 +755,9 @@ sub run_clip {
     run_CLIP_process($opt);
     run_CLIP_transfer($opt);
 
-    $L->info("Finished CLIP step");
+    chdir($currentdir);
 
+    $L->info("Finished CLIP step");
 }
 
 =pod
@@ -756,15 +780,23 @@ sub run_targetprediction {
 
     $L->info("Starting target prediction step");
 
+    my $currentdir = getcwd;
+    my $new_folder = "targetprediction";
+    mkdir($new_folder) || $L->logdie("Unable to create folder '$new_folder': $!");
+    chdir($new_folder);
+
     foreach my $file (@{$opt->{seq4prediction}})
     {
-	my $final_output = $opt->{basedir}.basename($file)."_final_miranda_output.txt";
+	my $final_output = getcwd()."/".basename($file)."_final_miranda_output.txt";
 
 	my @cmd = ($opt->{scriptdir}."Targetprediction.pl", $opt->{mirna}, $file, $final_output);
-	run_cmd($L, \@cmd)
+	run_cmd($L, \@cmd);
+	push(@{$opt->{miranda_output}}, $final_output);
     }
-    $L->info("Finished target prediction step");
 
+    chdir($currentdir);
+
+    $L->info("Finished target prediction step");
 }
 
 sub run_CLIP_transfer
@@ -773,29 +805,29 @@ sub run_CLIP_transfer
 
     my $L = Log::Log4perl::get_logger();
 
-    $opt->{mRNAB} = $opt->{basedir}."/"."mRNAB.fa";
+    $opt->{mRNAB} = getcwd()."/"."mRNAB.fa";
     my @cmd = ("gffread", $opt->{annotationB}, "-w", $opt->{mRNAB}, "-F", "-g", $opt->{genomeB});
     run_cmd($L, \@cmd);
 
     my @inputfiles = glob("clip_merged_*of*BEDfilter_mapGFF_minLen*_min*_max*_sort_UC.fasta");
 
-    my $file_uniqueA     = $opt->{basedir}.basename($opt->{annotationA}, ".gff")."_unique.csv";
-    my $file_uniqueA_log = $opt->{basedir}.basename($opt->{annotationA}, ".gff")."_unique.err";
+    my $file_uniqueA     = getcwd()."/".basename($opt->{annotationA}, ".gff")."_unique.csv";
+    my $file_uniqueA_log = getcwd()."/".basename($opt->{annotationA}, ".gff")."_unique.err";
     @cmd = ($opt->{scriptdir}."CLIP_parse_gff_return_longest_transcript.pl", $opt->{annotationA});
     run_cmd($L, \@cmd, undef, $file_uniqueA, $file_uniqueA_log);
 
-    my $file_uniqueB     = $opt->{basedir}.basename($opt->{annotationB}, ".gff")."_unique.csv";
-    my $file_uniqueB_log = $opt->{basedir}.basename($opt->{annotationB}, ".gff")."_unique.err";
+    my $file_uniqueB     = getcwd()."/".basename($opt->{annotationB}, ".gff")."_unique.csv";
+    my $file_uniqueB_log = getcwd()."/".basename($opt->{annotationB}, ".gff")."_unique.err";
     @cmd = ($opt->{scriptdir}."CLIP_parse_gff_return_longest_transcript.pl", $opt->{annotationB});
     run_cmd($L, \@cmd, undef, $file_uniqueB, $file_uniqueB_log);
 
     foreach my $file (@inputfiles)
     {
-	my $needle_csv = $opt->{basedir}.basename($file, ".fasta")."_needle.csv";
-	my $needle_aln = $opt->{basedir}.basename($file, ".fasta")."_needle.aln";
-	my $bed_out = $opt->{basedir}.basename($file, ".fasta")."_transfered.bed";
-	my $bed_merged = $opt->{basedir}.basename($file, ".fasta")."_transfered_merged.bed";
-	my $final_fasta = $opt->{basedir}.basename($file, ".fasta")."_transfered_final.fasta";
+	my $needle_csv =  getcwd()."/".basename($file, ".fasta")."_needle.csv";
+	my $needle_aln =  getcwd()."/".basename($file, ".fasta")."_needle.aln";
+	my $bed_out =     getcwd()."/".basename($file, ".fasta")."_transfered.bed";
+	my $bed_merged =  getcwd()."/".basename($file, ".fasta")."_transfered_merged.bed";
+	my $final_fasta = getcwd()."/".basename($file, ".fasta")."_transfered_final.fasta";
 
 	@cmd = ($opt->{scriptdir}."CLIP_map_clip_gff_needle.pl", $file_uniqueA, $opt->{proteinortho}, $file, $file_uniqueB, $opt->{mRNAB}, $needle_csv);
 	run_cmd($L, \@cmd, undef, $needle_aln);
@@ -813,6 +845,7 @@ sub run_CLIP_transfer
 	run_cmd($L, \@cmd);
 
 	push(@{$opt->{seq4prediction}}, $final_fasta);
+	push(@{$opt->{clip_final_bed}}, $bed_merged);
     }
 }
 
@@ -829,9 +862,9 @@ sub run_CLIP_process
 
     foreach my $file (@inputfiles)
     {
-	my $sorted_bed = sprintf("%s%s_min%i_max%i_sort.bed",      $opt->{basedir}, basename($file, ".bed"), $min, $max);
-	my $fasta =      sprintf("%s%s_min%i_max%i_sort.fasta",    $opt->{basedir}, basename($file, ".bed"), $min, $max);
-	my $fastaUC =    sprintf("%s%s_min%i_max%i_sort_UC.fasta", $opt->{basedir}, basename($file, ".bed"), $min, $max);
+	my $sorted_bed = sprintf("%s%s_min%i_max%i_sort.bed",      getcwd()."/", basename($file, ".bed"), $min, $max);
+	my $fasta =      sprintf("%s%s_min%i_max%i_sort.fasta",    getcwd()."/", basename($file, ".bed"), $min, $max);
+	my $fastaUC =    sprintf("%s%s_min%i_max%i_sort_UC.fasta", getcwd()."/", basename($file, ".bed"), $min, $max);
 	my @cmd = ($opt->{scriptdir}."CLIP_bedtool_discard_sizes.pl", $file, $min, $max);
 	my $output = run_cmd($L, \@cmd);
 
@@ -887,7 +920,7 @@ sub run_CLIP_clip_mapper
 
     foreach my $file (@inputfiles)
     {
-	my $outputname = $opt->{basedir}.basename($file, ".bed")."_mapGFF_minLen0.bed";
+	my $outputname = getcwd()."/".basename($file, ".bed")."_mapGFF_minLen0.bed";
 	my @cmd = ($opt->{scriptdir}."CLIP_mapper.pl", $file, $opt->{annotationA}, $minlength);
 	run_cmd($L, \@cmd, undef, $outputname);
     }
@@ -899,13 +932,13 @@ sub run_CLIP_filterbed
 
     my $L = Log::Log4perl::get_logger();
 
-    my @cmd = ($opt->{scriptdir}."CLIP_bed2signal.pl", $opt->{basedir}."clip_merged.bed");
+    my @cmd = ($opt->{scriptdir}."CLIP_bed2signal.pl", getcwd()."/"."clip_merged.bed");
 
     my $num_fields = int(@{$opt->{clip}});
 
     for(my $i=1;$i<=@{$opt->{clip}};$i++)
     {
-	my $filtered_bed_out = sprintf("%sclip_merged_%dof%dBEDfilter.bed", $opt->{basedir}, $i, $num_fields);
+	my $filtered_bed_out = sprintf("%sclip_merged_%dof%dBEDfilter.bed", getcwd()."/", $i, $num_fields);
 	run_cmd($L, [@cmd, $i], undef, $filtered_bed_out);
     }
 }
@@ -917,11 +950,11 @@ sub run_CLIP_bedtools_merge
 
     my $L = Log::Log4perl::get_logger();
 
-    my @cmd = ($opt->{scriptdir}."CLIP_merge_bed_files.pl", "--output", $opt->{basedir}."clip_merged.bed", "--log", "merging_bed_files.log");
+    my @cmd = ($opt->{scriptdir}."CLIP_merge_bed_files.pl", "--output", getcwd()."/"."clip_merged.bed", "--log", "merging_bed_files.log");
 
     for(my $i=0;$i<@{$opt->{clip}};$i++)
     {
-	my $sortedpiranhafile = $opt->{basedir}.basename($opt->{clip}[$i]).".piranha.sorted.bed";
+	my $sortedpiranhafile = getcwd()."/".basename($opt->{clip}[$i]).".piranha.sorted.bed";
 	push(@cmd, ("--input", basename($opt->{clip}[$i])."=".$sortedpiranhafile));
     }
 
@@ -936,9 +969,9 @@ sub run_CLIP_piranha
 
     foreach my $clipfile (@{$opt->{clip}})
     {
-	my $bedfile           = $opt->{basedir}.basename($clipfile).".bed";
-	my $piranhafile       = $opt->{basedir}.basename($clipfile).".piranha.bed";
-	my $sortedpiranhafile = $opt->{basedir}.basename($clipfile).".piranha.sorted.bed";
+	my $bedfile           = getcwd()."/".basename($clipfile).".bed";
+	my $piranhafile       = getcwd()."/".basename($clipfile).".piranha.bed";
+	my $sortedpiranhafile = getcwd()."/".basename($clipfile).".piranha.sorted.bed";
 	my @cmd = ("Piranha", "-o", $piranhafile, "-s", $bedfile);
 	if (exists $opt->{testrun} && $opt->{testrun})
 	{
@@ -987,9 +1020,9 @@ sub run_CLIP_mapping
 
     foreach my $clipfile (@{$opt->{clip}})
     {
-	my $trimmedfile = $opt->{basedir}.basename($clipfile).".trim";
-	my $bamfile     = $opt->{basedir}.basename($clipfile).".bam";
-	my $bedfile     = $opt->{basedir}.basename($clipfile).".bed";
+	my $trimmedfile = getcwd()."/".basename($clipfile).".trim";
+	my $bamfile     = getcwd()."/".basename($clipfile).".bam";
+	my $bedfile     = getcwd()."/".basename($clipfile).".bed";
 	# -N 1		:= look for splice sites
 	# -B 5		:= batch mode 5, allocate positions, genome and suffix array
 	# -O		:= ordered output
@@ -1028,7 +1061,7 @@ sub run_CLIP_adapter_trimming
 
     foreach my $clipfile (@{$opt->{clip}})
     {
-	my $outfile = $opt->{basedir}.basename($clipfile).".trim";
+	my $outfile = getcwd()."/".basename($clipfile).".trim";
 	# -m 20		:= min length of read
 	# --trim-n	:= trim terminal Ns of reads
 	my @cmd = ("cutadapt", "-a", $opt->{adapterclip}, "-m", 20, "--trim-n", "-o", $outfile, $clipfile);
@@ -1049,8 +1082,8 @@ sub run_proteinortho
     my $L = Log::Log4perl::get_logger();
 
     # extract proteins from annotation and genome file
-    $opt->{proteinA} = $opt->{basedir}."/"."proteinA.fa";
-    $opt->{proteinB} = $opt->{basedir}."/"."proteinB.fa";
+    $opt->{proteinA} = getcwd()."/"."proteinA.fa";
+    $opt->{proteinB} = getcwd()."/"."proteinB.fa";
     my @cmd = ("gffread", $opt->{annotationA}, "-y", $opt->{proteinA}, "-F", "-g", $opt->{genomeA});
     run_cmd($L, \@cmd);
     @cmd = ("gffread", $opt->{annotationB}, "-y", $opt->{proteinB}, "-F", "-g", $opt->{genomeB});
@@ -1066,7 +1099,90 @@ sub run_proteinortho
     @cmd = ("proteinortho5.pl", "-clean", "-project=microPIECE", "-cpus=".$opt->{threads}, $opt->{proteinA}, $opt->{proteinB});
     run_cmd($L, \@cmd, $opt->{out});
 
-    $opt->{proteinortho} = $opt->{basedir}."microPIECE.proteinortho";
+    $opt->{proteinortho} = getcwd()."/"."microPIECE.proteinortho";
+}
+
+sub transfer_resultfiles
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    $L->info("Start copying result files into output folder");
+
+    # mature miRNA set
+    # mature_combined_mirbase_novel.fa :=
+    # mature microRNA set, containing novels and miRBase-completed (if mined), together with the known miRNAs from miRBase
+    my $source = $opt->{final_mature};
+    if ($source && -e $source)
+    {
+	my $dest = basename($source);
+	copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
+    }
+
+    # precursor miRNA set
+    # hairpin_combined_mirbase_novel.fa :=
+    # precursor microRNA set, containing novels (if mined), together with the known miRNAs from miRBase
+    $source = $opt->{final_hairpin};
+    if ($source && -e $source)
+    {
+	my $dest = basename($source);
+	copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
+    }
+
+    # mature miRNA expression per condition
+    # miRNA_expression.csv :=
+    # Semicolon-separated file : rpm;condition;miRNA
+    $source = $opt->{mining_quantification_result};
+    if ($source && -e $source)
+    {
+	my $dest = basename($source);
+	copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
+    }
+
+    # miRDeep2 mining result in HTML
+    # result_02_03_2018_t_09_30_01.html:=
+    # the standard output HTML file of miRDeep2
+    $source = $opt->{mirdeep_output_html};
+    if ($source && -e $source)
+    {
+	my $dest = basename($source);
+	copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
+    }
+    $source = $opt->{mirdeep_output};
+    if ($source && -e $source)
+    {
+	my $dest = basename($source);
+	copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
+    }
+
+    # all library support-level target predictions
+    # *_miranda_output.txt :=
+    # miranda output, reduced to the lines, starting with > only
+    foreach my $miranda_file (@{$opt->{miranda_output}})
+    {
+	$source = $miranda_file;
+	if ($source && -e $source)
+	{
+	    my $dest = basename($source);
+	    copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
+	}
+    }
+    
+    # all library support-level CLIP transfer .bed files
+    # *transfered_merged.bed :=
+    # bed-file of the transferred CLIP-regions in speciesB transcriptome
+    foreach my $miranda_file (@{$opt->{clip_final_bed}})
+    {
+	$source = $miranda_file;
+	if ($source && -e $source)
+	{
+	    my $dest = basename($source);
+	    copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
+	}
+    }
+
+    $L->info("Finished copy process");
 }
 
 sub run_cmd
