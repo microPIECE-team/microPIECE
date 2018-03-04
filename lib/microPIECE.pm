@@ -886,7 +886,7 @@ sub run_CLIP_process
 	close(FH) || $L->logdie("Unable to close '$sorted_bed': $!");
 
 	# run bedtools getfasta
-	@cmd = ("bedtools", "getfasta", "-s", "-name", "-fi", $opt->{genomeA}, "-bed", $sorted_bed, );
+	@cmd = ("bedtools", "getfasta", "-s", "-name", "-fi", $opt->{genomeA}, "-bed", $sorted_bed, "-fo", $fasta);
 	my $fastaoutput = run_cmd($L, \@cmd);
 
 	open(FH, ">", $fasta) || $L->logdie("Unable to open '$fasta': $!");
