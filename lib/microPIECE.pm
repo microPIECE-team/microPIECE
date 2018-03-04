@@ -10,6 +10,7 @@ use Data::Dumper;
 use Cwd;
 use File::Path;
 use File::Basename;
+use File::Copy;
 use File::Spec;
 use File::Temp qw/ :POSIX /;
 use IO::Uncompress::Gunzip qw(gunzip $GunzipError);
@@ -379,7 +380,7 @@ sub run_mining_quantification
     close(FH) || $L->logdie("Unable to close file '$config_file': $!");
 
     # run the quantification analysis
-    $opt->{mining_quantification_result} = "miRNA_expression.csv";
+    $opt->{mining_quantification_result} = getcwd()."/"."miRNA_expression.csv";
     @cmd = ($opt->{scriptdir}."061_sam2de.pl", "--cfg", $config_file, "--mature_file", $opt->{final_mature}, "--out", $opt->{mining_quantification_result});
     run_cmd($L, \@cmd);
 }
@@ -562,8 +563,18 @@ sub run_mining_mirdeep2
 	$L->logdie("Found multiple *.csv files instead of a single: ".join(", ", map {"'$_'"} (@csv_files)));
     }
 
-    $opt->{mirdeep_output} = "mirdeep_output.csv";
+    $opt->{mirdeep_output} = getcwd()."/"."mirdeep_output.csv";
     rename $csv_files[0], $opt->{mirdeep_output} || $L->logdie("Unable to rename mirdeep output file");
+
+    my @html_files = grep { /result_/ } (glob("*.html"));
+    unless (@html_files == 1)
+    {
+	$L->logdie("Found multiple *.html files instead of a single: ".join(", ", map {"'$_'"} (@html_files)));
+    }
+
+    $opt->{mirdeep_output_html} = getcwd()."/"."mirdeep_output.html";
+    rename $html_files[0], $opt->{mirdeep_output_html} || $L->logdie("Unable to rename mirdeep output html file");
+
 }
 
 sub run_mining_mirbase_files
@@ -779,7 +790,8 @@ sub run_targetprediction {
 	my $final_output = getcwd()."/".basename($file)."_final_miranda_output.txt";
 
 	my @cmd = ($opt->{scriptdir}."Targetprediction.pl", $opt->{mirna}, $file, $final_output);
-	run_cmd($L, \@cmd)
+	run_cmd($L, \@cmd);
+	push(@{$opt->{miranda_output}}, $final_output);
     }
 
     chdir($currentdir);
@@ -833,6 +845,7 @@ sub run_CLIP_transfer
 	run_cmd($L, \@cmd);
 
 	push(@{$opt->{seq4prediction}}, $final_fasta);
+	push(@{$opt->{clip_final_bed}}, $bed_merged);
     }
 }
 
@@ -1087,6 +1100,89 @@ sub run_proteinortho
     run_cmd($L, \@cmd, $opt->{out});
 
     $opt->{proteinortho} = getcwd()."/"."microPIECE.proteinortho";
+}
+
+sub transfer_resultfiles
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    $L->info("Start copying result files into output folder");
+
+    # mature miRNA set
+    # mature_combined_mirbase_novel.fa :=
+    # mature microRNA set, containing novels and miRBase-completed (if mined), together with the known miRNAs from miRBase
+    my $source = $opt->{final_mature};
+    if ($source && -e $source)
+    {
+	my $dest = basename($source);
+	copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
+    }
+
+    # precursor miRNA set
+    # hairpin_combined_mirbase_novel.fa :=
+    # precursor microRNA set, containing novels (if mined), together with the known miRNAs from miRBase
+    $source = $opt->{final_hairpin};
+    if ($source && -e $source)
+    {
+	my $dest = basename($source);
+	copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
+    }
+
+    # mature miRNA expression per condition
+    # miRNA_expression.csv :=
+    # Semicolon-separated file : rpm;condition;miRNA
+    $source = $opt->{mining_quantification_result};
+    if ($source && -e $source)
+    {
+	my $dest = basename($source);
+	copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
+    }
+
+    # miRDeep2 mining result in HTML
+    # result_02_03_2018_t_09_30_01.html:=
+    # the standard output HTML file of miRDeep2
+    $source = $opt->{mirdeep_output_html};
+    if ($source && -e $source)
+    {
+	my $dest = basename($source);
+	copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
+    }
+    $source = $opt->{mirdeep_output};
+    if ($source && -e $source)
+    {
+	my $dest = basename($source);
+	copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
+    }
+
+    # all library support-level target predictions
+    # *_miranda_output.txt :=
+    # miranda output, reduced to the lines, starting with > only
+    foreach my $miranda_file (@{$opt->{miranda_output}})
+    {
+	$source = $miranda_file;
+	if ($source && -e $source)
+	{
+	    my $dest = basename($source);
+	    copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
+	}
+    }
+    
+    # all library support-level CLIP transfer .bed files
+    # *transfered_merged.bed :=
+    # bed-file of the transferred CLIP-regions in speciesB transcriptome
+    foreach my $miranda_file (@{$opt->{clip_final_bed}})
+    {
+	$source = $miranda_file;
+	if ($source && -e $source)
+	{
+	    my $dest = basename($source);
+	    copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
+	}
+    }
+
+    $L->info("Finished copy process");
 }
 
 sub run_cmd

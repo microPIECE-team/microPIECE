@@ -101,6 +101,8 @@ microPIECE::run_clip($opt);
 
 microPIECE::run_targetprediction($opt);
 
+microPIECE::transfer_resultfiles($opt);
+
 __END__
 
 =pod
