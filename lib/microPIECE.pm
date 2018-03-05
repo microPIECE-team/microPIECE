@@ -16,6 +16,7 @@ use File::Temp qw/ :POSIX /;
 use IO::Uncompress::Gunzip qw(gunzip $GunzipError);
 
 use IPC::Run3;
+use IPC::Cmd;
 
 =pod
 
@@ -200,6 +201,133 @@ sub check_requirements {
 
     ##############################################################
     #
+    #  Check external programs
+    #
+    ##############################################################
+    my $software2test = {
+	'bedtools'                     => {
+	    clip             => 1,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'blastn'                       => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'bowtie-build'                 => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'bwa'                          => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'collapse_reads_md.pl'         => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'cutadapt'                     => {
+	    clip             => 1,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'fastq2fasta.pl'               => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'gffread'                      => {
+	    clip             => 1,
+	    mining           => 0,
+	    targetprediction => 0
+	},
+	'gmap_build'                   => {
+	    clip             => 1,
+	    mining           => 0,
+	    targetprediction => 0
+	},
+	'gsnap'                        => {
+	    clip             => 1,
+	    mining           => 0,
+	    targetprediction => 0
+	},
+	'makeblastdb'                  => {
+	    clip             => 1,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'mapper.pl'                    => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'miRDeep2.pl'                  => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'xa2multi.pl'                  => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'Piranha'                      => {
+	    clip             => 1,
+	    mining           => 0,
+	    targetprediction => 0
+	},
+	'proteinortho5.pl'             => {
+	    clip             => 1,
+	    mining           => 0,
+	    targetprediction => 0
+	},
+	'remove_white_space_in_id.pl'  => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'samtools'                     => {
+	    clip             => 1,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'wget'                         => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+        }
+    };
+    ## what software need to be checked
+    my @fulfilled_dependency = ();
+    my @missing_dependency = ();
+    foreach my $prog (keys %{$software2test})
+    {
+	my $need2check = 0;
+	foreach my $step (qw(clip mining targetprediction))
+	{
+	    $need2check++ if ($software2test->{$prog}{$step} && $opt->{"run_".$step});
+	}
+
+	if ($need2check)
+	{
+	    my $full_path = IPC::Cmd::can_run($prog);
+	    if ($full_path)
+	    {
+		push(@fulfilled_dependency, { prog => $prog, path => $full_path });
+	    } else {
+		push(@missing_dependency, $prog);
+	    }
+	}
+    }
+    $L->info(sprintf("Found dependencies: %s", join(", ", map {$_->{prog}."(".$_->{path}.")"} (@fulfilled_dependency))));
+    $L->logdie(sprintf("Unable to run due to missing dependencies: %s", join(", ", (@missing_dependency)))) if (@missing_dependency);
+
+    ##############################################################
+    #
     #  Check output directory
     #
     ##############################################################
@@ -226,7 +354,7 @@ sub check_requirements {
 	}
     }
 
-    mkdir($opt->{out}) || $L->logdie("Unable to create output file: $!");
+    mkdir($opt->{out}) || $L->logdie("Unable to create output folder: $!");
 
     ##############################################################
     #
