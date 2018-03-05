@@ -187,7 +187,9 @@ foreach my $key (keys %input)
 	    # Counter + strand
 	    # Counter - strand
 
-	    for (my $i=$start; $i<=$stop; $i++)
+	    # due to bed stop field is 0-based, but exclusive, we
+	    # need to continue as long as $i is less then stop-field
+	    for (my $i=$start; $i<$stop; $i++)
 	    {
 		$genome[$chromosome][$strand][$i][$condition]++;
 	    }
@@ -248,16 +250,21 @@ foreach my $chromosome_key (sort keys %chromosomes)
 			$stop = $j;
 			push(@counts, $counts_on_inner_position);
 		    } else {
+			# due to bed stop field is 0-based, but exclusive, we
+			# need to increase stop coordinate by 1
+			$stop++;
 			last;
 		    }
 		}
 		if ($stop == -1)
 		{
+		    # due to bed stop field is 0-based, but exclusive, we
+		    # need to use the array size
 		    $stop = int(@{$genome[$chromosome][$strand]});
 		}
 
 		print $fh join("\t", ($chromosome_key, $start, $stop, sprintf("length=%d;counts=%s", @counts+0, generate_cigar_like_string(\@counts, ["total", @conditions_ordered])), ".", $strand_key)), "\n";
-		$i = $stop+1;
+		$i = $stop;
 		$start = -1; $stop = -1;
 	    }
 	}
