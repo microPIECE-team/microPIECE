@@ -1004,7 +1004,7 @@ sub run_CLIP_process
 	    push(@dat, \@fields);
 	}
 
-	@dat = sort { $a->[0] cmp $b->[0] || $a->[1] <=> $b->[2] } (@dat);
+	@dat = sort { $a->[0] cmp $b->[0] || $a->[1] <=> $b->[1] } (@dat);
 
 	open(FH, ">", $sorted_bed) || $L->logdie("Unable to open '$sorted_bed': $!");
 	foreach my $fields (@dat)
