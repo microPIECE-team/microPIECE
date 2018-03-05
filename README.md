@@ -37,13 +37,8 @@ We also provide `microPIECE` as DOCKER image. We tested the image on Ubuntu, Deb
 
 ```
 docker pull micropiece/micropiece
-cd /tmp
-git clone git@github.com:microPIECE-team/microPIECE.git micropiece
-cd micropiece
 git clone git@github.com:microPIECE-team/microPIECE-testset.git testset
-docker run -it --rm -v $PWD:/data micropiece/micropiece
-# und dann im Container:
-./microPIECE.pl   \
+docker run -it --rm -v $PWD:/data micropiece/micropiece microPIECE.pl   \
   --genomeA testset/NC_035109.1_reduced_AAE_genome.fa  \
   --genomeB testset/NC_007416.3_reduced_TCA_genome.fa   \
   --annotationA testset/NC_035109.1_reduced_AAE_genome.gff   \
