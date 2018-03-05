@@ -275,6 +275,10 @@ Please report any new issues ad L<new Github-Issue|https://github.com/microPIECE
 
 =over 4
 
+=item v1.0.2 (2018-03-05)
+
+Fixes the incorrect sorting of BED files, result was correct, but sorting was performed in the wrong order. (Fixes #63)
+
 =item v1.0.1 (2018-03-05)
 
 Fix an error conserning BED file handling of start and stop coordinates. (Fixes #59)
