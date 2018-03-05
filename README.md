@@ -122,7 +122,7 @@ docker run -it --rm -v $PWD:/data micropiece/micropiece
 
 ## Example
 ### Testset
-Feel free to test the pipeline with our testset:
+Feel free to test the pipeline with our [microPIECE-testset](https://github.com/microPIECE-team/microPIECE-testset) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1188471.svg)](https://doi.org/10.5281/zenodo.1188471):
 
 `git clone git@github.com:microPIECE-team/microPIECE-testset.git`
 
