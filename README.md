@@ -113,8 +113,8 @@ docker run -it --rm -v $PWD:/data micropiece/micropiece
 `hairpin_combined_mirbase_novel.fa` := precursor microRNA set, containing novels (if mined), together with the known miRNAs from miRBase
 #### mature miRNA expression per condition
 `miRNA_expression.csv` := Semicolon-separated file : `rpm;condition;miRNA`
-#### miRDeep2 mining result in HTML
-`result_02_03_2018_t_09_30_01.html`:= the standard output HTML file of miRDeep2
+#### miRDeep2 mining result in HTML/CSV
+`mirdeep_output.html/csv`:= the standard output HTML/CSV file of miRDeep2
 #### all library support-level target predictions
 `*_miranda_output.txt` := miranda output, reduced to the lines, starting with `>` only
 #### all library support-level CLIP transfer .bed files
