@@ -35,8 +35,12 @@ Please install the dependencies and run
 ## Docker
 We also provide `microPIECE` as [DOCKER image](https://hub.docker.com/r/micropiece/micropiece/). We tested the image on Ubuntu, Debian and MacOS. For the latter one, the `Piranha` command `make test` fails during the build, but when entering the container, the test succeds. Therefore, we temporarily excluded this statement.
 
+Information about the image: [![](https://images.microbadger.com/badges/version/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master "Get your own version badge on microbadger.com")
+[![](https://images.microbadger.com/badges/image/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master "Get your own image badge on microbadger.com")
+[![](https://images.microbadger.com/badges/commit/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master "Get your own commit badge on microbadger.com")
+
 ```
-docker pull micropiece/micropiece
+docker pull micropiece/micropiece:master
 git clone git@github.com:microPIECE-team/microPIECE-testset.git testset
 docker run -it --rm -v $PWD:/data micropiece/micropiece microPIECE.pl   \
   --genomeA testset/NC_035109.1_reduced_AAE_genome.fa  \
