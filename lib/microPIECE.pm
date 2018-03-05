@@ -314,7 +314,7 @@ sub check_requirements {
 
 	if ($need2check)
 	{
-	    my $full_path = can_run($prog);
+	    my $full_path = IPC::Cmd::can_run($prog);
 	    if ($full_path)
 	    {
 		push(@fulfilled_dependency, { prog => $prog, path => $full_path });
