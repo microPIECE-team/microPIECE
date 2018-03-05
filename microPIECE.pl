@@ -275,6 +275,10 @@ Please report any new issues ad L<new Github-Issue|https://github.com/microPIECE
 
 =over 4
 
+=item v1.0.1 (2018-03-05)
+
+Fix an error conserning BED file handling of start and stop coordinates. (Fixes #59)
+
 =item v1.0.0 (2018-03-05)
 
 =begin html
