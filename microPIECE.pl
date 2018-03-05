@@ -154,36 +154,33 @@ identification and orthology determination.
 
 =head2 Output data
 
-=head3 mature miRNA set
+=over 4
 
-mature_combined_mirbase_novel.fa:= 
+=item mature miRNA set: C<mature_combined_mirbase_novel.fa>
+
 mature microRNA set, containing novels and miRBase-completed (if mined), together with the known miRNAs from miRBase
 
-=head3 precursor miRNA set
+=item precursor miRNA set: C<hairpin_combined_mirbase_novel.fa>
 
-hairpin_combined_mirbase_novel.fa := 
 precursor microRNA set, containing novels (if mined), together with the known miRNAs from miRBase
 
-=head3 mature miRNA expression per condition
+=item mature miRNA expression per condition: C<miRNA_expression.csv>
 
-miRNA_expression.csv := 
 Semicolon-separated file --> rpm;condition;miRNA
 
-=head3 miRDeep2 mining result in HTML
+=item miRDeep2 mining result in HTML/CSV C<mirdeep_output.html/csv>
 
-result_02_03_2018_t_09_30_01.html := 
-the standard output HTML file of miRDeep2
+the standard output HTML/CSV file of miRDeep2
 
-=head3 all library support-level target predictions
+=item all library support-level target predictions: C<*_miranda_output.txt>
 
-*_miranda_output.txt := 
 miranda output, reduced to the lines, starting with > only
 
-=head3 all library support-level CLIP transfer .bed files
+=item all library support-level CLIP transfer .bed files: C<*transfered_merged.bed>
 
-*transfered_merged.bed := 
 bed-file of the transferred CLIP-regions in speciesB transcriptome
 
+=back
 
 =head1 HISTORY
 1.0.0 - March, 2nd 2018 : Initial release - no known bugs.
