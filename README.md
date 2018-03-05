@@ -141,7 +141,7 @@ Feel free to test the pipeline with our [microPIECE-testset](https://github.com/
 
     
 ## Changelog
-Version 1.0.0 is archived as *DOI* and submitted to [The Journal of Open Source Software](http://joss.theoj.org/).
+Version 0.9.0 first version archived at Zenodo with the [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1188481.svg)](https://doi.org/10.5281/zenodo.1188481)
 ## License
 This program is released under GPLv2. For further license information, see LICENSE.md shipped with this program.
 Copyright(c)2018 Daniel Amsel and Frank Förster (employees of Fraunhofer Institute for Molecular Biology and Applied Ecology IME) All rights reserved.
