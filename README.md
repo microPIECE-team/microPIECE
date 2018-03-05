@@ -185,6 +185,8 @@ Complete list of open issues is available on [Github-Issues](https://github.com/
 Please report any new issues ad [new Github-Issue](https://github.com/microPIECE-team/microPIECE/issues/new).
 
 ## Changelog
+Version v1.0.2 (2018-03-05) Fixes the incorrect sorting of BED files, result was correct, but sorting was performed in the wrong order. (Fixes #63)
+
 Version v1.0.1 (2018-03-05) Fix an error conserning BED file handling of start and stop coordinates. (Fixes #59)
 
 Version 1.0.0 (2018-03-05) is archived as [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1188484.svg)](https://doi.org/10.5281/zenodo.1188484) and submitted to [The Journal of Open Source Software](http://joss.theoj.org/).
