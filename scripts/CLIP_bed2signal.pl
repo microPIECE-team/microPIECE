@@ -41,6 +41,7 @@ while(<BED>){
 	{
 	    if ($data_from_bed_info{counts}[$i][0] >= $signal_strength)
 	    {
+
 		my $start = $i;
 		my $stop  = $i;
 		for(my $j=$i+1; $j<@{$data_from_bed_info{counts}}; $j++)
@@ -55,7 +56,9 @@ while(<BED>){
 
 		$i = $stop; # ensure we are starting after the region
 
-		push(@subregions, { start => $start, stop => $stop } );
+		# due to bed stop field is 0-based, but exclusive, we
+		# need to increase the stop coordinate by 1
+		push(@subregions, { start => $start, stop => $stop+1 } );
 	    }
 	}
 
@@ -97,7 +100,11 @@ sub get_new_info_string
     }
 
     # get the counts for the subregion
-    my @new_counts = map { $ref_data->{counts}[$_] } ($ref_subregion->{start}..$ref_subregion->{stop});
+    my @new_counts = ();
+    for (my $i=$ref_subregion->{start}; $i<$ref_subregion->{stop}; $i++)
+    {
+	push(@new_counts, $ref_data->{counts}[$i]);
+    }
     push(@output, "counts=".join(",", map { join("/", @{$_}) } (@new_counts)));
 
     # get the new length
