@@ -185,6 +185,8 @@ Complete list of open issues is available on [Github-Issues](https://github.com/
 Please report any new issues ad [new Github-Issue](https://github.com/microPIECE-team/microPIECE/issues/new).
 
 ## Changelog
+Version v1.0.3 (2018-03-06) Add tests for perl scripts in script folder which ensure the correct handling of BED stop coordinates (Fixes #65)
+
 Version v1.0.2 (2018-03-05) Fixes the incorrect sorting of BED files, result was correct, but sorting was performed in the wrong order. (Fixes #63)
 
 Version v1.0.1 (2018-03-05) Fix an error conserning BED file handling of start and stop coordinates. (Fixes #59)
