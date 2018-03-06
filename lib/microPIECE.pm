@@ -710,19 +710,20 @@ sub run_mining_mirbase_files
     my ($opt) = @_;
 
     my $L = Log::Log4perl::get_logger();
-    # -species	 	:= 3letter code of desired species(b)
-    # -precursor_file 	:= hairpin.fasta from miRBase.org
-    # -mature 		:= mature.fasta from miRBase.org
-    # -organism 	:= organism.txt from miRBase.org
-    # -out 		:= output folder
-    # This script separates the miRBase files into groups of multifasta files that either belong to the speciesB or not.
-    # In every case, it filters the microRNAs so that only metazoan are included.
-    my @cmd = ($opt->{scriptdir}."011_mirbase_files.pl",
-	       "-species", $opt->{speciesB_tag},
-	       "-precursor_file", $opt->{mining}{download}{hairpin},
-	       "-mature", $opt->{mining}{download}{mature},
-	       "-organism", $opt->{mining}{download}{organisms},
-	       "-out", "./");
+    my $cwd = getcwd()."/";
+    $opt->{mining}{splitted}{mature}           = $cwd."mature_mirbase_splitted.fa";
+    $opt->{mining}{splitted}{precursor}        = $cwd."precursor_mirbase_splitted.fa";
+    $opt->{mining}{splitted}{nonspeciesmature} = $cwd."mature_mirbase_splitted-not-speciesB.fa";
+
+    my @cmd = ($opt->{scriptdir}."MINING_split_mirbase_files.pl",
+	       "--species",             $opt->{speciesB_tag},
+	       "--precursor_file",      $opt->{mining}{download}{hairpin},
+	       "--mature",              $opt->{mining}{download}{mature},
+	       "--organism",            $opt->{mining}{download}{organisms},
+	       "--outmature",           $opt->{mining}{splitted}{mature},
+	       "--outprecursor",        $opt->{mining}{splitted}{precursor},
+	       "--outnonspeciesmature", $opt->{mining}{splitted}{nonspeciesmature},
+	);
     run_cmd($L, \@cmd);
 }
 
