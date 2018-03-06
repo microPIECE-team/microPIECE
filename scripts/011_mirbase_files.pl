@@ -7,46 +7,47 @@ my $precursor_file;
 my $mature_file;
 my $species;		# tca
 my $organism_file;	# organisms.txt from mirbase
-my $out;
+my $out_species_mature;
+my $out_species_precursor;
+my $out_nonspecies_mature;
 
 GetOptions(
 	"organisms=s"		=> \$organism_file,
 	"species=s"		=> \$species,
         "precursor_file=s"      => \$precursor_file,
         "mature_file=s" 	=> \$mature_file,
-	"out=s"			=> \$out) || die;
+	"outmature=s"		=> \$out_species_mature,
+	"outprecursor=s"	=> \$out_species_precursor,
+	"outnonspeciesmature=s"	=> \$out_nonspecies_mature,
+) || die;
+
+die "Need to specify precursor_file via --precursor_file *filename* option\n" unless (defined $precursor_file && -e $precursor_file);
+die "Need to specify mature_file via --mature_file *filename* option\n" unless (defined $mature_file && -e $mature_file);
+die "Need to specify organism_file via --organism *filename* option\n" unless (defined $organism_file && -e $organism_file);
+die "Need to specify the species via --species *speciestag* option\n" unless (defined $species);
+die "Need to specify a non existing mature output file via --outmature *filename* option\n" if ((! defined $out_species_mature) || (-e $out_species_mature));
+die "Need to specify a non existing precursor output file via --outprecursor *filename* option\n" if ((! defined $out_species_precursor) || (-e $out_species_precursor));
+die "Need to specify a non existing non-target-species-mature output file via --outnonspeciesmature *filename* option\n" if ((! defined $out_nonspecies_mature) || (-e $out_nonspecies_mature));
 
 
+my $kingdom	                        = &parse_organism($organism_file);
+my ($precursor, undef) 			= &parse_fasta($precursor_file, $species, $kingdom);
+my ($mature, $other_animal_mature)	= &parse_fasta($mature_file, $species, $kingdom);
 
+my %assignment = (
+    $out_species_mature    => $mature,
+    $out_species_precursor => $precursor,
+    $out_nonspecies_mature => $other_animal_mature,
+    );
 
-my %kingdom	= %{&parse_organism($organism_file)};
-
-
-my ($tca_precursor_ref, undef) 			= &parse_fasta($precursor_file,$species,\%kingdom);
-my ($tca_mature_ref,$other_animal_mature)	= &parse_fasta($mature_file,$species,\%kingdom);
-
-my %tca_precursor				= %{$tca_precursor_ref};
-my %tca_mature					= %{$tca_mature_ref};
-
-my %other_animal_mature				= %{$other_animal_mature};
-
-open(TMP,">","$out"."mature_mirbase.fa") || die;
-foreach(keys %tca_mature){
-	print TMP "$_\n$tca_mature{$_}\n";
+foreach my $outfile (keys %assignment)
+{
+    open(FH, ">", $outfile) || die "Unable to open file '$outfile': $!\n";
+    foreach my $header (keys %{$assignment{$outfile}}){
+	print FH "$header", "\n", $assignment{$outfile}{$header}, "\n";
+    }
+    close(FH) || die "Unable to close file '$outfile': $!\n";
 }
-close(TMP) || die;
-
-open(TMP,">","$out"."precursor_mirbase.fa") || die;
-foreach(keys %tca_precursor){
-	print TMP "$_\n$tca_precursor{$_}\n";
-}
-close(TMP) || die;
-
-open(TMP,">","$out"."mature.fa-no-speciesB.fa") || die;
-foreach(keys %other_animal_mature){
-	print TMP "$_\n$other_animal_mature{$_}\n";
-}
-close(TMP) || die;
 
 sub parse_organism{
 	my $po_file	= $_[0];
@@ -91,8 +92,8 @@ sub parse_fasta{
 		else{
 			next if($pf_header eq "");	
 			my $pf_seq	= $pf_line;
-			$pf_seq		=~ tr/U/T/;
-			if($pf_header 	=~ /^>$species/){
+			$pf_seq		=~ tr/Uu/Tt/;
+			if($pf_header 	=~ /^>$species/i){
 				$pf_soi{$pf_header}.=$pf_seq;
 			}
 			else{
