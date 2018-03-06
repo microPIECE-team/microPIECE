@@ -15,7 +15,7 @@ before_install:
     - build-perl
     - perl -V
 install:
-    - cpanm Devel::Cover Devel::Cover::Report::Coveralls Test::Script::Run
+    - cpanm Devel::Cover Devel::Cover::Report::Coveralls Test::Script::Run Log::Log4perl
 script:
     - PERL5OPT="-MDevel::Cover=-coverage,statement,branch,condition,path,subroutine,time" prove -It t/*.t
     - docker run -it --rm -v $PWD:/opt/microPIECE -v /tmp/microPIECE-testset:/tmp/microPIECE-testset micropiece/micropiece /opt/microPIECE/t/run_clip.sh
