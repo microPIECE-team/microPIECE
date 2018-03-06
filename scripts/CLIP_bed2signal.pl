@@ -58,7 +58,7 @@ while(<BED>){
 
 		# due to bed stop field is 0-based, but exclusive, we
 		# need to increase the stop coordinate by 1
-		push(@subregions, { start => $start, stop => $stop+1 } );
+		push(@subregions, { start => $start, stop => $stop } );
 	    }
 	}
 
@@ -101,7 +101,7 @@ sub get_new_info_string
 
     # get the counts for the subregion
     my @new_counts = ();
-    for (my $i=$ref_subregion->{start}; $i<$ref_subregion->{stop}; $i++)
+    for (my $i=$ref_subregion->{start}; $i<=$ref_subregion->{stop}; $i++)
     {
 	push(@new_counts, $ref_data->{counts}[$i]);
     }
