@@ -45,7 +45,7 @@ my ($fh2, $filename2) = File::Temp::tempfile();
 print $fh2 $second_file;
 close($fh2) || die;
 
-my ($return,$stdout,$stderr)=run_script('../scripts/046_merge_bed_files.pl',["--input", "bed1=$filename1,$filename2"]);
+my ($return,$stdout,$stderr)=run_script('../scripts/CLIP_merge_bed_files.pl',["--input", "bed1=$filename1,$filename2"]);
 is(Test::Script::Run::last_script_exit_code(), 0, 'With multiple files for a single condition it should exit with exit code 0');
 
 my $got	= &bed::parser($stdout);

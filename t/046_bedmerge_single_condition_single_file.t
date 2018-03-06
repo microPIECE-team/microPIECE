@@ -32,11 +32,11 @@ my ($fh, $filename) = File::Temp::tempfile();
 print $fh $first_file;
 close($fh) || die;
 
-my($return,$stdout,$stderr)=run_script('../scripts/046_merge_bed_files.pl');
+my($return,$stdout,$stderr)=run_script('../scripts/CLIP_merge_bed_files.pl');
 is(Test::Script::Run::last_script_exit_code(), 2, 'Without arguments is should exit with exit code 2');
 like($stderr,qr/Example defining to classes with two files each and output to merged.bed/,'Without arguments is should print a help text');
 
-($return,$stdout,$stderr)=run_script('../scripts/046_merge_bed_files.pl',["--input", "bed1=$filename"]);
+($return,$stdout,$stderr)=run_script('../scripts/CLIP_merge_bed_files.pl',["--input", "bed1=$filename"]);
 is(Test::Script::Run::last_script_exit_code(), 0, 'With single file/condition is should exit with exit code 0');
 
 my $got	= &bed::parser($stdout);
