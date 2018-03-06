@@ -509,7 +509,12 @@ sub run_mining_quantification
 
     # run the quantification analysis
     $opt->{mining_quantification_result} = getcwd()."/"."miRNA_expression.csv";
-    @cmd = ($opt->{scriptdir}."061_sam2de.pl", "--cfg", $config_file, "--mature_file", $opt->{final_mature}, "--out", $opt->{mining_quantification_result});
+    @cmd = (
+	$opt->{scriptdir}."MINING_sam2de.pl",
+           "--cfg", $config_file,
+	   "--mature_file", $opt->{final_mature},
+	   "--out", $opt->{mining_quantification_result}
+	);
     run_cmd($L, \@cmd);
 }
 
