@@ -23,10 +23,10 @@ my ($fh, $filename) = File::Temp::tempfile();
 print $fh @{$input->{in}};
 close($fh) || die;
 
-my ($return,$stdout,$stderr)=run_script('../scripts/071_bedtool_discard_sizes.pl');
+my ($return,$stdout,$stderr)=run_script('../scripts/CLIP_bedtool_discard_sizes.pl');
 is(Test::Script::Run::last_script_exit_code(), 2, 'Without arguments is should exit with exit code 2');
 
-($return,$stdout,$stderr)=run_script('../scripts/071_bedtool_discard_sizes.pl' ,[$filename, $min_val, $max_val]);
+($return,$stdout,$stderr)=run_script('../scripts/CLIP_bedtool_discard_sizes.pl' ,[$filename, $min_val, $max_val]);
 is(Test::Script::Run::last_script_exit_code(), 0, 'With single file/condition is should exit with exit code 0');
 
 my $got	= [ sort split("\n", $stdout) ];
