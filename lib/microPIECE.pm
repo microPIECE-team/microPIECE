@@ -528,7 +528,7 @@ sub run_mining_mirdeep2fasta
     # combine novel and known mature sequences and ensure DNA nucleotides
     $opt->{final_mature} = getcwd()."/"."mature_combined_mirbase_novel.fa";
     open(OUT, ">", $opt->{final_mature}) || $L->logdie("Unable to open file '$opt->{final_mature}' for writing: $!");
-    foreach my $file ($opt->{novel_mature}, $opt->{mining}{splitted}{mature})
+    foreach my $file ($opt->{novel_mature}, $opt->{mining}{completion}{completed})
     {
 	open(FH, "<", $file) || $L->logdie("Unable to open file '$file': $!");
 	while(<FH>)
