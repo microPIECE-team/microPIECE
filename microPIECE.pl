@@ -275,6 +275,10 @@ Please report any new issues ad L<new Github-Issue|https://github.com/microPIECE
 
 =over 4
 
+=item v1.0.3 (2018-03-06)
+
+Add tests for perl scripts in script folder which ensure the correct handling of BED stop coordinates (Fixes #65)
+
 =item v1.0.2 (2018-03-05)
 
 Fixes the incorrect sorting of BED files, result was correct, but sorting was performed in the wrong order. (Fixes #63)
