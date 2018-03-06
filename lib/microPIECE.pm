@@ -522,7 +522,14 @@ sub run_mining_mirdeep2fasta
     $opt->{novel_mature} = getcwd()."/"."novel_mature.fa";
     $opt->{novel_hairpin} = getcwd()."/"."novel_hairpin.fa";
 
-    my @cmd = ($opt->{scriptdir}."041_curated_mirdeep2fasta.pl", "--csv", $opt->{mirdeep_output}, "--cutoff", 10, "--matureout", $opt->{novel_mature}, "--hairpinout", $opt->{novel_hairpin}, "--species", $opt->{speciesB_tag});
+    my @cmd = (
+	$opt->{scriptdir}."MINING_curate_mirdeep2fasta.pl",
+	       "--csv", $opt->{mirdeep_output},
+	       "--cutoff", 10,
+	       "--matureout", $opt->{novel_mature},
+	       "--hairpinout", $opt->{novel_hairpin},
+	       "--species", $opt->{speciesB_tag}
+	);
     run_cmd($L, \@cmd);
 
     # combine novel and known mature sequences and ensure DNA nucleotides
