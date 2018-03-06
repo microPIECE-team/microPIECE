@@ -568,13 +568,10 @@ sub run_mining_complete
 
     my $L = Log::Log4perl::get_logger();
 
-    my @cmd = ($opt->{scriptdir}."021_parse_miRDeep2_output.pl", "-mirdeep_out", $opt->{mirdeep_output}, "-mature_fasta", $opt->{mining}{splitted}{mature});
-    my $output = run_cmd($L, \@cmd);
+    $opt->{mining}{completion}{completed} = getcwd()."/mature_mirbase_completed.fa";
 
-    my $mirbase_completed = getcwd()."/"."mature_mirbase_completed.fa";
-    open(FH, ">", $mirbase_completed) || $L->logdie("Unable to open file '$mirbase_completed': $!");
-    print FH $output;
-    close(FH) || $L->logdie("Unable to close file '$mirbase_completed': $!");
+    my @cmd = ($opt->{scriptdir}."MINING_complete_mirbase_by_miRDeep2_output.pl", "-mirdeep_out", $opt->{mirdeep_output}, "-mature_fasta", $opt->{mining}{splitted}{mature});
+    my $output = run_cmd($L, \@cmd, undef, $opt->{mining}{completion}{completed});
 }
 
 sub run_mining_rna2dna
@@ -1302,7 +1299,7 @@ sub transfer_resultfiles
 	    copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
 	}
     }
-    
+
     # all library support-level CLIP transfer .bed files
     # *transfered_merged.bed :=
     # bed-file of the transferred CLIP-regions in speciesB transcriptome
