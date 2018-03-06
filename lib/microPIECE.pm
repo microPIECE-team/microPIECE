@@ -528,7 +528,7 @@ sub run_mining_mirdeep2fasta
     # combine novel and known mature sequences and ensure DNA nucleotides
     $opt->{final_mature} = getcwd()."/"."mature_combined_mirbase_novel.fa";
     open(OUT, ">", $opt->{final_mature}) || $L->logdie("Unable to open file '$opt->{final_mature}' for writing: $!");
-    foreach my $file ($opt->{novel_mature}, "mature_mirbase.fa")
+    foreach my $file ($opt->{novel_mature}, $opt->{mining}{splitted}{mature})
     {
 	open(FH, "<", $file) || $L->logdie("Unable to open file '$file': $!");
 	while(<FH>)
@@ -546,7 +546,7 @@ sub run_mining_mirdeep2fasta
     # combine novel and known hairpin sequences and ensure DNA nucleotides
     $opt->{final_hairpin} = getcwd()."/"."hairpin_combined_mirbase_novel.fa";
     open(OUT, ">", $opt->{final_hairpin}) || $L->logdie("Unable to open file '$opt->{final_hairpin}' for writing: $!");
-    foreach my $file ($opt->{novel_hairpin}, "precursor_mirbase.fa")
+    foreach my $file ($opt->{novel_hairpin}, $opt->{mining}{splitted}{precursor})
     {
 	open(FH, "<", $file) || $L->logdie("Unable to open file '$file': $!");
 	while(<FH>)
@@ -568,7 +568,7 @@ sub run_mining_complete
 
     my $L = Log::Log4perl::get_logger();
 
-    my @cmd = ($opt->{scriptdir}."021_parse_miRDeep2_output.pl", "-mirdeep_out", $opt->{mirdeep_output}, "-mature_fasta", "mature_mirbase.fa");
+    my @cmd = ($opt->{scriptdir}."021_parse_miRDeep2_output.pl", "-mirdeep_out", $opt->{mirdeep_output}, "-mature_fasta", $opt->{mining}{splitted}{mature});
     my $output = run_cmd($L, \@cmd);
 
     my $mirbase_completed = getcwd()."/"."mature_mirbase_completed.fa";
@@ -613,14 +613,18 @@ sub run_mining_mirdeep2
     $genome_without_whitespace = "";
 
     # convert files from mirbase_files subroutine
-    foreach my $file (qw(mature_mirbase.fa precursor_mirbase.fa mature.fa-no-speciesB.fa))
+    foreach my $file (qw(mature nonspeciesmature precursor))
     {
-	@cmd=("remove_white_space_in_id.pl", $file);
+	$L->logdie("Missing entry for \$opt->{mining}{splitted}{$file}\n") unless (exists $opt->{mining}{splitted}{$file});
+
+	my @cmd=("remove_white_space_in_id.pl", $opt->{mining}{splitted}{$file});
 	my $output = run_cmd($L, \@cmd);
+
 	# convert to DNA
 	run_mining_rna2dna(\$output);
+
 	# write it into a file
-	my $new_filename = basename($file, ".fa")."_wo_whitespace.fa";
+	my $new_filename = basename($opt->{mining}{splitted}{$file}, ".fa")."_wo_whitespace.fa";
 	open(FH, ">", $new_filename) || $L->logdie("Unable to open file '$new_filename' for writing: $!");
 	print FH $output;
 	close(FH) || $L->logdie("Unable to close file '$new_filename' after writing: $!");
@@ -649,6 +653,7 @@ sub run_mining_mirdeep2
 	    # convert to fasta
 	    my @cmd = ("fastq2fasta.pl", $file);
 	    my $output = run_cmd($L, \@cmd);
+
 	    # write to tempfasta
 	    open(FH, ">>", $tempfasta) || $L->logdie("Unable to open file '$tempfasta' for writing: $!");
 	    print FH $output;
@@ -681,7 +686,7 @@ sub run_mining_mirdeep2
     run_cmd($L, \@cmd);
 
     # run mirdeep
-    @cmd = ("miRDeep2.pl", $tempfasta_wo_whitespace_collapsed, $genome_wo_whitespace, $temparf, $files_from_mirbase{'mature_mirbase.fa'}, $files_from_mirbase{'mature.fa-no-speciesB.fa'}, $files_from_mirbase{'precursor_mirbase.fa'}, "-P");
+    @cmd = ("miRDeep2.pl", $tempfasta_wo_whitespace_collapsed, $genome_wo_whitespace, $temparf, $files_from_mirbase{'mature'}, $files_from_mirbase{'nonspeciesmature'}, $files_from_mirbase{'precursor'}, "-P");
     run_cmd($L, \@cmd);
 
     # save output
