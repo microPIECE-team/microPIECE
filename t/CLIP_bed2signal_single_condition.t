@@ -24,10 +24,10 @@ my ($fh, $filename) = File::Temp::tempfile();
 print $fh $first_file;
 close($fh) || die;
 
-my ($return,$stdout,$stderr)=run_script('../scripts/049_bed2signal.pl');
+my ($return,$stdout,$stderr)=run_script('../scripts/CLIP_bed2signal.pl');
 is(Test::Script::Run::last_script_exit_code(), 2, 'Without arguments is should exit with exit code 2');
 
-($return,$stdout,$stderr)=run_script('../scripts/049_bed2signal.pl' ,[$filename, 2]);
+($return,$stdout,$stderr)=run_script('../scripts/CLIP_bed2signal.pl' ,[$filename, 2]);
 is(Test::Script::Run::last_script_exit_code(), 0, 'With single file/condition is should exit with exit code 0');
 
 my $got	= &bed::parser($stdout);
