@@ -121,7 +121,7 @@ microPIECE - microRNA pipeline enhanced by CLIP experiments
    --annotationA <speciesA_genome.gff> \
    --annotationB <speciesB_genome.gff> \
    --clip <ago_clip_seq.fastq> \
-   --mirnas <mature_miRNAs.fa>
+   --mirna <mature_miRNAs.fa>
 
 =head1 DESCRIPTION
 
@@ -224,7 +224,7 @@ piranha). This option should not be used in real analysis!
 
 output folder
 
-=item C<--mirnas>
+=item C<--mirna>
 
 miRNA set, if set, mining is disabled and this set is used for prediction
 
