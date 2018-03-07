@@ -756,8 +756,13 @@ sub run_mining_downloads
     foreach my $key(sort keys %filelist)
     {
 	my $file = $filelist{$key};
-	my @cmd=("wget", "--quiet", "ftp://mirbase.org/pub/mirbase/CURRENT/".$file);
-	run_cmd($L, \@cmd);
+	unless (exists $opt->{mirbasedir} && defined $opt->{mirbasedir} && -e $opt->{mirbasedir}."/".$file)
+	{
+	    my @cmd=("wget", "--quiet", "ftp://mirbase.org/pub/mirbase/CURRENT/".$file);
+	    run_cmd($L, \@cmd);
+	} else {
+	    $file = $opt->{mirbasedir}."/".$file;
+	}
 	# decompress the file
 	my $output = basename($file, ".gz");
 	my $status = gunzip $file => $output || $L->logdie("gunzip failed: $GunzipError");

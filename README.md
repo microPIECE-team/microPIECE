@@ -138,6 +138,12 @@ docker run -it --rm -v $PWD:/data micropiece/micropiece microPIECE.pl   \
     Three letter code of species where we want to predict the miRNA
     targets (species B, `--speciesBtag`).
 
+- `--mirbasedir`
+
+    The folder specified by `--mirbasedir` is searched for the files
+    `organisms.txt.gz`, `mature.fa.gz`, and `hairpin.fa.gz`. If the
+    files are not exist, they will be downloaded.
+
 
 ### OUTPUT
 - mature miRNA set: `mature_combined_mirbase_novel.fa`

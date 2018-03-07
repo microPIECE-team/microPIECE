@@ -13,4 +13,5 @@ perl -MDevel::Cover=-coverage,statement,branch,condition,path,subroutine,time /o
    --adaptersmallrnaseq5 GTTCAGAGTTCTACAGTCCGACGATC \
    --filterncrnas /tmp/microPIECE-testset/TCA_all_ncRNA_but_miR.fa \
    --speciesB tca \
+   --mirbasedir /tmp/microPIECE-testset \
    --out complete

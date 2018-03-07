@@ -47,6 +47,7 @@ my $opt = {
     testrun            => undef,
     mirna              => undef,
     speciesB_tag       => undef,
+    mirbasedir         => undef,
 };
 
 GetOptions(
@@ -68,7 +69,8 @@ GetOptions(
     'testrun'              => \$opt->{testrun},
     'out=s'                => \$opt->{out},
     'mirna=s'              => \$opt->{mirna},
-    'speciesBtag=s'           => \$opt->{speciesB_tag},
+    'speciesBtag=s'        => \$opt->{speciesB_tag},
+    'mirbasedir=s'         => \$opt->{mirbasedir},
     ) || pod2usage(1);
 
 # split clip files if required
@@ -232,6 +234,12 @@ miRNA set, if set, mining is disabled and this set is used for prediction
 
 Three letter code of species where we want to predict the miRNA
 targets (species B, C<--speciesBtag>).
+
+=item C<--mirbasedir>
+
+The folder specified by C<--mirbasedir> is searched for the files
+F<organisms.txt.gz>, F<mature.fa.gz>, and F<hairpin.fa.gz>. If the
+files are not exist, they will be downloaded.
 
 =back
 
