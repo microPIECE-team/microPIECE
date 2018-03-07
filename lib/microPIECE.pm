@@ -418,10 +418,31 @@ sub run_mining {
 
     run_mining_genomicposition($opt);
 
+    run_mining_orthologs($opt);
+
     $opt->{mirna} = $opt->{final_mature};
     $L->info("Finished mining step");
 
     chdir($currentdir);
+}
+
+sub run_mining_orthologs
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    $opt->{mining}{orthologs} = getcwd()."/miRNA_orthologs.csv";
+
+    my @cmd = (
+	$opt->{scriptdir}."/MINING_ortholog_blast.pl",
+	"--query", $opt->{final_mature},
+	"--subject", $opt->{mining}{splitted}{nonspeciesmature},
+	"--out", $opt->{mining}{orthologs},
+	"--threads", $opt->{threads}
+	);
+    run_cmd($L, \@cmd);
+
 }
 
 sub run_mining_genomicposition
@@ -1282,6 +1303,22 @@ sub transfer_resultfiles
     # miRNA_expression.csv :=
     # Semicolon-separated file : rpm;condition;miRNA
     $source = $opt->{mining_quantification_result};
+    if ($source && -e $source)
+    {
+	my $dest = basename($source);
+	copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
+    }
+
+    # orthologous prediction file
+    # miRNA_orthologs.csv :=
+    # tab-separated file : query_id subject_id identity aln_length
+    #                      num_mismatches num_gapopen query_start
+    #                      query_end subject_start subject_end evalue
+    #                      bitscore query_aligned_seq
+    #                      subject_aligned_seq query_length
+    #                      subject_length query_coverage
+    #                      subject_coverage
+    $source = $opt->{mining}{orthologs};
     if ($source && -e $source)
     {
 	my $dest = basename($source);
