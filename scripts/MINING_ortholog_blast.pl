@@ -100,10 +100,10 @@ while (<BLAST>)
     # we need the aligned sequence length for query/subject without
     # gaps
     my $qseq_wo_gaps = $fields{qseq};
-    $qseq_wo_gaps =~ tr/-//;
+    $qseq_wo_gaps =~ tr/-//d;
 
     my $sseq_wo_gaps = $fields{sseq};
-    $sseq_wo_gaps =~ tr/-//;
+    $sseq_wo_gaps =~ tr/-//d;
 
     my $qcoverage = sprintf("%.1f", (length($qseq_wo_gaps)/$fields{qlen}*100));
     my $scoverage = sprintf("%.1f", (length($sseq_wo_gaps)/$fields{slen}*100));
