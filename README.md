@@ -185,6 +185,8 @@ Complete list of open issues is available on [Github-Issues](https://github.com/
 Please report any new issues ad [new Github-Issue](https://github.com/microPIECE-team/microPIECE/issues/new).
 
 ## Changelog
+Version v1.0.5 (2018-03-06) Update of documentation and correct spelling of `--mirna` parameter
+
 Version v1.0.4 (2018-03-06) Fixes complete mature in final output (Fixes #69)
 
 Version v1.0.3 (2018-03-06) Add tests for perl scripts in script folder which ensure the correct handling of BED stop coordinates (Fixes #65)
