@@ -432,7 +432,7 @@ sub run_mining_orthologs
 
     my $L = Log::Log4perl::get_logger();
 
-    $opt->{mining}{orthologs} = "miRNA_orthologs.csv";
+    $opt->{mining}{orthologs} = getcwd()."/miRNA_orthologs.csv";
 
     my @cmd = (
 	$opt->{scriptdir}."/MINING_ortholog_blast.pl",
