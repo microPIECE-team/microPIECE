@@ -48,6 +48,7 @@ my $opt = {
     mirna              => undef,
     speciesB_tag       => undef,
     mirbasedir         => undef,
+    tempdir            => undef,
 };
 
 GetOptions(
@@ -71,6 +72,7 @@ GetOptions(
     'mirna=s'              => \$opt->{mirna},
     'speciesBtag=s'        => \$opt->{speciesB_tag},
     'mirbasedir=s'         => \$opt->{mirbasedir},
+    'tempdir=s'            => \$opt->{tempdir},
     ) || pod2usage(1);
 
 # split clip files if required
@@ -79,6 +81,12 @@ $opt->{clip} = [ split(",", join(",", @{$opt->{clip}})) ];
 foreach my $cond (keys %{$opt->{smallrnaseq}})
 {
     $opt->{smallrnaseq}{$cond} = [ split(",", join(",", @{$opt->{smallrnaseq}{$cond}})) ];
+}
+
+# if no tempdir was set, we will use $opt->{out}/tmp
+unless (exists $opt->{tempdir} && defined $opt->{tempdir})
+{
+    $opt->{tempdir} = $opt->{out}."/tmp/";
 }
 
 # help
@@ -240,6 +248,12 @@ targets (species B, C<--speciesBtag>).
 The folder specified by C<--mirbasedir> is searched for the files
 F<organisms.txt.gz>, F<mature.fa.gz>, and F<hairpin.fa.gz>. If the
 files are not exist, they will be downloaded.
+
+=item C<--tempdir>
+
+The folder specified by C<--tempdir> is used for temporary files. The
+default value is F<tmp/> inside the output folder specified by the
+C<--out> parameter.
 
 =back
 
