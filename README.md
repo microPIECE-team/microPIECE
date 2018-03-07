@@ -155,6 +155,10 @@ docker run -it --rm -v $PWD:/data micropiece/micropiece microPIECE.pl   \
 - mature miRNA expression per condition: `miRNA_expression.csv`
 
     Semicolon-separated file --> rpm;condition;miRNA
+
+- orthologous prediction file: `miRNA_orthologs.csv`
+
+   tab-separated file --> query_id subject_id identity aln_length num_mismatches num_gapopen query_start query_end subject_start subject_end evalue bitscore query_aligned_seq subject_aligned_seq query_length subject_length query_coverage subject_coverage
 - miRDeep2 mining result in HTML/CSV `mirdeep_output.html/csv`
 
     the standard output HTML/CSV file of miRDeep2
