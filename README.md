@@ -52,7 +52,7 @@ docker run -it --rm -v $PWD:/data micropiece/micropiece microPIECE.pl   \
   --overwrite \
   --smallrnaseq a=testset/tca_smallRNAseq_rna_contaminated.fastq \
   --adaptersmallrnaseq3=TGGAATTCTCGGGTGCCAAGG \
-  --adaptersmallrnaseq5 GTTCAGAGTTCTACAGTCCGACGATC \
+  --adaptersmallrnaseq5=GTTCAGAGTTCTACAGTCCGACGATC \
   --filterncrnas testset/TCA_all_ncRNA_but_miR.fa \
   --speciesB tca 2>&1 | tee out.log
 ```
