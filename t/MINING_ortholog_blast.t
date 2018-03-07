@@ -134,8 +134,19 @@ sub parser
 	$lines[$i] = [split(/\s+/, $lines[$i])];
     }
 
-    # sort the array at fields 0&1 (cmp), 6,7 (<=>)
-    @lines = sort { $a->[0] cmp $b->[0] || $a->[1] cmp $b->[1] || $a->[6] <=> $b->[6] || $a->[7] <=> $b->[7] } (@lines);
+    # sort the array at fields 0&1 (cmp), 6,7,8,9 (<=>)
+    @lines = sort { $a->[0] cmp $b->[0]
+			||
+			$a->[1] cmp $b->[1]
+			||
+			$a->[6] <=> $b->[6]
+			||
+			$a->[7] <=> $b->[7]
+			||
+			$a->[8] <=> $b->[8]
+			||
+			$a->[9] <=> $b->[9]
+    } (@lines);
 
     return \@lines;
 }
