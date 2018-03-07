@@ -85,8 +85,26 @@ my ($fh2, $filename2) = File::Temp::tempfile();
 print $fh2 $second_file;
 close($fh2) || die;
 
+my (undef, $filename3) = File::Temp::tempfile(OPEN => 0);
+
 my ($return,$stdout,$stderr)=run_script('../scripts/MINING_ortholog_blast.pl');
 isnt(Test::Script::Run::last_script_exit_code(), 0, 'Without arguments is should exit with exit code not equals to 1');
+
+($return,$stdout,$stderr)=run_script('../scripts/MINING_ortholog_blast.pl', ["--query", $filename1] );
+isnt(Test::Script::Run::last_script_exit_code(), 0, 'With file for query is should exit with exit code not equals to 1');
+like($stderr, qr/Need to specify a subject FASTA file via --subject parameter/, "Test for missing subject file");
+
+($return,$stdout,$stderr)=run_script('../scripts/MINING_ortholog_blast.pl', ["--query", $filename1."not_there"] );
+isnt(Test::Script::Run::last_script_exit_code(), 0, 'With non existing file for query is should exit with exit code not equals to 1');
+like($stderr, qr/Need to specify a query FASTA file via --query parameter/, "Test with non-existing query file");
+
+($return,$stdout,$stderr)=run_script('../scripts/MINING_ortholog_blast.pl', ["--subject", $filename2] );
+isnt(Test::Script::Run::last_script_exit_code(), 0, 'With file for subject is should exit with exit code not equals to 1');
+like($stderr, qr/Need to specify a query FASTA file via --query parameter/, "Test for missing query file");
+
+($return,$stdout,$stderr)=run_script('../scripts/MINING_ortholog_blast.pl', ["--query", $filename1, "--subject", $filename2."not_there"] );
+isnt(Test::Script::Run::last_script_exit_code(), 0, 'With non existing subject for query is should exit with exit code not equals to 1');
+like($stderr, qr/Need to specify a subject FASTA file via --subject parameter/, "Test with non-existing missing subject file");
 
 ($return,$stdout,$stderr)=run_script('../scripts/MINING_ortholog_blast.pl',["--query", $filename1, "--subject", $filename2]);
 is(Test::Script::Run::last_script_exit_code(), 0, 'With files for query and subject it should exit with exit code 0');
@@ -94,6 +112,15 @@ is(Test::Script::Run::last_script_exit_code(), 0, 'With files for query and subj
 my $got	= parser($stdout);
 my $expected = parser($expected_output);
 is_deeply($got,$expected,'output as expected');
+
+($return,$stdout,$stderr)=run_script('../scripts/MINING_ortholog_blast.pl',["--query", $filename1, "--subject", $filename2, "--out", $filename3]);
+is(Test::Script::Run::last_script_exit_code(), 0, 'With files for query, subject, and out it should exit with exit code 0');
+
+($return,$stdout,$stderr)=run_script('../scripts/MINING_ortholog_blast.pl',["--query", $filename1, "--subject", $filename2, "--out", $filename3]);
+isnt(Test::Script::Run::last_script_exit_code(), 0, 'With files for query, subject, and existing out it should exit without exit code 0');
+
+($return,$stdout,$stderr)=run_script('../scripts/MINING_ortholog_blast.pl',["--query", $filename1, "--subject", $filename2, "--out", $filename3, "--overwrite"]);
+is(Test::Script::Run::last_script_exit_code(), 0, 'With files for query, subject, and existing out and overwrite it should exit with exit code 0');
 
 done_testing();
 
