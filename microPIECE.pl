@@ -257,6 +257,10 @@ The folder specified by C<--tempdir> is used for temporary files. The
 default value is F<tmp/> inside the output folder specified by the
 C<--out> parameter.
 
+=item C<--piranahbinsize>
+
+    Sets the F<Piranah> bin size and has a default value of C<20>.
+
 =back
 
 =head1 OUTPUT
@@ -305,7 +309,7 @@ Please report any new issues ad L<new Github-Issue|https://github.com/microPIECE
 
 =item v1.0.7 (2018-03-08)
 
-Piranha was lacking of a bin_size parameter. Added parameter C<--prianahbinsize> with a default value of C<20>
+Piranha was lacking of a bin_size parameter. Added parameter C<--piranahbinsize> with a default value of C<20>
 (Fixes L<#66|https://github.com/microPIECE-team/microPIECE/issues/80>)
 
 =item v1.0.6 (2018-03-08)

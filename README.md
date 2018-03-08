@@ -150,6 +150,10 @@ docker run -it --rm -v $PWD:/data micropiece/micropiece microPIECE.pl   \
     default value is `tmp/` inside the output folder specified by the
     `--out` parameter.
 
+- `--piranahbinsize`
+
+    Sets the `Piranah` bin size and has a default value of `20`.
+
 ### OUTPUT
 - mature miRNA set: `mature_combined_mirbase_novel.fa`
 
@@ -200,7 +204,7 @@ Complete list of open issues is available on [Github-Issues](https://github.com/
 Please report any new issues ad [new Github-Issue](https://github.com/microPIECE-team/microPIECE/issues/new).
 
 ## Changelog
-Version v1.0.7 (2018-03-08) Piranha was lacking of a bin_size parameter. Added parameter `--prianahbinsize` with a default value of `20` (Fixes [#80](https://github.com/microPIECE-team/microPIECE/issues/80)
+Version v1.0.7 (2018-03-08) Piranha was lacking of a bin_size parameter. Added parameter `--piranahbinsize` with a default value of `20` (Fixes [#80](https://github.com/microPIECE-team/microPIECE/issues/80))
 
 Version v1.0.6 (2018-03-08) Added parameter `--mirbasedir` and `--tempdir` to support local mirbase files and relocation of directory for temporary files (Fixes [#66](https://github.com/microPIECE-team/microPIECE/issues/66), [#73](https://github.com/microPIECE-team/microPIECE/issues/73), and [#76](https://github.com/microPIECE-team/microPIECE/issues/76))
 
