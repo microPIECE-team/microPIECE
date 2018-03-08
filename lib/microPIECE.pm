@@ -1301,7 +1301,7 @@ sub run_proteinortho
 
     # run proteinortho
     @cmd = ("proteinortho5.pl", "-clean", "-project=microPIECE", "-cpus=".$opt->{threads}, $opt->{proteinA}, $opt->{proteinB});
-    run_cmd($L, \@cmd, $opt->{out});
+    run_cmd($L, \@cmd, getcwd());
 
     $opt->{proteinortho} = getcwd()."/"."microPIECE.proteinortho";
 }
