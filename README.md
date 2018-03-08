@@ -144,6 +144,11 @@ docker run -it --rm -v $PWD:/data micropiece/micropiece microPIECE.pl   \
     `organisms.txt.gz`, `mature.fa.gz`, and `hairpin.fa.gz`. If the
     files are not exist, they will be downloaded.
 
+- `--tempdir`
+
+    The folder specified by `--tempdir` is used for temporary files. The
+    default value is `tmp/` inside the output folder specified by the
+    `--out` parameter.
 
 ### OUTPUT
 - mature miRNA set: `mature_combined_mirbase_novel.fa`

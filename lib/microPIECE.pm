@@ -18,6 +18,8 @@ use IO::Uncompress::Gunzip qw(gunzip $GunzipError);
 use IPC::Run3;
 use IPC::Cmd;
 
+my @temp_files = (); # used for cleaning of temporary files
+
 =pod
 
 Just a little welcome screen indicating our current version number
@@ -80,6 +82,30 @@ sub check_files
 	}
 
     }
+}
+
+sub create_folder
+{
+    my @dirs2create = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    my @dir = File::Path::make_path(@dirs2create, { error => \my $err} );
+    if ($err && @{$err})
+    {
+	for my $diag (@$err)
+	{
+	    my ($folder, $message) = %$diag;
+	    if ($folder eq '')
+	    {
+		$L->fatal("general error: $message\n");
+	    } else {
+		$L->fatal("problem creating $folder: $message");
+	    }
+	}
+	return;
+    }
+    return 1;
 }
 
 =pod
@@ -344,17 +370,20 @@ sub check_requirements {
 		for my $diag (@$err) {
 		    my ($file, $message) = %$diag;
 		    if ($file eq '') {
-			$L->logdie("general error: $message");
+			$L->fatal("general error: $message");
 		    }
 		    else {
-			$L->logdie("problem unlinking $file: $message");
+			$L->fatal("problem unlinking $file: $message");
 		    }
 		}
+		$L->logdie("Error removing old directory");
 	    }
 	}
     }
 
-    mkdir($opt->{out}) || $L->logdie("Unable to create output folder: $!");
+    $opt->{out} = File::Spec->rel2abs($opt->{basedir}.$opt->{out});
+    $opt->{tempdir} = File::Spec->rel2abs($opt->{basedir}.$opt->{tempdir});
+    create_folder($opt->{out}, $opt->{tempdir}) || $L->logdie("Error on directory creation");
 
     ##############################################################
     #
@@ -362,9 +391,8 @@ sub check_requirements {
     #
     ##############################################################
 
-    $opt->{basedir} = $opt->{basedir}.$opt->{out}."/";
+    $opt->{basedir} = $opt->{out}."/";
     chdir($opt->{basedir});
-
 }
 
 =pod
@@ -404,7 +432,7 @@ sub run_mining {
 
     my $currentdir = getcwd;
     my $new_folder = "mining";
-    mkdir($new_folder) || $L->logdie("Unable to create folder '$new_folder': $!");
+    create_folder($new_folder) || $L->logdie("Error on directory '$new_folder' creation");
     chdir($new_folder);
 
     run_mining_clipping($opt);
@@ -486,9 +514,9 @@ sub run_mining_quantification
     run_cmd($L, \@cmd);
 
     # map the filtered short read libraries
-    my $temp_sai = tmpnam();
-    my $temp_sam = tmpnam();
-    my $temp_sam_mapped_only = tmpnam();
+    my $temp_sai = create_tempfile($opt);
+    my $temp_sam = create_tempfile($opt);
+    my $temp_sam_mapped_only = create_tempfile($opt);
     my @config_file_content = ();
 
     foreach my $condition (keys %{$opt->{mining}{filtered}})
@@ -537,6 +565,8 @@ sub run_mining_quantification
 	   "--out", $opt->{mining_quantification_result}
 	);
     run_cmd($L, \@cmd);
+
+    clean_tempfiles();
 }
 
 sub run_mining_mirdeep2fasta
@@ -675,7 +705,7 @@ sub run_mining_mirdeep2
     run_cmd($L, \@cmd);
 
     # run through all short read files and concat the output in a single fasta file
-    my $tempfasta = tmpnam();
+    my $tempfasta = create_tempfile($opt);
     foreach my $condition (keys %{$opt->{mining}{filtered}})
     {
 	foreach my $file (@{$opt->{mining}{filtered}{$condition}})
@@ -691,9 +721,9 @@ sub run_mining_mirdeep2
 	}
     }
 
-    my $tempfasta_wo_whitespace = tmpnam();
-    my $tempfasta_wo_whitespace_collapsed = tmpnam();
-    my $temparf = tmpnam();
+    my $tempfasta_wo_whitespace = create_tempfile($opt);
+    my $tempfasta_wo_whitespace_collapsed = create_tempfile($opt);
+    my $temparf = create_tempfile($opt);
 
     # remove whitespaces
     @cmd=("remove_white_space_in_id.pl", $tempfasta);
@@ -738,6 +768,7 @@ sub run_mining_mirdeep2
     $opt->{mirdeep_output_html} = getcwd()."/"."mirdeep_output.html";
     rename $html_files[0], $opt->{mirdeep_output_html} || $L->logdie("Unable to rename mirdeep output html file");
 
+    clean_tempfiles();
 }
 
 sub run_mining_mirbase_files
@@ -812,10 +843,10 @@ sub run_mining_filtering
     run_cmd($L, \@cmd);
 
     $L->logdie("Something went completly wrong") unless (exists $opt->{mining} && $opt->{mining}{trimmed});
-    my $tempbwaout = tmpnam();
-    my $tempsamout = tmpnam();
-    my $tempsamfilteredout = tmpnam();
-    my $tempsamsortedout = tmpnam();
+    my $tempbwaout = create_tempfile($opt);
+    my $tempsamout = create_tempfile($opt);
+    my $tempsamfilteredout = create_tempfile($opt);
+    my $tempsamsortedout = create_tempfile($opt);
     foreach my $condition (keys %{$opt->{mining}{trimmed}})
     {
 	foreach my $file (@{$opt->{mining}{trimmed}{$condition}})
@@ -852,6 +883,8 @@ sub run_mining_filtering
 	    push(@{$opt->{mining}{filtered}{$condition}}, $filtered_fq);
 	}
     }
+
+    clean_tempfiles();
 
     return;
 }
@@ -910,7 +943,7 @@ sub run_clip {
 
     my $currentdir = getcwd;
     my $new_folder = "clip";
-    mkdir($new_folder) || $L->logdie("Unable to create folder '$new_folder': $!");
+    create_folder($new_folder) || $L->logdie("Error on directory '$new_folder' creation");
     chdir($new_folder);
 
     run_proteinortho($opt);
@@ -951,7 +984,7 @@ sub run_targetprediction {
 
     my $currentdir = getcwd;
     my $new_folder = "targetprediction";
-    mkdir($new_folder) || $L->logdie("Unable to create folder '$new_folder': $!");
+    create_folder($new_folder) || $L->logdie("Error on directory '$new_folder' creation");
     chdir($new_folder);
 
     foreach my $file (@{$opt->{seq4prediction}})
@@ -1184,8 +1217,8 @@ sub run_CLIP_mapping
 
     my $L = Log::Log4perl::get_logger();
 
-    my $gsnap_output = tmpnam();
-    my $samtools_output = tmpnam();
+    my $gsnap_output = create_tempfile($opt);
+    my $samtools_output = create_tempfile($opt);
 
     foreach my $clipfile (@{$opt->{clip}})
     {
@@ -1209,6 +1242,8 @@ sub run_CLIP_mapping
 	@cmd = ("bedtools", "bamtobed", "-i", $bamfile);
 	run_cmd($L, \@cmd, undef, $bedfile);
     }
+
+    clean_tempfiles();
 }
 
 sub run_CLIP_build_db
@@ -1266,7 +1301,7 @@ sub run_proteinortho
 
     # run proteinortho
     @cmd = ("proteinortho5.pl", "-clean", "-project=microPIECE", "-cpus=".$opt->{threads}, $opt->{proteinA}, $opt->{proteinB});
-    run_cmd($L, \@cmd, $opt->{out});
+    run_cmd($L, \@cmd, getcwd());
 
     $opt->{proteinortho} = getcwd()."/"."microPIECE.proteinortho";
 }
@@ -1420,5 +1455,32 @@ sub run_cmd
     return $stdout;
 }
 
+sub create_tempfile
+{
+    my ($opt) = @_;
+
+    my $filename = File::Temp::tempnam($opt->{tempdir}, "test");
+
+    push(@temp_files, $filename);
+
+    return $filename;
+}
+
+sub clean_tempfiles
+{
+    while (@temp_files)
+    {
+	my $file = shift @temp_files;
+
+	if (-e $file) { unlink($file) || die "$!"; }
+    }
+}
+
+$SIG{INT}=sub{ clean_tempfiles(); };
+
+END {
+    # delete all temporary files
+    clean_tempfiles();
+}
 
 1;
