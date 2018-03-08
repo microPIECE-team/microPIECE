@@ -301,25 +301,33 @@ Please report any new issues ad L<new Github-Issue|https://github.com/microPIECE
 
 =over 4
 
-=item v1.0.5 (2018-03-06)
+=item v1.0.6 (2018-03-08)
+
+Added parameter C<--mirbasedir> and C<--tempdir> to support local
+mirbase files and relocation of directory for temporary files (Fixes
+L<#66|https://github.com/microPIECE-team/microPIECE/issues/66>,
+L<#73|https://github.com/microPIECE-team/microPIECE/issues/73>, and
+L<#76|https://github.com/microPIECE-team/microPIECE/issues/76>)
+
+=item v1.0.5 (2018-03-07)
 
 Update of documentation and correct spelling of C<--mirna> parameter
 
-=item v1.0.4 (2018-03-06)
+=item v1.0.4 (2018-03-07)
 
-Fixes complete mature in final output (Fixes #69)
+Fixes complete mature in final output (Fixes L<#69|https://github.com/microPIECE-team/microPIECE/issues/69>)
 
 =item v1.0.3 (2018-03-06)
 
-Add tests for perl scripts in script folder which ensure the correct handling of BED stop coordinates (Fixes #65)
+Add tests for perl scripts in script folder which ensure the correct handling of BED stop coordinates (Fixes L<#65|https://github.com/microPIECE-team/microPIECE/issues/65>)
 
 =item v1.0.2 (2018-03-05)
 
-Fixes the incorrect sorting of BED files, result was correct, but sorting was performed in the wrong order. (Fixes #63)
+Fixes the incorrect sorting of BED files, result was correct, but sorting was performed in the wrong order. (Fixes L<#63|https://github.com/microPIECE-team/microPIECE/issues/63>)
 
 =item v1.0.1 (2018-03-05)
 
-Fix an error conserning BED file handling of start and stop coordinates. (Fixes #59)
+Fix an error conserning BED file handling of start and stop coordinates. (Fixes L<#59|https://github.com/microPIECE-team/microPIECE/issues/59>)
 
 =item v1.0.0 (2018-03-05)
 
