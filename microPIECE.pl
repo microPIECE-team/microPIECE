@@ -301,6 +301,10 @@ Please report any new issues ad L<new Github-Issue|https://github.com/microPIECE
 
 =over 4
 
+=item v1.0.7 (2018-03-08)
+
+Piranha was lacking of a bin_size parameter. Set this value now to 20.
+
 =item v1.0.6 (2018-03-08)
 
 Added parameter C<--mirbasedir> and C<--tempdir> to support local
