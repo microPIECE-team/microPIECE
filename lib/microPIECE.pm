@@ -1174,7 +1174,7 @@ sub run_CLIP_piranha
 	my $bedfile           = getcwd()."/".basename($clipfile).".bed";
 	my $piranhafile       = getcwd()."/".basename($clipfile).".piranha.bed";
 	my $sortedpiranhafile = getcwd()."/".basename($clipfile).".piranha.sorted.bed";
-	my @cmd = ("Piranha","-b", 20, "-o", $piranhafile, "-s", $bedfile);
+	my @cmd = ("Piranha","-b", $opt->{piranha_bin_size}, "-o", $piranhafile, "-s", $bedfile);
 	if (exists $opt->{testrun} && $opt->{testrun})
 	{
 	    $L->warn("TESTRUN was activated though --testrun option. This increases the p-value threshold for Piranha to 20%!!! Please use only for the provided testset and NOT(!!!) for real analysis!!!");

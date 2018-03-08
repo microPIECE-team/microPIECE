@@ -49,6 +49,7 @@ my $opt = {
     speciesB_tag       => undef,
     mirbasedir         => undef,
     tempdir            => undef,
+    piranha_bin_size   => 20,
 };
 
 GetOptions(
@@ -73,6 +74,7 @@ GetOptions(
     'speciesBtag=s'        => \$opt->{speciesB_tag},
     'mirbasedir=s'         => \$opt->{mirbasedir},
     'tempdir=s'            => \$opt->{tempdir},
+    'piranahbinsize=i'     => \$opt->{piranha_bin_size},
     ) || pod2usage(1);
 
 # split clip files if required
@@ -303,7 +305,8 @@ Please report any new issues ad L<new Github-Issue|https://github.com/microPIECE
 
 =item v1.0.7 (2018-03-08)
 
-Piranha was lacking of a bin_size parameter. Set this value now to 20.
+Piranha was lacking of a bin_size parameter. Added parameter C<--prianahbinsize> with a default value of C<20>
+(Fixes L<#66|https://github.com/microPIECE-team/microPIECE/issues/80>)
 
 =item v1.0.6 (2018-03-08)
 
