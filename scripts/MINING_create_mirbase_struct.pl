@@ -28,11 +28,19 @@ use File::Temp qw(tmpnam);
 my $hairpin_file;
 my $mature_file;
 my $struct_file;
+my $custom_tmp;
 
 GetOptions(
-	"hairpin=s"	=> \$hairpin_file,
-	"mature=s"	=> \$mature_file,
-	"struct=s"	=> \$struct_file) || die;
+    "hairpin=s"	=> \$hairpin_file,
+    "mature=s"	=> \$mature_file,
+    "struct=s"	=> \$struct_file,
+    "out=s"         => \$custom_tmp
+    ) || die;
+
+die "Need to specify a existing hairpin file via --hairpin parameter\n" unless (defined $hairpin_file && -e $hairpin_file);
+die "Need to specify a existing mature file via --mature parameter\n" unless (defined $mature_file && -e $mature_file);
+die "Need to specify a existing structure file via --struct parameter\n" unless (defined $struct_file && -e $struct_file);
+die "Need to specify a non-existing output file via --out parameter\n" unless (defined $custom_tmp && ( ! -e $custom_tmp ));
 
 my $rnafold		= "RNAfold -noPS";
 
@@ -42,7 +50,6 @@ my %mature_hash		= %{&read_fasta($mature_file)};
 
 my %structure_hash	= %{&parse_structure($struct_file)};
 
-my $custom_tmp	= "custom.str";
 open(OUT,">",$custom_tmp) || die;
 
 foreach(keys %hairpin_hash){
@@ -72,7 +79,9 @@ foreach(keys %hairpin_hash){
 		print TMP "$hairpin_id\n$hairpin_seq";
 		close(TMP) || die;
 		my $tmp_struct_rna	= tmpnam();
-		system("$rnafold < $tmp_hairpin_fa > $tmp_struct_rna");
+		my $cmd = "$rnafold < $tmp_hairpin_fa > $tmp_struct_rna";
+		system($cmd);
+		die "Error running command: '$cmd'\n" unless ($? == 0);
 		my $hairpin_struct;	#((..))
 		my $hairpin_energy;	#(-20.00)
 		open(RNA,"<",$tmp_struct_rna) || die;
