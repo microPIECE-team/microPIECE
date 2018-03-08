@@ -1177,7 +1177,7 @@ sub run_CLIP_piranha
 	my @cmd = ("Piranha","-b", 20, "-o", $piranhafile, "-s", $bedfile);
 	if (exists $opt->{testrun} && $opt->{testrun})
 	{
-	    $L->info("TESTRUN was activated though --testrun option. This increases the p-value threshold for Piranha to 20%!!! Please use only for the provided testset and NOT(!!!) for real analysis!!!");
+	    $L->warn("TESTRUN was activated though --testrun option. This increases the p-value threshold for Piranha to 20%!!! Please use only for the provided testset and NOT(!!!) for real analysis!!!");
 	    push(@cmd, ("-p", 0.2));
 	}
 	run_cmd($L, \@cmd);
