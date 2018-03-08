@@ -3,7 +3,7 @@ package microPIECE;
 use strict;
 use warnings;
 
-use version 0.77; our $VERSION = version->declare("v1.0.6");
+use version 0.77; our $VERSION = version->declare("v1.0.7");
 
 use Log::Log4perl;
 use Data::Dumper;
@@ -1174,10 +1174,10 @@ sub run_CLIP_piranha
 	my $bedfile           = getcwd()."/".basename($clipfile).".bed";
 	my $piranhafile       = getcwd()."/".basename($clipfile).".piranha.bed";
 	my $sortedpiranhafile = getcwd()."/".basename($clipfile).".piranha.sorted.bed";
-	my @cmd = ("Piranha", "-o", $piranhafile, "-s", $bedfile);
+	my @cmd = ("Piranha","-b", $opt->{piranha_bin_size}, "-o", $piranhafile, "-s", $bedfile);
 	if (exists $opt->{testrun} && $opt->{testrun})
 	{
-	    $L->info("TESTRUN was activated though --testrun option. This increases the p-value threshold for Piranha to 20%!!! Please use only for the provided testset and NOT(!!!) for real analysis!!!");
+	    $L->warn("TESTRUN was activated though --testrun option. This increases the p-value threshold for Piranha to 20%!!! Please use only for the provided testset and NOT(!!!) for real analysis!!!");
 	    push(@cmd, ("-p", 0.2));
 	}
 	run_cmd($L, \@cmd);
