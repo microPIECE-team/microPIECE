@@ -456,6 +456,34 @@ sub run_mining {
     chdir($currentdir);
 }
 
+sub get_mirbase_download_or_local_copy
+{
+    my ($opt, $filename) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+    my $delete = 0;
+
+    unless (exists $opt->{mirbasedir} && defined $opt->{mirbasedir} && -e $opt->{mirbasedir}."/".$filename)
+    {
+	my @cmd=("wget", "--quiet", "ftp://mirbase.org/pub/mirbase/CURRENT/".$filename);
+	run_cmd($L, \@cmd);
+	$delete = 1;          # remove downloaded file
+    } else {
+	$file = $opt->{mirbasedir}."/".$filename;
+    }
+    # decompress the file
+    my $output = getcwd()."/".basename($filename, ".gz");
+    my $status = gunzip $file => $output || $L->logdie("gunzip failed: $GunzipError");
+
+    # delete the output, if not local copy
+    if ($delete && -e $filename)
+    {
+	unlink($filename) || $L->error("Unable to delete downloaded file '$filename': $!");
+    }
+
+    return $output;
+}
+
 sub run_mining_isomir
 {
     my ($opt) = @_;
@@ -496,19 +524,7 @@ sub run_mining_isomir
     }
 
     # Create a miRNA.str (miRNA structure file with the novel microRNAs)
-    my $file = "miRNA.str.gz";
-    unless (exists $opt->{mirbasedir} && defined $opt->{mirbasedir} && -e $opt->{mirbasedir}."/".$file)
-    {
-	my @cmd=("wget", "--quiet", "ftp://mirbase.org/pub/mirbase/CURRENT/".$file);
-	run_cmd($L, \@cmd);
-    } else {
-	$file = $opt->{mirbasedir}."/".$file;
-    }
-    # decompress the file
-    my $output = basename($file, ".gz");
-    my $status = gunzip $file => $output || $L->logdie("gunzip failed: $GunzipError");
-
-    $opt->{mining}{download}{mirbase_mirna_structure}  = getcwd()."/".$output;
+    $opt->{mining}{download}{mirbase_mirna_structure}  = get_mirbase_download_or_local_copy($opt, "miRNA.str.gz");
     $opt->{mining}{download}{custom_structure} = getcwd()."/custom.str";
 
     my @cmd=(
@@ -875,19 +891,7 @@ sub run_mining_downloads
 
     foreach my $key(sort keys %filelist)
     {
-	my $file = $filelist{$key};
-	unless (exists $opt->{mirbasedir} && defined $opt->{mirbasedir} && -e $opt->{mirbasedir}."/".$file)
-	{
-	    my @cmd=("wget", "--quiet", "ftp://mirbase.org/pub/mirbase/CURRENT/".$file);
-	    run_cmd($L, \@cmd);
-	} else {
-	    $file = $opt->{mirbasedir}."/".$file;
-	}
-	# decompress the file
-	my $output = basename($file, ".gz");
-	my $status = gunzip $file => $output || $L->logdie("gunzip failed: $GunzipError");
-
-	$opt->{mining}{download}{$key} = $output;
+	$opt->{mining}{download}{$key}  = get_mirbase_download_or_local_copy($opt, $filelist{$key});
     }
 }
 
