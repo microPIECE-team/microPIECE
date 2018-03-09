@@ -556,7 +556,7 @@ sub filter_for_N_and_collapse_reads
 	{
 	    for(my $i=0; $i<length($seq); $i++)
 	    {
-		$sum[$i]+=ord(substr($current_qual, $i, 0));
+		$sum[$i]+=ord(substr($current_qual, $i, 1));
 	    }
 	}
 	my $qual = join("", (map { chr(int($_/$counts)) } (@sum)));
