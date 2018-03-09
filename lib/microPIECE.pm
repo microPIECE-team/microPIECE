@@ -494,6 +494,32 @@ sub run_mining_isomir
 	    close(FH) || $L->logdie("Unable to close file '$file': $!");
 	}
     }
+
+    # Create a miRNA.str (miRNA structure file with the novel microRNAs)
+    my $file = "miRNA.str.gz";
+    unless (exists $opt->{mirbasedir} && defined $opt->{mirbasedir} && -e $opt->{mirbasedir}."/".$file)
+    {
+	my @cmd=("wget", "--quiet", "ftp://mirbase.org/pub/mirbase/CURRENT/".$file);
+	run_cmd($L, \@cmd);
+    } else {
+	$file = $opt->{mirbasedir}."/".$file;
+    }
+    # decompress the file
+    my $output = basename($file, ".gz");
+    my $status = gunzip $file => $output || $L->logdie("gunzip failed: $GunzipError");
+
+    $opt->{mining}{download}{mirbase_mirna_structure}  = getcwd()."/".$output;
+    $opt->{mining}{download}{custom_structure} = getcwd()."/custom.str";
+
+    my @cmd=(
+	$opt->{scriptdir}."/MINING_create_mirbase_struct.pl",
+	"--hairpin", $opt->{final_hairpin},
+	"--mature", $opt->{final_mature},
+	"--struct", $opt->{mining}{download}{mirbase_mirna_structure},
+	"--out", $opt->{mining}{download}{custom_structure},
+	);
+    run_cmd($L, \@cmd);
+
 }
 
 sub run_mining_orthologs
