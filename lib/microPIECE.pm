@@ -462,6 +462,38 @@ sub run_mining_isomir
 
     my $L = Log::Log4perl::get_logger();
 
+    # run through all short read files and ensure reads have no non-ACGT nucleotids incorporated
+    foreach my $condition (keys %{$opt->{mining}{filtered}})
+    {
+	foreach my $file (@{$opt->{mining}{filtered}{$condition}})
+	{
+	    my $file_filteredN = basename($file, ".fq")."_filteredN.fq";
+	    push(@{$opt->{mining}{filtered4N}{$condition}}, $file_filteredN);
+
+	    open(FH, "<", $file) || $L->logdie("Unable to open file '$file' for reading: $!");
+	    open(OUT, ">", $file_filteredN) || $L->logdie("Unable to open file '$file_filteredN' for writing: $!");
+
+	    while(!eof(FH))
+	    {
+		my $header  = <FH>;
+		my $seq     = <FH>;
+		my $header2 = <FH>;
+		my $qual    = <FH>;
+		chomp($header, $seq, $header2, $qual);
+
+		# check if the sequence contains Ns
+		my $num_nucleotids2keep = $seq =~ tr/AGCTagct/AGCTagct/;
+
+		if ($num_nucleotids2keep == length($seq))
+		{
+		    print OUT join("\n", ($header, $seq, $header2, $qual)), "\n";
+		}
+	    }
+
+	    close(OUT)|| $L->logdie("Unable to close file '$file_filteredN': $!");
+	    close(FH) || $L->logdie("Unable to close file '$file': $!");
+	}
+    }
 }
 
 sub run_mining_orthologs
