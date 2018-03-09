@@ -1,4 +1,4 @@
-ARG baseimage_version=v1.1
+ARG baseimage_version=v1.2
 FROM micropiece/micropiece-dockerbase:${baseimage_version}
 
 ARG micropiece_version=master
