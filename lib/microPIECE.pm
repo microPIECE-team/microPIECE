@@ -495,12 +495,12 @@ sub run_mining_isomir
     {
 	foreach my $file (@{$opt->{mining}{filtered}{$condition}})
 	{
-	    my $file_filteredN = basename($file, ".fq")."_filteredN.fq";
-	    push(@{$opt->{mining}{filtered4N}{$condition}}, $file_filteredN);
+	    my $file_filteredN_collapsed = basename($file, ".fq")."_filteredN_collapsed.fq";
+	    push(@{$opt->{mining}{filtered4N_collapsed}{$condition}}, $file_filteredN_collapsed);
+
+	    my %seq_collapsed = ();
 
 	    open(FH, "<", $file) || $L->logdie("Unable to open file '$file' for reading: $!");
-	    open(OUT, ">", $file_filteredN) || $L->logdie("Unable to open file '$file_filteredN' for writing: $!");
-
 	    while(!eof(FH))
 	    {
 		my $header  = <FH>;
@@ -514,12 +514,30 @@ sub run_mining_isomir
 
 		if ($num_nucleotids2keep == length($seq))
 		{
-		    print OUT join("\n", ($header, $seq, $header2, $qual)), "\n";
+		    $seq_collapsed{$seq}{counts}++;
+		    push(@{$seq_collapsed{$seq}{qual}}, $qual);
 		}
 	    }
-
-	    close(OUT)|| $L->logdie("Unable to close file '$file_filteredN': $!");
 	    close(FH) || $L->logdie("Unable to close file '$file': $!");
+
+	    open(OUT, ">", $file_filteredN_collapsed) || $L->logdie("Unable to open file '$file_filteredN_collapsed' for writing: $!");
+	    my $counter = 1;
+	    foreach my $seq (keys %seq_collapsed)
+	    {
+		# get the mean quality for each position
+		my $counts = $seq_collapsed{$seq}{counts};
+		my @sum=();
+		foreach my $current_qual (@{$seq_collapsed{$seq}{qual}})
+		{
+		    for(my $i=0; $i<length($seq); $i++)
+		    {
+			$sum[$i]+=ord(substr($current_qual, $i, 0));
+		    }
+		}
+		my $qual = join("", (map { chr(int($_/$counts)) } (@sum)));
+		printf OUT '@'."seq_%d_x%d\n%s\n+\n%s\n", $counter, $counts, $seq, $qual;
+	    }
+	    close(OUT)|| $L->logdie("Unable to close file '$file_filteredN_collapsed': $!");
 	}
     }
 
