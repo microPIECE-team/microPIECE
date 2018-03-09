@@ -444,6 +444,8 @@ sub run_mining {
     run_mining_mirdeep2fasta($opt);
     run_mining_quantification($opt);
 
+    run_mining_isomir($opt);
+
     run_mining_genomicposition($opt);
 
     run_mining_orthologs($opt);
@@ -452,6 +454,14 @@ sub run_mining {
     $L->info("Finished mining step");
 
     chdir($currentdir);
+}
+
+sub run_mining_isomir
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
 }
 
 sub run_mining_orthologs
