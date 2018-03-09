@@ -469,11 +469,11 @@ sub get_mirbase_download_or_local_copy
 	run_cmd($L, \@cmd);
 	$delete = 1;          # remove downloaded file
     } else {
-	$file = $opt->{mirbasedir}."/".$filename;
+	$filename = $opt->{mirbasedir}."/".$filename;
     }
     # decompress the file
     my $output = getcwd()."/".basename($filename, ".gz");
-    my $status = gunzip $file => $output || $L->logdie("gunzip failed: $GunzipError");
+    my $status = gunzip $filename => $output || $L->logdie("gunzip failed: $GunzipError");
 
     # delete the output, if not local copy
     if ($delete && -e $filename)
