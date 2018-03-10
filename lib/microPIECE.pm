@@ -321,6 +321,16 @@ sub check_requirements {
 	    mining           => 1,
 	    targetprediction => 0
 	},
+	'miraligner'                   => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+         },
+        'java'                         => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+        },
 	'wget'                         => {
 	    clip             => 0,
 	    mining           => 1,
@@ -340,7 +350,23 @@ sub check_requirements {
 
 	if ($need2check)
 	{
-	    my $full_path = IPC::Cmd::can_run($prog);
+	    my $full_path;
+	    if ($prog eq "miraligner")
+	    {
+		$opt->{miraligner} = "/opt/seqbuster/modules/miraligner/miraligner.jar";   # default docker path
+		if (exists $ENV{MIRALIGNER} && defined $ENV{MIRALIGNER})
+		{
+		    $opt->{miraligner} = $ENV{MIRALIGNER};
+		}
+		if (-e $opt->{miraligner})
+		{
+		    $full_path = $opt->{miraligner};
+		} else {
+		    $L->WARN("Unable to find 'miraligner.jar'! Please specify its location via MIRALIGNER environmental variable!");
+		}
+	    } else {
+		$full_path = IPC::Cmd::can_run($prog);
+	    }
 	    if ($full_path)
 	    {
 		push(@fulfilled_dependency, { prog => $prog, path => $full_path });
@@ -349,6 +375,7 @@ sub check_requirements {
 	    }
 	}
     }
+
     $L->info(sprintf("Found dependencies: %s", join(", ", map {$_->{prog}."(".$_->{path}.")"} (@fulfilled_dependency))));
     $L->logdie(sprintf("Unable to run due to missing dependencies: %s", join(", ", (@missing_dependency)))) if (@missing_dependency);
 
