@@ -522,7 +522,7 @@ sub run_mining_isomir
     $opt->{mining}{download}{custom_structure} = getcwd()."/custom.str";
 
     my @cmd=(
-	$opt->{scriptdir}."/MINING_create_mirbase_struct.pl",
+	$opt->{scriptdir}."/ISOMIR_create_mirbase_struct.pl",
 	"--hairpin", $opt->{final_hairpin},
 	"--mature", $opt->{final_mature},
 	"--struct", $opt->{mining}{download}{mirbase_mirna_structure},
