@@ -561,6 +561,7 @@ sub filter_for_N_and_collapse_reads
 	}
 	my $qual = join("", (map { chr(int($_/$counts)) } (@sum)));
 	printf OUT '@'."seq_%d_x%d\n%s\n+\n%s\n", $counter, $counts, $seq, $qual;
+	$counter++;
     }
     close(OUT)|| $L->logdie("Unable to close file '$outfile': $!");
 }
