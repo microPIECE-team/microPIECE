@@ -532,6 +532,8 @@ sub run_mining_isomir
 
     foreach my $condition (keys %{$opt->{mining}{filtered}})
     {
+	my @condition_files_from_miraligner = ();
+
 	foreach my $file (@{$opt->{mining}{filtered}{$condition}})
 	{
 	    # run through all short read files and ensure reads have no non-ACGT nucleotids incorporated
@@ -544,7 +546,24 @@ sub run_mining_isomir
 	    # run miraligner for each read file
 	    my @cmd = ("java", "-jar", $opt->{miraligner}, "-sub", 1, "-trim", 3, "-add", 3, "-s", $opt->{speciesB_tag}, "-freq", "-i", $file_filteredN_collapsed, "-db", getcwd(), "-o", $miraligner_out);
 	    run_cmd($L, \@cmd);
+
+	    my $expected_output_file = $miraligner_out.".mirna";
+	    unless (-e $expected_output_file)
+	    {
+		$L->logdie("Expected output file '$expected_output_file' does not exist");
+	    }
+	    push(@condition_files_from_miraligner, $expected_output_file);
 	}
+
+	my @cmd = (
+	    $opt->{scriptdir}."/ISOMIR_reformat_isomirs.pl",
+	    join(",", @condition_files_from_miraligner),
+	    $condition
+	    );
+	my $output_file = getcwd()."/isomir_output_".$condition.".txt";
+	run_cmd($L, \@cmd, undef, $output_file);
+
+	push(@{$opt->{isomir_output_files}}, $output_file);
     }
 }
 
