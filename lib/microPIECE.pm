@@ -517,19 +517,6 @@ sub run_mining_isomir
 
     my $L = Log::Log4perl::get_logger();
 
-    # run through all short read files and ensure reads have no non-ACGT nucleotids incorporated
-    foreach my $condition (keys %{$opt->{mining}{filtered}})
-    {
-	foreach my $file (@{$opt->{mining}{filtered}{$condition}})
-	{
-	    my $file_filteredN_collapsed = basename($file, ".fq")."_filteredN_collapsed.fq";
-
-	    push(@{$opt->{mining}{filtered4N_collapsed}{$condition}}, $file_filteredN_collapsed);
-
-	    filter_for_N_and_collapse_reads($file, $file_filteredN_collapsed);
-	}
-    }
-
     # Create a miRNA.str (miRNA structure file with the novel microRNAs)
     $opt->{mining}{download}{mirbase_mirna_structure}  = get_mirbase_download_or_local_copy($opt, "miRNA.str.gz");
     $opt->{mining}{download}{custom_structure} = getcwd()."/custom.str";
@@ -543,6 +530,22 @@ sub run_mining_isomir
 	);
     run_cmd($L, \@cmd);
 
+    foreach my $condition (keys %{$opt->{mining}{filtered}})
+    {
+	foreach my $file (@{$opt->{mining}{filtered}{$condition}})
+	{
+	    # run through all short read files and ensure reads have no non-ACGT nucleotids incorporated
+	    my $file_filteredN_collapsed = getcwd()."/".basename($file, ".fq")."_filteredN_collapsed.fq";
+	    my $miraligner_out           = getcwd()."/".basename($file, ".fq")."_miraligner_out";
+	    push(@{$opt->{mining}{filtered4N_collapsed}{$condition}}, $file_filteredN_collapsed);
+
+	    filter_for_N_and_collapse_reads($file, $file_filteredN_collapsed);
+
+	    # run miraligner for each read file
+	    my @cmd = ("java", "-jar", $opt->{miraligner}, "-sub", 1, "-trim", 3, "-add", 3, "-s", $opt->{speciesB_tag}, "-freq", "-i", $file_filteredN_collapsed, "-db", getcwd(), "-o", $miraligner_out);
+	    run_cmd($L, \@cmd);
+	}
+    }
 }
 
 sub filter_for_N_and_collapse_reads
