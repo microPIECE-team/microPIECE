@@ -311,6 +311,40 @@ semincolon delimited file containing:
 
 =back
 
+=item genomics location of miRNAs: F<miRNA_genomic_position.csv>
+
+tab delimited file containing:
+
+=over 8
+
+=item 1. C<miRNA>
+
+=item 2. C<genomic contig>
+
+=item 3. C<identify>
+
+=item 4. C<length>
+
+=item 5. C<miRNA-length>
+
+=item 6. C<number mismatches>
+
+=item 7. C<number gapopens>
+
+=item 8. C<miRNA-start>
+
+=item 9. C<miRNA-stop>
+
+=item 10. C<genomic-start>
+
+=item 11. C<genomic-stop>
+
+=item 12. C<evalue>
+
+=item 13. C<bitscore>
+
+=back
+
 =item all library support-level target predictions: F<*_miranda_output.txt>
 
 miranda output, reduced to the lines, starting with > only
