@@ -1455,6 +1455,37 @@ sub run_proteinortho
     $opt->{proteinortho} = getcwd()."/"."microPIECE.proteinortho";
 }
 
+sub copy_final_files
+{
+    my ($opt, @sourcefiles) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    foreach my $sourcefile (@sourcefiles)
+    {
+	if (! defined $sourcefile)
+	{
+	    $L->error("Sourcefile '$sourcefile' is not defined");
+	}
+	elsif (! -e $sourcefile)
+	{
+	    $L->error("Sourcefile '$sourcefile' not accessable");
+	} else {
+	    my $destfile = basename($source);
+	    if (-e $destfile)
+	    {
+		if ($opt->{overwrite} )
+		{
+		    unlink($destfile) || $L->logdie("Unable to remove existing destination: '$destfile': $!");
+		    copy($sourcefile, $destfile) || $L->logdie("Unable to copy '$sourcefile' to '$destfile'");
+		} else {
+		    $L->error("Destination file exists and overwrite was not specified");
+		}
+	    }
+	}
+    }
+}
+
 sub transfer_resultfiles
 {
     my ($opt) = @_;
@@ -1466,32 +1497,17 @@ sub transfer_resultfiles
     # mature miRNA set
     # mature_combined_mirbase_novel.fa :=
     # mature microRNA set, containing novels and miRBase-completed (if mined), together with the known miRNAs from miRBase
-    my $source = $opt->{final_mature};
-    if ($source && -e $source)
-    {
-	my $dest = basename($source);
-	copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
-    }
+    copy_final_files($opt, $opt->{final_mature});
 
     # precursor miRNA set
     # hairpin_combined_mirbase_novel.fa :=
     # precursor microRNA set, containing novels (if mined), together with the known miRNAs from miRBase
-    $source = $opt->{final_hairpin};
-    if ($source && -e $source)
-    {
-	my $dest = basename($source);
-	copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
-    }
+    copy_final_files($opt, $opt->{final_hairpin});
 
     # mature miRNA expression per condition
     # miRNA_expression.csv :=
     # Semicolon-separated file : rpm;condition;miRNA
-    $source = $opt->{mining_quantification_result};
-    if ($source && -e $source)
-    {
-	my $dest = basename($source);
-	copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
-    }
+    copy_final_files($opt, $opt->{mining_quantification_result});
 
     # orthologous prediction file
     # miRNA_orthologs.csv :=
@@ -1502,54 +1518,23 @@ sub transfer_resultfiles
     #                      subject_aligned_seq query_length
     #                      subject_length query_coverage
     #                      subject_coverage
-    $source = $opt->{mining}{orthologs};
-    if ($source && -e $source)
-    {
-	my $dest = basename($source);
-	copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
-    }
+    copy_final_files($opt, $opt->{mining}{orthologs});
 
     # miRDeep2 mining result in HTML
     # result_02_03_2018_t_09_30_01.html:=
     # the standard output HTML file of miRDeep2
-    $source = $opt->{mirdeep_output_html};
-    if ($source && -e $source)
-    {
-	my $dest = basename($source);
-	copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
-    }
-    $source = $opt->{mirdeep_output};
-    if ($source && -e $source)
-    {
-	my $dest = basename($source);
-	copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
-    }
+    copy_final_files($opt, $opt->{mirdeep_output_html}, $opt->{mirdeep_output});
+
 
     # all library support-level target predictions
     # *_miranda_output.txt :=
     # miranda output, reduced to the lines, starting with > only
-    foreach my $miranda_file (@{$opt->{miranda_output}})
-    {
-	$source = $miranda_file;
-	if ($source && -e $source)
-	{
-	    my $dest = basename($source);
-	    copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
-	}
-    }
+    copy_final_files($opt, @{$opt->{miranda_output}});
 
     # all library support-level CLIP transfer .bed files
     # *transfered_merged.bed :=
     # bed-file of the transferred CLIP-regions in speciesB transcriptome
-    foreach my $miranda_file (@{$opt->{clip_final_bed}})
-    {
-	$source = $miranda_file;
-	if ($source && -e $source)
-	{
-	    my $dest = basename($source);
-	    copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
-	}
-    }
+    copy_final_files($opt, @{$opt->{clip_final_bed}});
 
     $L->info("Finished copy process");
 }
