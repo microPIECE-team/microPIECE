@@ -13,7 +13,10 @@ my @required_fields = qw(seq freq mir mism add t5 t3 ambiguity);
 
 my %rep_hash;	 #{miRBaseID;mism;add;t5;t3;ambiguity} = freq/ambiguous
 
-foreach my $input_file	(@input_array){
+for(my $i=0; $i<@input_array; $i++)
+{
+    my $input_file = $input_array[$i];
+    my $input_file_plus_counter = $input_file."_".$i;
     open(TMP,"<",$input_file) || die "Unable to open input file '$input_file': $!\n";
     
     my $fieldlist	= <TMP>;
@@ -55,7 +58,7 @@ foreach my $input_file	(@input_array){
 	my $key = join(";", map {$fields{$_}} (qw(mir mism add t5 t3 seq)));
 
 	$rep_hash{$key}{fields} = \%fields;
-	$rep_hash{$key}{rpm}{$input_file} = $div_c;
+	$rep_hash{$key}{rpm}{$input_file_plus_counter} = $div_c;
     }
 
     close(TMP) || die "Unable to close input file '$input_file': $!\n";
@@ -63,9 +66,9 @@ foreach my $input_file	(@input_array){
     # calc RPM
     my %rpm_hash;
     foreach my $key (keys %rep_hash){
-	next unless (exists $rep_hash{$key}{rpm}{$input_file}); 
+	next unless (exists $rep_hash{$key}{rpm}{$input_file_plus_counter}); 
 
-	$rep_hash{$key}{rpm}{$input_file} = $rep_hash{$key}{rpm}{$input_file}/$tmp_total_read_count*1000000;
+	$rep_hash{$key}{rpm}{$input_file_plus_counter} = $rep_hash{$key}{rpm}{$input_file_plus_counter}/$tmp_total_read_count*1000000;
     }
 }
 
