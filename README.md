@@ -168,6 +168,19 @@ docker run -it --rm -v $PWD:/data micropiece/micropiece microPIECE.pl   \
 - orthologous prediction file: `miRNA_orthologs.csv`
 
    tab-separated file --> query_id subject_id identity aln_length num_mismatches num_gapopen query_start query_end subject_start subject_end evalue bitscore query_aligned_seq subject_aligned_seq query_length subject_length query_coverage subject_coverage
+- ISOMIR prediction files: `isomir_output_CONDITION.csv`
+
+semincolon delimited file containing:
+
+   1. `mirna`
+   2. `substitutions`
+   3. `added nucleotids on 3' end`
+   4. `nucleotides at 5' end different from the annonated sequence`
+   5. `nucleotides at 3' end different from the annonated sequence`
+   6. `sequence`
+   7. `rpm`
+   8. `condition`
+
 - miRDeep2 mining result in HTML/CSV `mirdeep_output.html/csv`
 
     the standard output HTML/CSV file of miRDeep2

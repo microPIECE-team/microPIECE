@@ -1526,7 +1526,7 @@ sub transfer_resultfiles
     copy_final_files($opt, $opt->{mirdeep_output_html}, $opt->{mirdeep_output});
 
     # all isomir output files
-    # isomir_output_CONDITION.txt
+    # isomir_output_CONDITION.csv
     # semincolon delimited file containing the following
     # columns: mirna
     #          substitutions
