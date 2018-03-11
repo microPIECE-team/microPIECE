@@ -1525,6 +1525,18 @@ sub transfer_resultfiles
     # the standard output HTML file of miRDeep2
     copy_final_files($opt, $opt->{mirdeep_output_html}, $opt->{mirdeep_output});
 
+    # all isomir output files
+    # isomir_output_CONDITION.txt
+    # semincolon delimited file containing the following
+    # columns: mirna
+    #          substitutions
+    #          added nucleotids on 3' end
+    #          nucleotides at 5' end different from the annonated sequence
+    #          nucleotides at 3' end different from the annonated sequence
+    #          sequence
+    #          rpm
+    #          condition
+    copy_final_files($opt, @{$opt->{isomir_output_files}});
 
     # all library support-level target predictions
     # *_miranda_output.txt :=
