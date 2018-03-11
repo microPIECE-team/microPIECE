@@ -1538,6 +1538,24 @@ sub transfer_resultfiles
     #          condition
     copy_final_files($opt, @{$opt->{isomir_output_files}});
 
+    # genomic location of miRNAs
+    # miRNA_genomic_position.csv
+    # tab-delimited file containing the following
+    # columns: miRNA
+    #          genomic contig
+    #          identify
+    #          length
+    #          miRNA-length
+    #          number mismatches
+    #          number gapopens
+    #          miRNA-start
+    #          miRNA-stop
+    #          genomic-start
+    #          genomic-stop
+    #          evalue
+    #          bitscore
+    copy_final_files($opt, $opt->{mining}{genomic_location});
+
     # all library support-level target predictions
     # *_miranda_output.txt :=
     # miranda output, reduced to the lines, starting with > only
