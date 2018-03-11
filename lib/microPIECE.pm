@@ -560,7 +560,7 @@ sub run_mining_isomir
 	    join(",", @condition_files_from_miraligner),
 	    $condition
 	    );
-	my $output_file = getcwd()."/isomir_output_".$condition.".txt";
+	my $output_file = getcwd()."/isomir_output_".$condition.".csv";
 	run_cmd($L, \@cmd, undef, $output_file);
 
 	push(@{$opt->{isomir_output_files}}, $output_file);
