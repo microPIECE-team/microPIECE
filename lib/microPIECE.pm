@@ -1471,7 +1471,7 @@ sub copy_final_files
 	{
 	    $L->error("Sourcefile '$sourcefile' not accessable");
 	} else {
-	    my $destfile = basename($source);
+	    my $destfile = basename($sourcefile);
 	    if (-e $destfile)
 	    {
 		if ($opt->{overwrite} )
