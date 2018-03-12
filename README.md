@@ -277,25 +277,59 @@ Complete list of open issues is available on [Github-Issues](https://github.com/
 Please report any new issues ad [new Github-Issue](https://github.com/microPIECE-team/microPIECE/issues/new).
 
 ## Changelog
-Version v1.1.0 (2018-03-12) Add isomir detection and copy the final genomic location file to the output filter (Fixes [#34](https://github.com/microPIECE-team/microPIECE/issues/34))
 
-Version v1.0.7 (2018-03-08) Piranha was lacking of a bin_size parameter. Added parameter `--piranahbinsize` with a default value of `20` (Fixes [#80](https://github.com/microPIECE-team/microPIECE/issues/80))
+- [v1.1.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.1.0) (2018-03-12)
 
-Version v1.0.6 (2018-03-08) Added parameter `--mirbasedir` and `--tempdir` to support local mirbase files and relocation of directory for temporary files (Fixes [#66](https://github.com/microPIECE-team/microPIECE/issues/66), [#73](https://github.com/microPIECE-team/microPIECE/issues/73), and [#76](https://github.com/microPIECE-team/microPIECE/issues/76))
+    Add isomir detection and copy the final genomic location file to the
+    output filter (Fixes
+    [#34](https://github.com/microPIECE-team/microPIECE/issues/34))
 
-Version v1.0.5 (2018-03-07) Update of documentation and correct spelling of `--mirna` parameter
+- [v1.0.7](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.7) (2018-03-08)
 
-Version v1.0.4 (2018-03-07) Fixes complete mature in final output (Fixes [#69](https://github.com/microPIECE-team/microPIECE/issues/69))
+    Piranha was lacking of a bin\_size parameter. Added parameter `--piranahbinsize` with a default value of `20`
+    (Fixes [#66](https://github.com/microPIECE-team/microPIECE/issues/80))
 
-Version v1.0.3 (2018-03-06) Add tests for perl scripts in script folder which ensure the correct handling of BED stop coordinates (Fixes [#65](https://github.com/microPIECE-team/microPIECE/issues/65))
+- [v1.0.6](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.6) (2018-03-08)
 
-Version v1.0.2 (2018-03-05) Fixes the incorrect sorting of BED files, result was correct, but sorting was performed in the wrong order. (Fixes [#63](https://github.com/microPIECE-team/microPIECE/issues/63))
+    Added parameter `--mirbasedir` and `--tempdir` to support local
+    mirbase files and relocation of directory for temporary files (Fixes
+    [#66](https://github.com/microPIECE-team/microPIECE/issues/66),
+    [#73](https://github.com/microPIECE-team/microPIECE/issues/73), and
+    [#76](https://github.com/microPIECE-team/microPIECE/issues/76))
 
-Version v1.0.1 (2018-03-05) Fix an error conserning BED file handling of start and stop coordinates. (Fixes [#59](https://github.com/microPIECE-team/microPIECE/issues/59))
+- [v1.0.5](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.5) (2018-03-07)
 
-Version 1.0.0 (2018-03-05) is archived as [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1188484.svg)](https://doi.org/10.5281/zenodo.1188484) and submitted to [The Journal of Open Source Software](http://joss.theoj.org/).
+    Update of documentation and correct spelling of `--mirna` parameter
 
-Version 0.9.0 (2018-03-05) first version archived at Zenodo with the [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1188481.svg)](https://doi.org/10.5281/zenodo.1188481)
+- [v1.0.4](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.4) (2018-03-07)
+
+    Fixes complete mature in final output (Fixes [#69](https://github.com/microPIECE-team/microPIECE/issues/69))
+
+- [v1.0.3](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.3) (2018-03-06)
+
+    Add tests for perl scripts in script folder which ensure the correct handling of BED stop coordinates (Fixes [#65](https://github.com/microPIECE-team/microPIECE/issues/65))
+
+- [v1.0.2](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.2) (2018-03-05)
+
+    Fixes the incorrect sorting of BED files, result was correct, but sorting was performed in the wrong order. (Fixes [#63](https://github.com/microPIECE-team/microPIECE/issues/63))
+
+- [v1.0.1](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.1) (2018-03-05)
+
+    Fix an error conserning BED file handling of start and stop coordinates. (Fixes [#59](https://github.com/microPIECE-team/microPIECE/issues/59))
+
+- [v1.0.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.0) (2018-03-05)
+
+    <div>
+            is archived as <a href="https://doi.org/10.5281/zenodo.1188484"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.1188484.svg" alt="DOI" /></a>
+            and submitted to <a href="http://joss.theoj.org">The Journal of Open Source Software</a>.
+    </div>
+
+- [v0.9.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v0.9.0) (2018-03-05)
+
+    <div>
+            first version archived at Zenodo with the <a href="https://doi.org/10.5281/zenodo.1188481"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.1188481.svg" alt="DOI" /></a>
+    </div>
+
 ## License
 This program is released under GPLv2. For further license information, see LICENSE.md shipped with this program.
 Copyright(c)2018 Daniel Amsel and Frank Förster (employees of Fraunhofer Institute for Molecular Biology and Applied Ecology IME) All rights reserved.
