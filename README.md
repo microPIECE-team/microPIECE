@@ -78,65 +78,78 @@ docker run -it --rm -v $PWD:/data micropiece/micropiece microPIECE.pl   \
     - speciesB smallRNA-sequencing library/libraries
     
 ### PARAMETERS
+
 - `--version|-V`
 
     version of this pipeline
+
 - `--help|-h`
 
     prints a helpful help message
+
 - `--genomeA` and `--genomeB`
 
     Genome of the species with the CLIP data (species A, `--genomeA`) and
     the genome of the species where we want to predict the miRNA targets
     (species B, `--genomeB`)
+
 - `--gffA` and `--gffB`
 
     Genome feature file (GFF) of the species with the CLIP data (species
     A, `--gffA`) and the GFF of the species where we want to predict the
     miRNA targets (species B, `--gffB`)
+
 - `--clip`
 
     Comma-separated CLIP-seq .fastq files in Format
-    ```
-    --clip con1_rep1_clip.fq,con1_rep2_clip.fq,con2_clip.fq
-    # OR
-    --clip con1_rep1_clip.fq --clip con1_rep2_clip.fq --clip con2_clip.fq
-    ```
+
+        --clip con1_rep1_clip.fq,con1_rep2_clip.fq,con2_clip.fq
+        # OR
+        --clip con1_rep1_clip.fq --clip con1_rep2_clip.fq --clip con2_clip.fq
+
 - `--adapterclip`
 
     Sequencing-adapter of CLIP reads
+
 - `--smallrnaseq`
 
     Comma-separated smallRNA-seq FASTQ files, initialized with
     'condition=' in Format
-    ```
-    --smallrnaseq con1=A.fastq,B.fastq --smallrnaseq con2=C.fq
-    # OR
-    --smallrnaseq con1=A.fastq --smallrnaseq con1=B.fastq --smallrnaseq con2=C.fq
-    ```
+
+        --smallrnaseq con1=A.fastq,B.fastq --smallrnaseq con2=C.fq
+        # OR
+        --smallrnaseq con1=A.fastq --smallrnaseq con1=B.fastq --smallrnaseq con2=C.fq
+
 - `--adaptersmallrnaseq5` and `--adaptersmallrnaseq3`
 
     5' adapter of smallRNA-seq reads (`--adaptersmallrnaseq5`) and for 3' end (`--adaptersmallrnaseq3`)
+
 - `--filterncrnas`
 
     Multi-fasta file of ncRNAs to filter smallRNA-seq reads. Those must
     not contain miRNAs.
+
 - `--threads`
 
     Number of threads to be used
+
 - `--overwrite`
 
     set this parameter to overwrite existing files
+
 - `--testrun`
 
     sets this pipeline to testmode (accounting for small testset in
     piranha). This option should not be used in real analysis!
+
 - `--out`
 
     output folder
-- `--mirnas`
+
+- `--mirna`
 
     miRNA set, if set, mining is disabled and this set is used for prediction
+
 - `--speciesBtag`
 
     Three letter code of species where we want to predict the miRNA
@@ -159,56 +172,85 @@ docker run -it --rm -v $PWD:/data micropiece/micropiece microPIECE.pl   \
     Sets the `Piranah` bin size and has a default value of `20`.
 
 ### OUTPUT
+
 - mature miRNA set: `mature_combined_mirbase_novel.fa`
 
     mature microRNA set, containing novels and miRBase-completed (if mined), together with the known miRNAs from miRBase
+
 - precursor miRNA set: `hairpin_combined_mirbase_novel.fa`
 
     precursor microRNA set, containing novels (if mined), together with the known miRNAs from miRBase
+
 - mature miRNA expression per condition: `miRNA_expression.csv`
 
-    Semicolon-separated file --> rpm;condition;miRNA
+    Semicolon-separated file containing:
+
+    - 1. `rpm`
+    - 2. `condition`
+    - 3. `miRNA`
 
 - orthologous prediction file: `miRNA_orthologs.csv`
 
-   tab-separated file --> query_id subject_id identity aln_length num_mismatches num_gapopen query_start query_end subject_start subject_end evalue bitscore query_aligned_seq subject_aligned_seq query_length subject_length query_coverage subject_coverage
-- ISOMIR prediction files: `isomir_output_CONDITION.csv`
+    tab-separated file containing:
 
-semincolon delimited file containing:
-
-   1. `mirna`
-   2. `substitutions`
-   3. `added nucleotids on 3' end`
-   4. `nucleotides at 5' end different from the annonated sequence`
-   5. `nucleotides at 3' end different from the annonated sequence`
-   6. `sequence`
-   7. `rpm`
-   8. `condition`
-
-- genomics location of miRNAs: `miRNA_genomic_position.csv`
-
-tab delimited file containing:
-
-   1. `miRNA`
-   2. `genomic contig`
-   3. `identify`
-   4. `length`
-   5. `miRNA-length`
-   6. `number mismatches`
-   7. `number gapopens`
-   8. `miRNA-start`
-   9. `miRNA-stop`
-   10. `genomic-start`
-   11. `genomic-stop`
-   12. `evalue`
-   13. `bitscore`
+    - 1. `query_id`
+    - 2. `subject_id`
+    - 3. `identity`
+    - 4. `alignment length`
+    - 5. `number mismatches`
+    - 6. `number gap openings`
+    - 7. `start position inside query`
+    - 8. `end position inside query`
+    - 9. `start position inside subject`
+    - 10. `end position inside subject`
+    - 11. `evalue`
+    - 12. `bitscore`
+    - 13. `aligned query sequence`
+    - 14. `aligned subject sequence`
+    - 15. `length query sequence`
+    - 16. `length subject sequence`
+    - 17. `coverage for query sequence`
+    - 18. `coverage for subject sequence`
 
 - miRDeep2 mining result in HTML/CSV `mirdeep_output.html/csv`
 
     the standard output HTML/CSV file of miRDeep2
+
+- ISOMIR prediction files: `isomir_output_CONDITION.csv`
+
+    semincolon delimited file containing:
+
+    - 1. `mirna`
+    - 2. `substitutions`
+    - 3. `added nucleotids on 3' end`
+    - 4. `nucleotides at 5' end different from the annonated sequence`
+    - 5. `nucleotides at 3' end different from the annonated sequence`
+    - 6. `sequence`
+    - 7. `rpm`
+    - 8. `condition`
+
+- genomics location of miRNAs: `miRNA_genomic_position.csv`
+
+    tab delimited file containing:
+
+    - 1. `miRNA`
+    - 2. `genomic contig`
+    - 3. `identify`
+    - 4. `length`
+    - 5. `miRNA-length`
+    - 6. `number mismatches`
+    - 7. `number gapopens`
+    - 8. `miRNA-start`
+    - 9. `miRNA-stop`
+    - 10. `genomic-start`
+    - 11. `genomic-stop`
+    - 12. `evalue`
+    - 13. `bitscore`
+
 - all library support-level target predictions: `*_miranda_output.txt`
 
     miranda output, reduced to the lines, starting with > only
+
 - all library support-level CLIP transfer .bed files: `*transfered_merged.bed`
 
     bed-file of the transferred CLIP-regions in speciesB transcriptome
@@ -239,25 +281,59 @@ Complete list of open issues is available on [Github-Issues](https://github.com/
 Please report any new issues ad [new Github-Issue](https://github.com/microPIECE-team/microPIECE/issues/new).
 
 ## Changelog
-Version v1.1.0 (2018-03-12) Add isomir detection and copy the final genomic location file to the output filter (Fixes [#34](https://github.com/microPIECE-team/microPIECE/issues/34))
 
-Version v1.0.7 (2018-03-08) Piranha was lacking of a bin_size parameter. Added parameter `--piranahbinsize` with a default value of `20` (Fixes [#80](https://github.com/microPIECE-team/microPIECE/issues/80))
+- [v1.1.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.1.0) (2018-03-12)
 
-Version v1.0.6 (2018-03-08) Added parameter `--mirbasedir` and `--tempdir` to support local mirbase files and relocation of directory for temporary files (Fixes [#66](https://github.com/microPIECE-team/microPIECE/issues/66), [#73](https://github.com/microPIECE-team/microPIECE/issues/73), and [#76](https://github.com/microPIECE-team/microPIECE/issues/76))
+    Add isomir detection and copy the final genomic location file to the
+    output filter (Fixes
+    [#34](https://github.com/microPIECE-team/microPIECE/issues/34))
 
-Version v1.0.5 (2018-03-07) Update of documentation and correct spelling of `--mirna` parameter
+- [v1.0.7](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.7) (2018-03-08)
 
-Version v1.0.4 (2018-03-07) Fixes complete mature in final output (Fixes [#69](https://github.com/microPIECE-team/microPIECE/issues/69))
+    Piranha was lacking of a bin\_size parameter. Added parameter `--piranahbinsize` with a default value of `20`
+    (Fixes [#66](https://github.com/microPIECE-team/microPIECE/issues/80))
 
-Version v1.0.3 (2018-03-06) Add tests for perl scripts in script folder which ensure the correct handling of BED stop coordinates (Fixes [#65](https://github.com/microPIECE-team/microPIECE/issues/65))
+- [v1.0.6](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.6) (2018-03-08)
 
-Version v1.0.2 (2018-03-05) Fixes the incorrect sorting of BED files, result was correct, but sorting was performed in the wrong order. (Fixes [#63](https://github.com/microPIECE-team/microPIECE/issues/63))
+    Added parameter `--mirbasedir` and `--tempdir` to support local
+    mirbase files and relocation of directory for temporary files (Fixes
+    [#66](https://github.com/microPIECE-team/microPIECE/issues/66),
+    [#73](https://github.com/microPIECE-team/microPIECE/issues/73), and
+    [#76](https://github.com/microPIECE-team/microPIECE/issues/76))
 
-Version v1.0.1 (2018-03-05) Fix an error conserning BED file handling of start and stop coordinates. (Fixes [#59](https://github.com/microPIECE-team/microPIECE/issues/59))
+- [v1.0.5](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.5) (2018-03-07)
 
-Version 1.0.0 (2018-03-05) is archived as [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1188484.svg)](https://doi.org/10.5281/zenodo.1188484) and submitted to [The Journal of Open Source Software](http://joss.theoj.org/).
+    Update of documentation and correct spelling of `--mirna` parameter
 
-Version 0.9.0 (2018-03-05) first version archived at Zenodo with the [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1188481.svg)](https://doi.org/10.5281/zenodo.1188481)
+- [v1.0.4](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.4) (2018-03-07)
+
+    Fixes complete mature in final output (Fixes [#69](https://github.com/microPIECE-team/microPIECE/issues/69))
+
+- [v1.0.3](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.3) (2018-03-06)
+
+    Add tests for perl scripts in script folder which ensure the correct handling of BED stop coordinates (Fixes [#65](https://github.com/microPIECE-team/microPIECE/issues/65))
+
+- [v1.0.2](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.2) (2018-03-05)
+
+    Fixes the incorrect sorting of BED files, result was correct, but sorting was performed in the wrong order. (Fixes [#63](https://github.com/microPIECE-team/microPIECE/issues/63))
+
+- [v1.0.1](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.1) (2018-03-05)
+
+    Fix an error conserning BED file handling of start and stop coordinates. (Fixes [#59](https://github.com/microPIECE-team/microPIECE/issues/59))
+
+- [v1.0.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.0) (2018-03-05)
+
+    <div>
+            is archived as <a href="https://doi.org/10.5281/zenodo.1188484"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.1188484.svg" alt="DOI" /></a>
+            and submitted to <a href="http://joss.theoj.org">The Journal of Open Source Software</a>.
+    </div>
+
+- [v0.9.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v0.9.0) (2018-03-05)
+
+    <div>
+            first version archived at Zenodo with the <a href="https://doi.org/10.5281/zenodo.1188481"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.1188481.svg" alt="DOI" /></a>
+    </div>
+
 ## License
 This program is released under GPLv2. For further license information, see LICENSE.md shipped with this program.
 Copyright(c)2018 Daniel Amsel and Frank Förster (employees of Fraunhofer Institute for Molecular Biology and Applied Ecology IME) All rights reserved.
