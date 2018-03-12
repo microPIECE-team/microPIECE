@@ -168,56 +168,85 @@ docker run -it --rm -v $PWD:/data micropiece/micropiece microPIECE.pl   \
     Sets the `Piranah` bin size and has a default value of `20`.
 
 ### OUTPUT
+
 - mature miRNA set: `mature_combined_mirbase_novel.fa`
 
     mature microRNA set, containing novels and miRBase-completed (if mined), together with the known miRNAs from miRBase
+
 - precursor miRNA set: `hairpin_combined_mirbase_novel.fa`
 
     precursor microRNA set, containing novels (if mined), together with the known miRNAs from miRBase
+
 - mature miRNA expression per condition: `miRNA_expression.csv`
 
-    Semicolon-separated file --> rpm;condition;miRNA
+    Semicolon-separated file containing:
+
+    - 1. `rpm`
+    - 2. `condition`
+    - 3. `miRNA`
 
 - orthologous prediction file: `miRNA_orthologs.csv`
 
-   tab-separated file --> query_id subject_id identity aln_length num_mismatches num_gapopen query_start query_end subject_start subject_end evalue bitscore query_aligned_seq subject_aligned_seq query_length subject_length query_coverage subject_coverage
-- ISOMIR prediction files: `isomir_output_CONDITION.csv`
+    tab-separated file containing:
 
-semincolon delimited file containing:
-
-   1. `mirna`
-   2. `substitutions`
-   3. `added nucleotids on 3' end`
-   4. `nucleotides at 5' end different from the annonated sequence`
-   5. `nucleotides at 3' end different from the annonated sequence`
-   6. `sequence`
-   7. `rpm`
-   8. `condition`
-
-- genomics location of miRNAs: `miRNA_genomic_position.csv`
-
-tab delimited file containing:
-
-   1. `miRNA`
-   2. `genomic contig`
-   3. `identify`
-   4. `length`
-   5. `miRNA-length`
-   6. `number mismatches`
-   7. `number gapopens`
-   8. `miRNA-start`
-   9. `miRNA-stop`
-   10. `genomic-start`
-   11. `genomic-stop`
-   12. `evalue`
-   13. `bitscore`
+    - 1. `query_id`
+    - 2. `subject_id`
+    - 3. `identity`
+    - 4. `alignment length`
+    - 5. `number mismatches`
+    - 6. `number gap openings`
+    - 7. `start position inside query`
+    - 8. `end position inside query`
+    - 9. `start position inside subject`
+    - 10. `end position inside subject`
+    - 11. `evalue`
+    - 12. `bitscore`
+    - 13. `aligned query sequence`
+    - 14. `aligned subject sequence`
+    - 15. `length query sequence`
+    - 16. `length subject sequence`
+    - 17. `coverage for query sequence`
+    - 18. `coverage for subject sequence`
 
 - miRDeep2 mining result in HTML/CSV `mirdeep_output.html/csv`
 
     the standard output HTML/CSV file of miRDeep2
+
+- ISOMIR prediction files: `isomir_output_CONDITION.csv`
+
+    semincolon delimited file containing:
+
+    - 1. `mirna`
+    - 2. `substitutions`
+    - 3. `added nucleotids on 3' end`
+    - 4. `nucleotides at 5' end different from the annonated sequence`
+    - 5. `nucleotides at 3' end different from the annonated sequence`
+    - 6. `sequence`
+    - 7. `rpm`
+    - 8. `condition`
+
+- genomics location of miRNAs: `miRNA_genomic_position.csv`
+
+    tab delimited file containing:
+
+    - 1. `miRNA`
+    - 2. `genomic contig`
+    - 3. `identify`
+    - 4. `length`
+    - 5. `miRNA-length`
+    - 6. `number mismatches`
+    - 7. `number gapopens`
+    - 8. `miRNA-start`
+    - 9. `miRNA-stop`
+    - 10. `genomic-start`
+    - 11. `genomic-stop`
+    - 12. `evalue`
+    - 13. `bitscore`
+
 - all library support-level target predictions: `*_miranda_output.txt`
 
     miranda output, reduced to the lines, starting with > only
+
 - all library support-level CLIP transfer .bed files: `*transfered_merged.bed`
 
     bed-file of the transferred CLIP-regions in speciesB transcriptome
