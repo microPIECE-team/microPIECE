@@ -74,65 +74,78 @@ docker run -it --rm -v $PWD:/data micropiece/micropiece microPIECE.pl   \
     - speciesB smallRNA-sequencing library/libraries
     
 ### PARAMETERS
+
 - `--version|-V`
 
     version of this pipeline
+
 - `--help|-h`
 
     prints a helpful help message
+
 - `--genomeA` and `--genomeB`
 
     Genome of the species with the CLIP data (species A, `--genomeA`) and
     the genome of the species where we want to predict the miRNA targets
     (species B, `--genomeB`)
+
 - `--gffA` and `--gffB`
 
     Genome feature file (GFF) of the species with the CLIP data (species
     A, `--gffA`) and the GFF of the species where we want to predict the
     miRNA targets (species B, `--gffB`)
+
 - `--clip`
 
     Comma-separated CLIP-seq .fastq files in Format
-    ```
-    --clip con1_rep1_clip.fq,con1_rep2_clip.fq,con2_clip.fq
-    # OR
-    --clip con1_rep1_clip.fq --clip con1_rep2_clip.fq --clip con2_clip.fq
-    ```
+
+        --clip con1_rep1_clip.fq,con1_rep2_clip.fq,con2_clip.fq
+        # OR
+        --clip con1_rep1_clip.fq --clip con1_rep2_clip.fq --clip con2_clip.fq
+
 - `--adapterclip`
 
     Sequencing-adapter of CLIP reads
+
 - `--smallrnaseq`
 
     Comma-separated smallRNA-seq FASTQ files, initialized with
     'condition=' in Format
-    ```
-    --smallrnaseq con1=A.fastq,B.fastq --smallrnaseq con2=C.fq
-    # OR
-    --smallrnaseq con1=A.fastq --smallrnaseq con1=B.fastq --smallrnaseq con2=C.fq
-    ```
+
+        --smallrnaseq con1=A.fastq,B.fastq --smallrnaseq con2=C.fq
+        # OR
+        --smallrnaseq con1=A.fastq --smallrnaseq con1=B.fastq --smallrnaseq con2=C.fq
+
 - `--adaptersmallrnaseq5` and `--adaptersmallrnaseq3`
 
     5' adapter of smallRNA-seq reads (`--adaptersmallrnaseq5`) and for 3' end (`--adaptersmallrnaseq3`)
+
 - `--filterncrnas`
 
     Multi-fasta file of ncRNAs to filter smallRNA-seq reads. Those must
     not contain miRNAs.
+
 - `--threads`
 
     Number of threads to be used
+
 - `--overwrite`
 
     set this parameter to overwrite existing files
+
 - `--testrun`
 
     sets this pipeline to testmode (accounting for small testset in
     piranha). This option should not be used in real analysis!
+
 - `--out`
 
     output folder
-- `--mirnas`
+
+- `--mirna`
 
     miRNA set, if set, mining is disabled and this set is used for prediction
+
 - `--speciesBtag`
 
     Three letter code of species where we want to predict the miRNA
