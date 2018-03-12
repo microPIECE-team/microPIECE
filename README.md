@@ -35,9 +35,13 @@ Please install the dependencies and run
 ## Docker
 We also provide `microPIECE` as [DOCKER image](https://hub.docker.com/r/micropiece/micropiece/). We tested the image on Ubuntu, Debian and MacOS. For the latter one, the `Piranha` command `make test` fails during the build, but when entering the container, the test succeds. Therefore, we temporarily excluded this statement.
 
-Information about the image: [![](https://images.microbadger.com/badges/version/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master "Get your own version badge on microbadger.com")
-[![](https://images.microbadger.com/badges/image/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master "Get your own image badge on microbadger.com")
-[![](https://images.microbadger.com/badges/commit/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master "Get your own commit badge on microbadger.com")
+### Information about the docker images:
+| Branch | Size | Layers | Comment |
+|-|-|-|-|
+|[![](https://images.microbadger.com/badges/version/micropiece/micropiece:v1.1.0.svg)](https://microbadger.com/images/micropiece/micropiece:v1.1.0) | [![](https://images.microbadger.com/badges/image/micropiece/micropiece:v1.1.0.svg)](https://microbadger.com/images/micropiece/micropiece:v1.1.0) | [![](https://images.microbadger.com/badges/commit/micropiece/micropiece:v1.1.0.svg)](https://microbadger.com/images/micropiece/micropiece:v1.1.0) | Latest release [v1.1.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.1.0) |
+|[![](https://images.microbadger.com/badges/version/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master) | [![](https://images.microbadger.com/badges/image/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master) | [![](https://images.microbadger.com/badges/commit/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master) | |
+|[![](https://images.microbadger.com/badges/version/micropiece/micropiece:develop.svg)](https://microbadger.com/images/micropiece/micropiece:develop) | [![](https://images.microbadger.com/badges/image/micropiece/micropiece:develop.svg)](https://microbadger.com/images/micropiece/micropiece:develop) | [![](https://images.microbadger.com/badges/commit/micropiece/micropiece:develop.svg)](https://microbadger.com/images/micropiece/micropiece:develop) | |
+
 
 ```
 docker pull micropiece/micropiece:master
