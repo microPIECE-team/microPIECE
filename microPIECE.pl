@@ -259,7 +259,7 @@ C<--out> parameter.
 
 =item C<--piranahbinsize>
 
-    Sets the F<Piranah> bin size and has a default value of C<20>.
+Sets the F<Piranah> bin size and has a default value of C<20>.
 
 =back
 
