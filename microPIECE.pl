@@ -291,7 +291,47 @@ Semicolon-separated file containing:
 
 =item orthologous prediction file: F<miRNA_orthologs.csv>
 
-tab-separated file --> C<query_id subject_id identity aln_length num_mismatches num_gapopen query_start query_end subject_start subject_end evalue bitscore query_aligned_seq subject_aligned_seq query_length subject_length query_coverage subject_coverage>
+tab-separated file containing:
+
+=over 8
+
+=item 1. C<query_id>
+
+=item 2. C<subject_id>
+
+=item 3. C<identity>
+
+=item 4. C<alignment length>
+
+=item 5. C<number mismatches>
+
+=item 6. C<number gap openings>
+
+=item 7. C<start position inside query>
+
+=item 8. C<end position inside query>
+
+=item 9. C<start position inside subject>
+
+=item 10. C<end position inside subject>
+
+=item 11. C<evalue>
+
+=item 12. C<bitscore>
+
+=item 13. C<aligned query sequence>
+
+=item 14. C<aligned subject sequence>
+
+=item 15. C<length query sequence>
+
+=item 16. C<length subject sequence>
+
+=item 17. C<coverage for query sequence>
+
+=item 18. C<coverage for subject sequence>
+
+=back
 
 =item miRDeep2 mining result in HTML/CSV F<mirdeep_output.html/csv>
 
