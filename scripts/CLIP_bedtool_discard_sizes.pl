@@ -18,10 +18,10 @@ while(<BED>){
 	}
 
 	my $bed_line	= $_;
-	my @bed_array	= split(" ",$bed_line);
+	my @bed_array	= split("\t",$bed_line);
 	my $bed_start	= $bed_array[1];
 	my $bed_stop	= $bed_array[2];
-	my $bed_len	= $bed_stop-$bed_start;
+	my $bed_len	= $bed_stop-$bed_start+1;
 	next if($bed_len < $min);
 	next if($bed_len > $max);
 	print "$bed_line\n";

@@ -3,6 +3,9 @@
 The `microPIECE` (**micro**RNA **pi**peline **e**nhanced by **C**LIP **e**xperiments) takes the AGO-CLIP data from a *speciesA* and transfers it to a *speciesB*. Given a set of miRNAs from *speciesB* it then predicts their targets on the transfered CLIP regions.
 
 For the minimal workflow it needs a genome file, as well as its annotation file in GFF format for *speciesA* and *speciesB*. For *speciesA* at least one AGO-CLIP dataset is needed and *speciesB* needs a set of miRNAs for the target prediction. For the full workflow, a set of smallRNA-sequencing data is additionally needed and a set of non-coding RNAs can be provided as filter. The pipeline uses the smallRNA data for the mining of novel microRNAs and the completion of the given miRNA dataset, if needed. It further performs expression calculation, isoform detection, genomic loci identification and orthology determination.
+## Status
+[![Build Status](https://travis-ci.org/microPIECE-team/microPIECE.svg?branch=master)](https://travis-ci.org/microPIECE-team/microPIECE)
+[![Coverage Status](https://coveralls.io/repos/github/microPIECE-team/microPIECE/badge.svg?branch=travis)](https://coveralls.io/github/microPIECE-team/microPIECE?branch=travis)
 
 ## Required Software
   - [bwa](http://bio-bwa.sourceforge.net/) (0.7.12-r1039)
@@ -30,17 +33,16 @@ Please install the dependencies and run
 `git clone git@github.com:microPIECE-team/microPIECE.git`
 
 ## Docker
-We also provide `microPIECE` as DOCKER image. We tested the image on Ubuntu, Debian and MacOS. For the latter one, the `Piranha` command `make test` fails during the build, but when entering the container, the test succeds. Therefore, we temporarily excluded this statement.
+We also provide `microPIECE` as [DOCKER image](https://hub.docker.com/r/micropiece/micropiece/). We tested the image on Ubuntu, Debian and MacOS. For the latter one, the `Piranha` command `make test` fails during the build, but when entering the container, the test succeds. Therefore, we temporarily excluded this statement.
+
+Information about the image: [![](https://images.microbadger.com/badges/version/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master "Get your own version badge on microbadger.com")
+[![](https://images.microbadger.com/badges/image/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master "Get your own image badge on microbadger.com")
+[![](https://images.microbadger.com/badges/commit/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master "Get your own commit badge on microbadger.com")
 
 ```
-docker pull micropiece/micropiece
-cd /tmp
-git clone git@github.com:microPIECE-team/microPIECE.git micropiece
-cd micropiece
+docker pull micropiece/micropiece:master
 git clone git@github.com:microPIECE-team/microPIECE-testset.git testset
-docker run -it --rm -v $PWD:/data micropiece/micropiece
-# und dann im Container:
-./microPIECE.pl   \
+docker run -it --rm -v $PWD:/data micropiece/micropiece microPIECE.pl   \
   --genomeA testset/NC_035109.1_reduced_AAE_genome.fa  \
   --genomeB testset/NC_007416.3_reduced_TCA_genome.fa   \
   --annotationA testset/NC_035109.1_reduced_AAE_genome.gff   \
@@ -57,39 +59,8 @@ docker run -it --rm -v $PWD:/data micropiece/micropiece
 
 
 ## Usage
-```
-# INPUT PARAMETERS:
-	--version|-v := version of this pipeline
-	--help|-h := prints a helpful help message
 
---genomeA := Genome of the species with the CLIP data
---genomeB := Genome of the species where we want to predict the miRNA targets
---gffA := GFF annotation of speciesA
---gffB := GFF annotation of speciesB
---clip := Comma-separated CLIP-seq .fastq files
-
- --clip con1_rep1_clip.fq,con1_rep2_clip.fq,con2_clip.fq
- OR
- --clip ron1_rep1_clip.fq --clip con1_rep2_clip.fq --clip con2_clip.fq
-    
---adapterclip := Sequencing-adapter of CLIP reads
---smallrnaseq := Comma-separated smallRNA-seq .fastq files, initialized with 'condition='
-
- --smallrnaseq con1=A.fastq,B.fastq --smallrnaseq con2=C.fq
- OR
- --smallrnaseq con1=A.fastq --smallrnaseq con1=B.fastq --smallrnaseq con2=C.fq
-    
---adaptersmallrnaseq5 := 5' adapter of smallRNA-seq reads
---adaptersmallrnaseq3 := 3' adapter of smallRNA-seq reads
---filterncrnas := Multi-fasta file of ncRNAs to filter smallRNA-seq reads
---threads := Number of threads to be used
---overwrite := set this parameter to overwrite existing files 
---testrun := sets this pipeline to testmode (accounting for small testset in piranha)
---out := output folder
---mirnas := miRNA set, if set, mining is disabled and this set is used for prediction
---speciesBtag := 3letter code of speciesB
-```
-## Input data
+### Input data
   - minimal workflow
     - speciesA genome
     - speciesA GFF
@@ -102,28 +73,149 @@ docker run -it --rm -v $PWD:/data micropiece/micropiece
     - speciesB microRNA set (precursor)
     - speciesB smallRNA-sequencing library/libraries
     
-## Output data
+### PARAMETERS
+- `--version|-V`
 
-#### mature miRNA set
-`mature_combined_mirbase_novel.fa` := mature microRNA set, containing novels and miRBase-completed (if mined), together with the known miRNAs from miRBase
-#### precursor miRNA set
-`hairpin_combined_mirbase_novel.fa` := precursor microRNA set, containing novels (if mined), together with the known miRNAs from miRBase
-#### mature miRNA expression per condition
-`miRNA_expression.csv` := Semicolon-separated file : `rpm;condition;miRNA`
-#### miRDeep2 mining result in HTML
-`result_02_03_2018_t_09_30_01.html`:= the standard output HTML file of miRDeep2
-#### all library support-level target predictions
-`*_miranda_output.txt` := miranda output, reduced to the lines, starting with `>` only
-#### all library support-level CLIP transfer .bed files
-`*transfered_merged.bed` := bed-file of the transferred CLIP-regions in speciesB transcriptome
+    version of this pipeline
+- `--help|-h`
 
-## Example
-### Testset
-Feel free to test the pipeline with our testset:
+    prints a helpful help message
+- `--genomeA` and `--genomeB`
+
+    Genome of the species with the CLIP data (species A, `--genomeA`) and
+    the genome of the species where we want to predict the miRNA targets
+    (species B, `--genomeB`)
+- `--gffA` and `--gffB`
+
+    Genome feature file (GFF) of the species with the CLIP data (species
+    A, `--gffA`) and the GFF of the species where we want to predict the
+    miRNA targets (species B, `--gffB`)
+- `--clip`
+
+    Comma-separated CLIP-seq .fastq files in Format
+    ```
+    --clip con1_rep1_clip.fq,con1_rep2_clip.fq,con2_clip.fq
+    # OR
+    --clip con1_rep1_clip.fq --clip con1_rep2_clip.fq --clip con2_clip.fq
+    ```
+- `--adapterclip`
+
+    Sequencing-adapter of CLIP reads
+- `--smallrnaseq`
+
+    Comma-separated smallRNA-seq FASTQ files, initialized with
+    'condition=' in Format
+    ```
+    --smallrnaseq con1=A.fastq,B.fastq --smallrnaseq con2=C.fq
+    # OR
+    --smallrnaseq con1=A.fastq --smallrnaseq con1=B.fastq --smallrnaseq con2=C.fq
+    ```
+- `--adaptersmallrnaseq5` and `--adaptersmallrnaseq3`
+
+    5' adapter of smallRNA-seq reads (`--adaptersmallrnaseq5`) and for 3' end (`--adaptersmallrnaseq3`)
+- `--filterncrnas`
+
+    Multi-fasta file of ncRNAs to filter smallRNA-seq reads. Those must
+    not contain miRNAs.
+- `--threads`
+
+    Number of threads to be used
+- `--overwrite`
+
+    set this parameter to overwrite existing files
+- `--testrun`
+
+    sets this pipeline to testmode (accounting for small testset in
+    piranha). This option should not be used in real analysis!
+- `--out`
+
+    output folder
+- `--mirnas`
+
+    miRNA set, if set, mining is disabled and this set is used for prediction
+- `--speciesBtag`
+
+    Three letter code of species where we want to predict the miRNA
+    targets (species B, `--speciesBtag`).
+
+- `--mirbasedir`
+
+    The folder specified by `--mirbasedir` is searched for the files
+    `organisms.txt.gz`, `mature.fa.gz`, and `hairpin.fa.gz`. If the
+    files are not exist, they will be downloaded.
+
+- `--tempdir`
+
+    The folder specified by `--tempdir` is used for temporary files. The
+    default value is `tmp/` inside the output folder specified by the
+    `--out` parameter.
+
+- `--piranahbinsize`
+
+    Sets the `Piranah` bin size and has a default value of `20`.
+
+### OUTPUT
+- mature miRNA set: `mature_combined_mirbase_novel.fa`
+
+    mature microRNA set, containing novels and miRBase-completed (if mined), together with the known miRNAs from miRBase
+- precursor miRNA set: `hairpin_combined_mirbase_novel.fa`
+
+    precursor microRNA set, containing novels (if mined), together with the known miRNAs from miRBase
+- mature miRNA expression per condition: `miRNA_expression.csv`
+
+    Semicolon-separated file --> rpm;condition;miRNA
+
+- orthologous prediction file: `miRNA_orthologs.csv`
+
+   tab-separated file --> query_id subject_id identity aln_length num_mismatches num_gapopen query_start query_end subject_start subject_end evalue bitscore query_aligned_seq subject_aligned_seq query_length subject_length query_coverage subject_coverage
+- ISOMIR prediction files: `isomir_output_CONDITION.csv`
+
+semincolon delimited file containing:
+
+   1. `mirna`
+   2. `substitutions`
+   3. `added nucleotids on 3' end`
+   4. `nucleotides at 5' end different from the annonated sequence`
+   5. `nucleotides at 3' end different from the annonated sequence`
+   6. `sequence`
+   7. `rpm`
+   8. `condition`
+
+- genomics location of miRNAs: `miRNA_genomic_position.csv`
+
+tab delimited file containing:
+
+   1. `miRNA`
+   2. `genomic contig`
+   3. `identify`
+   4. `length`
+   5. `miRNA-length`
+   6. `number mismatches`
+   7. `number gapopens`
+   8. `miRNA-start`
+   9. `miRNA-stop`
+   10. `genomic-start`
+   11. `genomic-stop`
+   12. `evalue`
+   13. `bitscore`
+
+- miRDeep2 mining result in HTML/CSV `mirdeep_output.html/csv`
+
+    the standard output HTML/CSV file of miRDeep2
+- all library support-level target predictions: `*_miranda_output.txt`
+
+    miranda output, reduced to the lines, starting with > only
+- all library support-level CLIP transfer .bed files: `*transfered_merged.bed`
+
+    bed-file of the transferred CLIP-regions in speciesB transcriptome
+
+### Example
+#### Testset
+Feel free to test the pipeline with our [microPIECE-testset](https://github.com/microPIECE-team/microPIECE-testset) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1188471.svg)](https://doi.org/10.5281/zenodo.1188471):
 
 `git clone git@github.com:microPIECE-team/microPIECE-testset.git`
 
-### Alternative
+#### Alternative
   - **minimal workflow**
     - speciesA genome [AAE genome : ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/204/515/GCF_002204515.2_AaegL5.0/GCF_002204515.2_AaegL5.0_genomic.fna.gz](https://tinyurl.com/yagl5mlo)
     - speciesA GFF [AAE GFF : ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/204/515/GCF_002204515.2_AaegL5.0/GCF_002204515.2_AaegL5.0_genomic.gff.gz](https://tinyurl.com/ybckl5pp)
@@ -137,10 +229,41 @@ Feel free to test the pipeline with our testset:
     - speciesB smallRNA-sequencing library/libraries [TCA smallRNA-sequencing data](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63770)
     - speciesB non-codingRNA set (without miRNAs - to filter smRNA-seq data) (*OPTIONAL*)
 
-    
+## CAVEATS
+Complete list of open issues is available on [Github-Issues](https://github.com/microPIECE-team/microPIECE/issues).
+
+Please report any new issues ad [new Github-Issue](https://github.com/microPIECE-team/microPIECE/issues/new).
+
 ## Changelog
-Version 1.0.0 is archived as *DOI* and submitted to [The Journal of Open Source Software](http://joss.theoj.org/).
+Version v1.1.0 (2018-03-12) Add isomir detection and copy the final genomic location file to the output filter (Fixes [#34](https://github.com/microPIECE-team/microPIECE/issues/34))
+
+Version v1.0.7 (2018-03-08) Piranha was lacking of a bin_size parameter. Added parameter `--piranahbinsize` with a default value of `20` (Fixes [#80](https://github.com/microPIECE-team/microPIECE/issues/80))
+
+Version v1.0.6 (2018-03-08) Added parameter `--mirbasedir` and `--tempdir` to support local mirbase files and relocation of directory for temporary files (Fixes [#66](https://github.com/microPIECE-team/microPIECE/issues/66), [#73](https://github.com/microPIECE-team/microPIECE/issues/73), and [#76](https://github.com/microPIECE-team/microPIECE/issues/76))
+
+Version v1.0.5 (2018-03-07) Update of documentation and correct spelling of `--mirna` parameter
+
+Version v1.0.4 (2018-03-07) Fixes complete mature in final output (Fixes [#69](https://github.com/microPIECE-team/microPIECE/issues/69))
+
+Version v1.0.3 (2018-03-06) Add tests for perl scripts in script folder which ensure the correct handling of BED stop coordinates (Fixes [#65](https://github.com/microPIECE-team/microPIECE/issues/65))
+
+Version v1.0.2 (2018-03-05) Fixes the incorrect sorting of BED files, result was correct, but sorting was performed in the wrong order. (Fixes [#63](https://github.com/microPIECE-team/microPIECE/issues/63))
+
+Version v1.0.1 (2018-03-05) Fix an error conserning BED file handling of start and stop coordinates. (Fixes [#59](https://github.com/microPIECE-team/microPIECE/issues/59))
+
+Version 1.0.0 (2018-03-05) is archived as [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1188484.svg)](https://doi.org/10.5281/zenodo.1188484) and submitted to [The Journal of Open Source Software](http://joss.theoj.org/).
+
+Version 0.9.0 (2018-03-05) first version archived at Zenodo with the [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1188481.svg)](https://doi.org/10.5281/zenodo.1188481)
 ## License
 This program is released under GPLv2. For further license information, see LICENSE.md shipped with this program.
 Copyright(c)2018 Daniel Amsel and Frank Förster (employees of Fraunhofer Institute for Molecular Biology and Applied Ecology IME) All rights reserved.
 
+# AUTHORS
+- Daniel Amsel &lt;daniel.amsel@ime.fraunhofer.de>
+- Frank Förster &lt;frank.foerster@ime.fraunhofer.de>
+
+# SEE ALSO
+[Project source code on Github](https://github.com/microPIECE-team/microPIECE)
+[Docker image on DockerHub](https://hub.docker.com/r/micropiece/micropiece/)
+[Travis continuous integration page](https://travis-ci.org/microPIECE-team/microPIECE)
+[Test coverage reports](https://coveralls.io/github/microPIECE-team/microPIECE)

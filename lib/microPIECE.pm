@@ -3,18 +3,22 @@ package microPIECE;
 use strict;
 use warnings;
 
-use version 0.77; our $VERSION = version->declare("v0.9.0");
+use version 0.77; our $VERSION = version->declare("v1.1.0");
 
 use Log::Log4perl;
 use Data::Dumper;
 use Cwd;
 use File::Path;
 use File::Basename;
+use File::Copy;
 use File::Spec;
 use File::Temp qw/ :POSIX /;
 use IO::Uncompress::Gunzip qw(gunzip $GunzipError);
 
 use IPC::Run3;
+use IPC::Cmd;
+
+my @temp_files = (); # used for cleaning of temporary files
 
 =pod
 
@@ -78,6 +82,30 @@ sub check_files
 	}
 
     }
+}
+
+sub create_folder
+{
+    my @dirs2create = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    my @dir = File::Path::make_path(@dirs2create, { error => \my $err} );
+    if ($err && @{$err})
+    {
+	for my $diag (@$err)
+	{
+	    my ($folder, $message) = %$diag;
+	    if ($folder eq '')
+	    {
+		$L->fatal("general error: $message\n");
+	    } else {
+		$L->fatal("problem creating $folder: $message");
+	    }
+	}
+	return;
+    }
+    return 1;
 }
 
 =pod
@@ -199,6 +227,160 @@ sub check_requirements {
 
     ##############################################################
     #
+    #  Check external programs
+    #
+    ##############################################################
+    my $software2test = {
+	'bedtools'                     => {
+	    clip             => 1,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'blastn'                       => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'bowtie-build'                 => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'bwa'                          => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'collapse_reads_md.pl'         => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'cutadapt'                     => {
+	    clip             => 1,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'fastq2fasta.pl'               => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'gffread'                      => {
+	    clip             => 1,
+	    mining           => 0,
+	    targetprediction => 0
+	},
+	'gmap_build'                   => {
+	    clip             => 1,
+	    mining           => 0,
+	    targetprediction => 0
+	},
+	'gsnap'                        => {
+	    clip             => 1,
+	    mining           => 0,
+	    targetprediction => 0
+	},
+	'makeblastdb'                  => {
+	    clip             => 1,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'mapper.pl'                    => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'miRDeep2.pl'                  => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'xa2multi.pl'                  => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'Piranha'                      => {
+	    clip             => 1,
+	    mining           => 0,
+	    targetprediction => 0
+	},
+	'proteinortho5.pl'             => {
+	    clip             => 1,
+	    mining           => 0,
+	    targetprediction => 0
+	},
+	'remove_white_space_in_id.pl'  => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'samtools'                     => {
+	    clip             => 1,
+	    mining           => 1,
+	    targetprediction => 0
+	},
+	'miraligner'                   => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+         },
+        'java'                         => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+        },
+	'wget'                         => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+        }
+    };
+    ## what software need to be checked
+    my @fulfilled_dependency = ();
+    my @missing_dependency = ();
+    foreach my $prog (keys %{$software2test})
+    {
+	my $need2check = 0;
+	foreach my $step (qw(clip mining targetprediction))
+	{
+	    $need2check++ if ($software2test->{$prog}{$step} && $opt->{"run_".$step});
+	}
+
+	if ($need2check)
+	{
+	    my $full_path;
+	    if ($prog eq "miraligner")
+	    {
+		$opt->{miraligner} = "/opt/seqbuster/modules/miraligner/miraligner.jar";   # default docker path
+		if (exists $ENV{MIRALIGNER} && defined $ENV{MIRALIGNER})
+		{
+		    $opt->{miraligner} = $ENV{MIRALIGNER};
+		}
+		if (-e $opt->{miraligner})
+		{
+		    $full_path = $opt->{miraligner};
+		} else {
+		    $L->WARN("Unable to find 'miraligner.jar'! Please specify its location via MIRALIGNER environmental variable!");
+		}
+	    } else {
+		$full_path = IPC::Cmd::can_run($prog);
+	    }
+	    if ($full_path)
+	    {
+		push(@fulfilled_dependency, { prog => $prog, path => $full_path });
+	    } else {
+		push(@missing_dependency, $prog);
+	    }
+	}
+    }
+
+    $L->info(sprintf("Found dependencies: %s", join(", ", map {$_->{prog}."(".$_->{path}.")"} (@fulfilled_dependency))));
+    $L->logdie(sprintf("Unable to run due to missing dependencies: %s", join(", ", (@missing_dependency)))) if (@missing_dependency);
+
+    ##############################################################
+    #
     #  Check output directory
     #
     ##############################################################
@@ -215,17 +397,20 @@ sub check_requirements {
 		for my $diag (@$err) {
 		    my ($file, $message) = %$diag;
 		    if ($file eq '') {
-			$L->logdie("general error: $message");
+			$L->fatal("general error: $message");
 		    }
 		    else {
-			$L->logdie("problem unlinking $file: $message");
+			$L->fatal("problem unlinking $file: $message");
 		    }
 		}
+		$L->logdie("Error removing old directory");
 	    }
 	}
     }
 
-    mkdir($opt->{out}) || $L->logdie("Unable to create output file: $!");
+    $opt->{out} = File::Spec->rel2abs($opt->{basedir}.$opt->{out});
+    $opt->{tempdir} = File::Spec->rel2abs($opt->{basedir}.$opt->{tempdir});
+    create_folder($opt->{out}, $opt->{tempdir}) || $L->logdie("Error on directory creation");
 
     ##############################################################
     #
@@ -233,9 +418,8 @@ sub check_requirements {
     #
     ##############################################################
 
-    $opt->{basedir} = $opt->{basedir}.$opt->{out}."/";
+    $opt->{basedir} = $opt->{out}."/";
     chdir($opt->{basedir});
-
 }
 
 =pod
@@ -273,6 +457,11 @@ sub run_mining {
 
     $L->info("Starting mining step");
 
+    my $currentdir = getcwd;
+    my $new_folder = "mining";
+    create_folder($new_folder) || $L->logdie("Error on directory '$new_folder' creation");
+    chdir($new_folder);
+
     run_mining_clipping($opt);
     run_mining_filtering($opt);
     run_mining_downloads($opt);
@@ -282,10 +471,167 @@ sub run_mining {
     run_mining_mirdeep2fasta($opt);
     run_mining_quantification($opt);
 
+    run_mining_isomir($opt);
+
     run_mining_genomicposition($opt);
+
+    run_mining_orthologs($opt);
 
     $opt->{mirna} = $opt->{final_mature};
     $L->info("Finished mining step");
+
+    chdir($currentdir);
+}
+
+sub get_mirbase_download_or_local_copy
+{
+    my ($opt, $filename) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+    my $delete = 0;
+
+    unless (exists $opt->{mirbasedir} && defined $opt->{mirbasedir} && -e $opt->{mirbasedir}."/".$filename)
+    {
+	my @cmd=("wget", "--quiet", "ftp://mirbase.org/pub/mirbase/CURRENT/".$filename);
+	run_cmd($L, \@cmd);
+	$delete = 1;          # remove downloaded file
+    } else {
+	$filename = $opt->{mirbasedir}."/".$filename;
+    }
+    # decompress the file
+    my $output = getcwd()."/".basename($filename, ".gz");
+    my $status = gunzip $filename => $output || $L->logdie("gunzip failed: $GunzipError");
+
+    # delete the output, if not local copy
+    if ($delete && -e $filename)
+    {
+	unlink($filename) || $L->error("Unable to delete downloaded file '$filename': $!");
+    }
+
+    return $output;
+}
+
+sub run_mining_isomir
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    # Create a miRNA.str (miRNA structure file with the novel microRNAs)
+    $opt->{mining}{download}{mirbase_mirna_structure}  = get_mirbase_download_or_local_copy($opt, "miRNA.str.gz");
+    $opt->{mining}{download}{custom_structure} = getcwd()."/custom.str";
+
+    my @cmd=(
+	$opt->{scriptdir}."/ISOMIR_create_mirbase_struct.pl",
+	"--hairpin", $opt->{final_hairpin},
+	"--mature", $opt->{final_mature},
+	"--struct", $opt->{mining}{download}{mirbase_mirna_structure},
+	"--out", $opt->{mining}{download}{custom_structure},
+	);
+    run_cmd($L, \@cmd);
+
+    foreach my $condition (keys %{$opt->{mining}{filtered}})
+    {
+	my @condition_files_from_miraligner = ();
+
+	foreach my $file (@{$opt->{mining}{filtered}{$condition}})
+	{
+	    # run through all short read files and ensure reads have no non-ACGT nucleotids incorporated
+	    my $file_filteredN_collapsed = getcwd()."/".basename($file, ".fq")."_filteredN_collapsed.fq";
+	    my $miraligner_out           = getcwd()."/".basename($file, ".fq")."_miraligner_out";
+	    push(@{$opt->{mining}{filtered4N_collapsed}{$condition}}, $file_filteredN_collapsed);
+
+	    filter_for_N_and_collapse_reads($file, $file_filteredN_collapsed);
+
+	    # run miraligner for each read file
+	    my @cmd = ("java", "-jar", $opt->{miraligner}, "-sub", 1, "-trim", 3, "-add", 3, "-s", $opt->{speciesB_tag}, "-freq", "-i", $file_filteredN_collapsed, "-db", getcwd(), "-o", $miraligner_out);
+	    run_cmd($L, \@cmd);
+
+	    my $expected_output_file = $miraligner_out.".mirna";
+	    unless (-e $expected_output_file)
+	    {
+		$L->logdie("Expected output file '$expected_output_file' does not exist");
+	    }
+	    push(@condition_files_from_miraligner, $expected_output_file);
+	}
+
+	my @cmd = (
+	    $opt->{scriptdir}."/ISOMIR_reformat_isomirs.pl",
+	    join(",", @condition_files_from_miraligner),
+	    $condition
+	    );
+	my $output_file = getcwd()."/isomir_output_".$condition.".csv";
+	run_cmd($L, \@cmd, undef, $output_file);
+
+	push(@{$opt->{isomir_output_files}}, $output_file);
+    }
+}
+
+sub filter_for_N_and_collapse_reads
+{
+    my ($infile, $outfile) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+    my %seq_collapsed = ();
+
+    open(FH, "<", $infile) || $L->logdie("Unable to open file '$infile' for reading: $!");
+    while(!eof(FH))
+    {
+	my $header  = <FH>;
+	my $seq     = <FH>;
+	my $header2 = <FH>;
+	my $qual    = <FH>;
+	chomp($header, $seq, $header2, $qual);
+
+	# check if the sequence contains Ns
+	my $num_nucleotids2keep = $seq =~ tr/AGCTagct/AGCTagct/;
+
+	if ($num_nucleotids2keep == length($seq))
+	{
+	    $seq_collapsed{$seq}{counts}++;
+	    push(@{$seq_collapsed{$seq}{qual}}, $qual);
+	}
+    }
+    close(FH) || $L->logdie("Unable to close file '$infile': $!");
+
+    open(OUT, ">", $outfile) || $L->logdie("Unable to open file '$outfile' for writing: $!");
+    my $counter = 1;
+    foreach my $seq (keys %seq_collapsed)
+    {
+	# get the mean quality for each position
+	my $counts = $seq_collapsed{$seq}{counts};
+	my @sum=();
+	foreach my $current_qual (@{$seq_collapsed{$seq}{qual}})
+	{
+	    for(my $i=0; $i<length($seq); $i++)
+	    {
+		$sum[$i]+=ord(substr($current_qual, $i, 1));
+	    }
+	}
+	my $qual = join("", (map { chr(int($_/$counts)) } (@sum)));
+	printf OUT '@'."seq_%d_x%d\n%s\n+\n%s\n", $counter, $counts, $seq, $qual;
+	$counter++;
+    }
+    close(OUT)|| $L->logdie("Unable to close file '$outfile': $!");
+}
+
+sub run_mining_orthologs
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    $opt->{mining}{orthologs} = getcwd()."/miRNA_orthologs.csv";
+
+    my @cmd = (
+	$opt->{scriptdir}."/MINING_ortholog_blast.pl",
+	"--query", $opt->{final_mature},
+	"--subject", $opt->{mining}{splitted}{nonspeciesmature},
+	"--out", $opt->{mining}{orthologs},
+	"--threads", $opt->{threads}
+	);
+    run_cmd($L, \@cmd);
+
 }
 
 sub run_mining_genomicposition
@@ -329,9 +675,9 @@ sub run_mining_quantification
     run_cmd($L, \@cmd);
 
     # map the filtered short read libraries
-    my $temp_sai = tmpnam();
-    my $temp_sam = tmpnam();
-    my $temp_sam_mapped_only = tmpnam();
+    my $temp_sai = create_tempfile($opt);
+    my $temp_sam = create_tempfile($opt);
+    my $temp_sam_mapped_only = create_tempfile($opt);
     my @config_file_content = ();
 
     foreach my $condition (keys %{$opt->{mining}{filtered}})
@@ -372,9 +718,16 @@ sub run_mining_quantification
     close(FH) || $L->logdie("Unable to close file '$config_file': $!");
 
     # run the quantification analysis
-    $opt->{mining_quantification_result} = "miRNA_expression.csv";
-    @cmd = ($opt->{scriptdir}."061_sam2de.pl", "--cfg", $config_file, "--mature_file", $opt->{final_mature}, "--out", $opt->{mining_quantification_result});
+    $opt->{mining_quantification_result} = getcwd()."/"."miRNA_expression.csv";
+    @cmd = (
+	$opt->{scriptdir}."MINING_sam2de.pl",
+           "--cfg", $config_file,
+	   "--mature_file", $opt->{final_mature},
+	   "--out", $opt->{mining_quantification_result}
+	);
     run_cmd($L, \@cmd);
+
+    clean_tempfiles();
 }
 
 sub run_mining_mirdeep2fasta
@@ -383,16 +736,23 @@ sub run_mining_mirdeep2fasta
 
     my $L = Log::Log4perl::get_logger();
 
-    $opt->{novel_mature} = "novel_mature.fa";
-    $opt->{novel_hairpin} = "novel_hairpin.fa";
+    $opt->{novel_mature} = getcwd()."/"."novel_mature.fa";
+    $opt->{novel_hairpin} = getcwd()."/"."novel_hairpin.fa";
 
-    my @cmd = ($opt->{scriptdir}."041_curated_mirdeep2fasta.pl", "--csv", $opt->{mirdeep_output}, "--cutoff", 10, "--matureout", $opt->{novel_mature}, "--hairpinout", $opt->{novel_hairpin}, "--species", $opt->{speciesB_tag});
+    my @cmd = (
+	$opt->{scriptdir}."MINING_curate_mirdeep2fasta.pl",
+	       "--csv", $opt->{mirdeep_output},
+	       "--cutoff", 10,
+	       "--matureout", $opt->{novel_mature},
+	       "--hairpinout", $opt->{novel_hairpin},
+	       "--species", $opt->{speciesB_tag}
+	);
     run_cmd($L, \@cmd);
 
     # combine novel and known mature sequences and ensure DNA nucleotides
-    $opt->{final_mature} = "mature_combined_mirbase_novel.fa";
+    $opt->{final_mature} = getcwd()."/"."mature_combined_mirbase_novel.fa";
     open(OUT, ">", $opt->{final_mature}) || $L->logdie("Unable to open file '$opt->{final_mature}' for writing: $!");
-    foreach my $file ($opt->{novel_mature}, "mature_mirbase.fa")
+    foreach my $file ($opt->{novel_mature}, $opt->{mining}{completion}{completed})
     {
 	open(FH, "<", $file) || $L->logdie("Unable to open file '$file': $!");
 	while(<FH>)
@@ -408,9 +768,9 @@ sub run_mining_mirdeep2fasta
     close(OUT) || $L->logdie("Unable to close file '$opt->{final_mature}' after writing: $!");
 
     # combine novel and known hairpin sequences and ensure DNA nucleotides
-    $opt->{final_hairpin} = "hairpin_combined_mirbase_novel.fa";
+    $opt->{final_hairpin} = getcwd()."/"."hairpin_combined_mirbase_novel.fa";
     open(OUT, ">", $opt->{final_hairpin}) || $L->logdie("Unable to open file '$opt->{final_hairpin}' for writing: $!");
-    foreach my $file ($opt->{novel_hairpin}, "precursor_mirbase.fa")
+    foreach my $file ($opt->{novel_hairpin}, $opt->{mining}{splitted}{precursor})
     {
 	open(FH, "<", $file) || $L->logdie("Unable to open file '$file': $!");
 	while(<FH>)
@@ -432,13 +792,10 @@ sub run_mining_complete
 
     my $L = Log::Log4perl::get_logger();
 
-    my @cmd = ($opt->{scriptdir}."021_parse_miRDeep2_output.pl", "-mirdeep_out", $opt->{mirdeep_output}, "-mature_fasta", "mature_mirbase.fa");
-    my $output = run_cmd($L, \@cmd);
+    $opt->{mining}{completion}{completed} = getcwd()."/mature_mirbase_completed.fa";
 
-    my $mirbase_completed = "mature_mirbase_completed.fa";
-    open(FH, ">", $mirbase_completed) || $L->logdie("Unable to open file '$mirbase_completed': $!");
-    print FH $output;
-    close(FH) || $L->logdie("Unable to close file '$mirbase_completed': $!");
+    my @cmd = ($opt->{scriptdir}."MINING_complete_mirbase_by_miRDeep2_output.pl", "-mirdeep_out", $opt->{mirdeep_output}, "-mature_fasta", $opt->{mining}{splitted}{mature});
+    my $output = run_cmd($L, \@cmd, undef, $opt->{mining}{completion}{completed});
 }
 
 sub run_mining_rna2dna
@@ -464,7 +821,7 @@ sub run_mining_mirdeep2
     my $L = Log::Log4perl::get_logger();
     # miRDeep2 needs fasta headers without whitespaces and provides this script for that purpose
 
-    my $genome_wo_whitespace = $opt->{basedir}."genome_without_whitespace.fa";
+    my $genome_wo_whitespace = getcwd()."/"."genome_without_whitespace.fa";
     my %files_from_mirbase = ();
 
     my @cmd=("remove_white_space_in_id.pl", $opt->{genomeB});
@@ -477,14 +834,18 @@ sub run_mining_mirdeep2
     $genome_without_whitespace = "";
 
     # convert files from mirbase_files subroutine
-    foreach my $file (qw(mature_mirbase.fa precursor_mirbase.fa mature.fa-no-speciesB.fa))
+    foreach my $file (qw(mature nonspeciesmature precursor))
     {
-	@cmd=("remove_white_space_in_id.pl", $file);
+	$L->logdie("Missing entry for \$opt->{mining}{splitted}{$file}\n") unless (exists $opt->{mining}{splitted}{$file});
+
+	my @cmd=("remove_white_space_in_id.pl", $opt->{mining}{splitted}{$file});
 	my $output = run_cmd($L, \@cmd);
+
 	# convert to DNA
 	run_mining_rna2dna(\$output);
+
 	# write it into a file
-	my $new_filename = basename($file, ".fa")."_wo_whitespace.fa";
+	my $new_filename = basename($opt->{mining}{splitted}{$file}, ".fa")."_wo_whitespace.fa";
 	open(FH, ">", $new_filename) || $L->logdie("Unable to open file '$new_filename' for writing: $!");
 	print FH $output;
 	close(FH) || $L->logdie("Unable to close file '$new_filename' after writing: $!");
@@ -505,7 +866,7 @@ sub run_mining_mirdeep2
     run_cmd($L, \@cmd);
 
     # run through all short read files and concat the output in a single fasta file
-    my $tempfasta = tmpnam();
+    my $tempfasta = create_tempfile($opt);
     foreach my $condition (keys %{$opt->{mining}{filtered}})
     {
 	foreach my $file (@{$opt->{mining}{filtered}{$condition}})
@@ -513,6 +874,7 @@ sub run_mining_mirdeep2
 	    # convert to fasta
 	    my @cmd = ("fastq2fasta.pl", $file);
 	    my $output = run_cmd($L, \@cmd);
+
 	    # write to tempfasta
 	    open(FH, ">>", $tempfasta) || $L->logdie("Unable to open file '$tempfasta' for writing: $!");
 	    print FH $output;
@@ -520,9 +882,9 @@ sub run_mining_mirdeep2
 	}
     }
 
-    my $tempfasta_wo_whitespace = tmpnam();
-    my $tempfasta_wo_whitespace_collapsed = tmpnam();
-    my $temparf = tmpnam();
+    my $tempfasta_wo_whitespace = create_tempfile($opt);
+    my $tempfasta_wo_whitespace_collapsed = create_tempfile($opt);
+    my $temparf = create_tempfile($opt);
 
     # remove whitespaces
     @cmd=("remove_white_space_in_id.pl", $tempfasta);
@@ -545,7 +907,7 @@ sub run_mining_mirdeep2
     run_cmd($L, \@cmd);
 
     # run mirdeep
-    @cmd = ("miRDeep2.pl", $tempfasta_wo_whitespace_collapsed, $genome_wo_whitespace, $temparf, $files_from_mirbase{'mature_mirbase.fa'}, $files_from_mirbase{'mature.fa-no-speciesB.fa'}, $files_from_mirbase{'precursor_mirbase.fa'}, "-P");
+    @cmd = ("miRDeep2.pl", $tempfasta_wo_whitespace_collapsed, $genome_wo_whitespace, $temparf, $files_from_mirbase{'mature'}, $files_from_mirbase{'nonspeciesmature'}, $files_from_mirbase{'precursor'}, "-P");
     run_cmd($L, \@cmd);
 
     # save output
@@ -555,8 +917,19 @@ sub run_mining_mirdeep2
 	$L->logdie("Found multiple *.csv files instead of a single: ".join(", ", map {"'$_'"} (@csv_files)));
     }
 
-    $opt->{mirdeep_output} = "mirdeep_output.csv";
+    $opt->{mirdeep_output} = getcwd()."/"."mirdeep_output.csv";
     rename $csv_files[0], $opt->{mirdeep_output} || $L->logdie("Unable to rename mirdeep output file");
+
+    my @html_files = grep { /result_/ } (glob("*.html"));
+    unless (@html_files == 1)
+    {
+	$L->logdie("Found multiple *.html files instead of a single: ".join(", ", map {"'$_'"} (@html_files)));
+    }
+
+    $opt->{mirdeep_output_html} = getcwd()."/"."mirdeep_output.html";
+    rename $html_files[0], $opt->{mirdeep_output_html} || $L->logdie("Unable to rename mirdeep output html file");
+
+    clean_tempfiles();
 }
 
 sub run_mining_mirbase_files
@@ -564,19 +937,20 @@ sub run_mining_mirbase_files
     my ($opt) = @_;
 
     my $L = Log::Log4perl::get_logger();
-    # -species	 	:= 3letter code of desired species(b)
-    # -precursor_file 	:= hairpin.fasta from miRBase.org
-    # -mature 		:= mature.fasta from miRBase.org
-    # -organism 	:= organism.txt from miRBase.org
-    # -out 		:= output folder
-    # This script separates the miRBase files into groups of multifasta files that either belong to the speciesB or not.
-    # In every case, it filters the microRNAs so that only metazoan are included.
-    my @cmd = ($opt->{scriptdir}."011_mirbase_files.pl",
-	       "-species", $opt->{speciesB_tag},
-	       "-precursor_file", $opt->{mining}{download}{hairpin},
-	       "-mature", $opt->{mining}{download}{mature},
-	       "-organism", $opt->{mining}{download}{organisms},
-	       "-out", "./");
+    my $cwd = getcwd()."/";
+    $opt->{mining}{splitted}{mature}           = $cwd."mature_mirbase_splitted.fa";
+    $opt->{mining}{splitted}{precursor}        = $cwd."precursor_mirbase_splitted.fa";
+    $opt->{mining}{splitted}{nonspeciesmature} = $cwd."mature_mirbase_splitted-not-speciesB.fa";
+
+    my @cmd = ($opt->{scriptdir}."MINING_split_mirbase_files.pl",
+	       "--species",             $opt->{speciesB_tag},
+	       "--precursor_file",      $opt->{mining}{download}{hairpin},
+	       "--mature",              $opt->{mining}{download}{mature},
+	       "--organism",            $opt->{mining}{download}{organisms},
+	       "--outmature",           $opt->{mining}{splitted}{mature},
+	       "--outprecursor",        $opt->{mining}{splitted}{precursor},
+	       "--outnonspeciesmature", $opt->{mining}{splitted}{nonspeciesmature},
+	);
     run_cmd($L, \@cmd);
 }
 
@@ -594,14 +968,7 @@ sub run_mining_downloads
 
     foreach my $key(sort keys %filelist)
     {
-	my $file = $filelist{$key};
-	my @cmd=("wget", "--quiet", "ftp://mirbase.org/pub/mirbase/CURRENT/".$file);
-	run_cmd($L, \@cmd);
-	# decompress the file
-	my $output = basename($file, ".gz");
-	my $status = gunzip $file => $output || $L->logdie("gunzip failed: $GunzipError");
-
-	$opt->{mining}{download}{$key} = $output;
+	$opt->{mining}{download}{$key}  = get_mirbase_download_or_local_copy($opt, $filelist{$key});
     }
 }
 
@@ -625,16 +992,16 @@ sub run_mining_filtering
     run_cmd($L, \@cmd);
 
     $L->logdie("Something went completly wrong") unless (exists $opt->{mining} && $opt->{mining}{trimmed});
-    my $tempbwaout = tmpnam();
-    my $tempsamout = tmpnam();
-    my $tempsamfilteredout = tmpnam();
-    my $tempsamsortedout = tmpnam();
+    my $tempbwaout = create_tempfile($opt);
+    my $tempsamout = create_tempfile($opt);
+    my $tempsamfilteredout = create_tempfile($opt);
+    my $tempsamsortedout = create_tempfile($opt);
     foreach my $condition (keys %{$opt->{mining}{trimmed}})
     {
 	foreach my $file (@{$opt->{mining}{trimmed}{$condition}})
 	{
 	    # new filename will be
-	    my $filtered_fq = $opt->{basedir}.basename($file, (".fq", ".fastq"))."_filtered.fq";
+	    my $filtered_fq = getcwd()."/".basename($file, (".fq", ".fastq"))."_filtered.fq";
 
 	    # map to filter file
 	    # -n 1 := edit distance of 1
@@ -666,6 +1033,8 @@ sub run_mining_filtering
 	}
     }
 
+    clean_tempfiles();
+
     return;
 }
 
@@ -693,7 +1062,7 @@ sub run_mining_clipping
 	foreach my $file (@{$opt->{smallrnaseq}{$condition}})
 	{
 	    my @cmd2run = @cmd;
-	    my $outfile = $opt->{basedir}.basename($file, (".fq", ".fastq"))."_trimmed.fq";
+	    my $outfile = getcwd()."/".basename($file, (".fq", ".fastq"))."_trimmed.fq";
 	    push(@cmd2run, ($file, "-o", $outfile));
 	    run_cmd($L, \@cmd2run);
 	    push(@{$opt->{mining}{trimmed}{$condition}}, $outfile);
@@ -721,6 +1090,11 @@ sub run_clip {
 
     $L->info("Starting CLIP step");
 
+    my $currentdir = getcwd;
+    my $new_folder = "clip";
+    create_folder($new_folder) || $L->logdie("Error on directory '$new_folder' creation");
+    chdir($new_folder);
+
     run_proteinortho($opt);
     run_CLIP_adapter_trimming($opt);
     run_CLIP_build_db($opt);
@@ -732,8 +1106,9 @@ sub run_clip {
     run_CLIP_process($opt);
     run_CLIP_transfer($opt);
 
-    $L->info("Finished CLIP step");
+    chdir($currentdir);
 
+    $L->info("Finished CLIP step");
 }
 
 =pod
@@ -756,15 +1131,23 @@ sub run_targetprediction {
 
     $L->info("Starting target prediction step");
 
+    my $currentdir = getcwd;
+    my $new_folder = "targetprediction";
+    create_folder($new_folder) || $L->logdie("Error on directory '$new_folder' creation");
+    chdir($new_folder);
+
     foreach my $file (@{$opt->{seq4prediction}})
     {
-	my $final_output = $opt->{basedir}.basename($file)."_final_miranda_output.txt";
+	my $final_output = getcwd()."/".basename($file)."_final_miranda_output.txt";
 
 	my @cmd = ($opt->{scriptdir}."Targetprediction.pl", $opt->{mirna}, $file, $final_output);
-	run_cmd($L, \@cmd)
+	run_cmd($L, \@cmd);
+	push(@{$opt->{miranda_output}}, $final_output);
     }
-    $L->info("Finished target prediction step");
 
+    chdir($currentdir);
+
+    $L->info("Finished target prediction step");
 }
 
 sub run_CLIP_transfer
@@ -773,29 +1156,29 @@ sub run_CLIP_transfer
 
     my $L = Log::Log4perl::get_logger();
 
-    $opt->{mRNAB} = $opt->{basedir}."/"."mRNAB.fa";
+    $opt->{mRNAB} = getcwd()."/"."mRNAB.fa";
     my @cmd = ("gffread", $opt->{annotationB}, "-w", $opt->{mRNAB}, "-F", "-g", $opt->{genomeB});
     run_cmd($L, \@cmd);
 
     my @inputfiles = glob("clip_merged_*of*BEDfilter_mapGFF_minLen*_min*_max*_sort_UC.fasta");
 
-    my $file_uniqueA     = $opt->{basedir}.basename($opt->{annotationA}, ".gff")."_unique.csv";
-    my $file_uniqueA_log = $opt->{basedir}.basename($opt->{annotationA}, ".gff")."_unique.err";
+    my $file_uniqueA     = getcwd()."/".basename($opt->{annotationA}, ".gff")."_unique.csv";
+    my $file_uniqueA_log = getcwd()."/".basename($opt->{annotationA}, ".gff")."_unique.err";
     @cmd = ($opt->{scriptdir}."CLIP_parse_gff_return_longest_transcript.pl", $opt->{annotationA});
     run_cmd($L, \@cmd, undef, $file_uniqueA, $file_uniqueA_log);
 
-    my $file_uniqueB     = $opt->{basedir}.basename($opt->{annotationB}, ".gff")."_unique.csv";
-    my $file_uniqueB_log = $opt->{basedir}.basename($opt->{annotationB}, ".gff")."_unique.err";
+    my $file_uniqueB     = getcwd()."/".basename($opt->{annotationB}, ".gff")."_unique.csv";
+    my $file_uniqueB_log = getcwd()."/".basename($opt->{annotationB}, ".gff")."_unique.err";
     @cmd = ($opt->{scriptdir}."CLIP_parse_gff_return_longest_transcript.pl", $opt->{annotationB});
     run_cmd($L, \@cmd, undef, $file_uniqueB, $file_uniqueB_log);
 
     foreach my $file (@inputfiles)
     {
-	my $needle_csv = $opt->{basedir}.basename($file, ".fasta")."_needle.csv";
-	my $needle_aln = $opt->{basedir}.basename($file, ".fasta")."_needle.aln";
-	my $bed_out = $opt->{basedir}.basename($file, ".fasta")."_transfered.bed";
-	my $bed_merged = $opt->{basedir}.basename($file, ".fasta")."_transfered_merged.bed";
-	my $final_fasta = $opt->{basedir}.basename($file, ".fasta")."_transfered_final.fasta";
+	my $needle_csv =  getcwd()."/".basename($file, ".fasta")."_needle.csv";
+	my $needle_aln =  getcwd()."/".basename($file, ".fasta")."_needle.aln";
+	my $bed_out =     getcwd()."/".basename($file, ".fasta")."_transfered.bed";
+	my $bed_merged =  getcwd()."/".basename($file, ".fasta")."_transfered_merged.bed";
+	my $final_fasta = getcwd()."/".basename($file, ".fasta")."_transfered_final.fasta";
 
 	@cmd = ($opt->{scriptdir}."CLIP_map_clip_gff_needle.pl", $file_uniqueA, $opt->{proteinortho}, $file, $file_uniqueB, $opt->{mRNAB}, $needle_csv);
 	run_cmd($L, \@cmd, undef, $needle_aln);
@@ -813,6 +1196,7 @@ sub run_CLIP_transfer
 	run_cmd($L, \@cmd);
 
 	push(@{$opt->{seq4prediction}}, $final_fasta);
+	push(@{$opt->{clip_final_bed}}, $bed_merged);
     }
 }
 
@@ -829,9 +1213,9 @@ sub run_CLIP_process
 
     foreach my $file (@inputfiles)
     {
-	my $sorted_bed = sprintf("%s%s_min%i_max%i_sort.bed",      $opt->{basedir}, basename($file, ".bed"), $min, $max);
-	my $fasta =      sprintf("%s%s_min%i_max%i_sort.fasta",    $opt->{basedir}, basename($file, ".bed"), $min, $max);
-	my $fastaUC =    sprintf("%s%s_min%i_max%i_sort_UC.fasta", $opt->{basedir}, basename($file, ".bed"), $min, $max);
+	my $sorted_bed = sprintf("%s%s_min%i_max%i_sort.bed",      getcwd()."/", basename($file, ".bed"), $min, $max);
+	my $fasta =      sprintf("%s%s_min%i_max%i_sort.fasta",    getcwd()."/", basename($file, ".bed"), $min, $max);
+	my $fastaUC =    sprintf("%s%s_min%i_max%i_sort_UC.fasta", getcwd()."/", basename($file, ".bed"), $min, $max);
 	my @cmd = ($opt->{scriptdir}."CLIP_bedtool_discard_sizes.pl", $file, $min, $max);
 	my $output = run_cmd($L, \@cmd);
 
@@ -843,7 +1227,7 @@ sub run_CLIP_process
 	    push(@dat, \@fields);
 	}
 
-	@dat = sort { $a->[0] cmp $b->[0] || $a->[1] <=> $b->[2] } (@dat);
+	@dat = sort { $a->[0] cmp $b->[0] || $a->[1] <=> $b->[1] } (@dat);
 
 	open(FH, ">", $sorted_bed) || $L->logdie("Unable to open '$sorted_bed': $!");
 	foreach my $fields (@dat)
@@ -887,7 +1271,7 @@ sub run_CLIP_clip_mapper
 
     foreach my $file (@inputfiles)
     {
-	my $outputname = $opt->{basedir}.basename($file, ".bed")."_mapGFF_minLen0.bed";
+	my $outputname = getcwd()."/".basename($file, ".bed")."_mapGFF_minLen0.bed";
 	my @cmd = ($opt->{scriptdir}."CLIP_mapper.pl", $file, $opt->{annotationA}, $minlength);
 	run_cmd($L, \@cmd, undef, $outputname);
     }
@@ -899,13 +1283,13 @@ sub run_CLIP_filterbed
 
     my $L = Log::Log4perl::get_logger();
 
-    my @cmd = ($opt->{scriptdir}."CLIP_bed2signal.pl", $opt->{basedir}."clip_merged.bed");
+    my @cmd = ($opt->{scriptdir}."CLIP_bed2signal.pl", getcwd()."/"."clip_merged.bed");
 
     my $num_fields = int(@{$opt->{clip}});
 
     for(my $i=1;$i<=@{$opt->{clip}};$i++)
     {
-	my $filtered_bed_out = sprintf("%sclip_merged_%dof%dBEDfilter.bed", $opt->{basedir}, $i, $num_fields);
+	my $filtered_bed_out = sprintf("%sclip_merged_%dof%dBEDfilter.bed", getcwd()."/", $i, $num_fields);
 	run_cmd($L, [@cmd, $i], undef, $filtered_bed_out);
     }
 }
@@ -917,11 +1301,11 @@ sub run_CLIP_bedtools_merge
 
     my $L = Log::Log4perl::get_logger();
 
-    my @cmd = ($opt->{scriptdir}."CLIP_merge_bed_files.pl", "--output", $opt->{basedir}."clip_merged.bed", "--log", "merging_bed_files.log");
+    my @cmd = ($opt->{scriptdir}."CLIP_merge_bed_files.pl", "--output", getcwd()."/"."clip_merged.bed", "--log", "merging_bed_files.log");
 
     for(my $i=0;$i<@{$opt->{clip}};$i++)
     {
-	my $sortedpiranhafile = $opt->{basedir}.basename($opt->{clip}[$i]).".piranha.sorted.bed";
+	my $sortedpiranhafile = getcwd()."/".basename($opt->{clip}[$i]).".piranha.sorted.bed";
 	push(@cmd, ("--input", basename($opt->{clip}[$i])."=".$sortedpiranhafile));
     }
 
@@ -936,13 +1320,13 @@ sub run_CLIP_piranha
 
     foreach my $clipfile (@{$opt->{clip}})
     {
-	my $bedfile           = $opt->{basedir}.basename($clipfile).".bed";
-	my $piranhafile       = $opt->{basedir}.basename($clipfile).".piranha.bed";
-	my $sortedpiranhafile = $opt->{basedir}.basename($clipfile).".piranha.sorted.bed";
-	my @cmd = ("Piranha", "-o", $piranhafile, "-s", $bedfile);
+	my $bedfile           = getcwd()."/".basename($clipfile).".bed";
+	my $piranhafile       = getcwd()."/".basename($clipfile).".piranha.bed";
+	my $sortedpiranhafile = getcwd()."/".basename($clipfile).".piranha.sorted.bed";
+	my @cmd = ("Piranha","-b", $opt->{piranha_bin_size}, "-o", $piranhafile, "-s", $bedfile);
 	if (exists $opt->{testrun} && $opt->{testrun})
 	{
-	    $L->info("TESTRUN was activated though --testrun option. This increases the p-value threshold for Piranha to 20%!!! Please use only for the provided testset and NOT(!!!) for real analysis!!!");
+	    $L->warn("TESTRUN was activated though --testrun option. This increases the p-value threshold for Piranha to 20%!!! Please use only for the provided testset and NOT(!!!) for real analysis!!!");
 	    push(@cmd, ("-p", 0.2));
 	}
 	run_cmd($L, \@cmd);
@@ -982,14 +1366,14 @@ sub run_CLIP_mapping
 
     my $L = Log::Log4perl::get_logger();
 
-    my $gsnap_output = tmpnam();
-    my $samtools_output = tmpnam();
+    my $gsnap_output = create_tempfile($opt);
+    my $samtools_output = create_tempfile($opt);
 
     foreach my $clipfile (@{$opt->{clip}})
     {
-	my $trimmedfile = $opt->{basedir}.basename($clipfile).".trim";
-	my $bamfile     = $opt->{basedir}.basename($clipfile).".bam";
-	my $bedfile     = $opt->{basedir}.basename($clipfile).".bed";
+	my $trimmedfile = getcwd()."/".basename($clipfile).".trim";
+	my $bamfile     = getcwd()."/".basename($clipfile).".bam";
+	my $bedfile     = getcwd()."/".basename($clipfile).".bed";
 	# -N 1		:= look for splice sites
 	# -B 5		:= batch mode 5, allocate positions, genome and suffix array
 	# -O		:= ordered output
@@ -1007,6 +1391,8 @@ sub run_CLIP_mapping
 	@cmd = ("bedtools", "bamtobed", "-i", $bamfile);
 	run_cmd($L, \@cmd, undef, $bedfile);
     }
+
+    clean_tempfiles();
 }
 
 sub run_CLIP_build_db
@@ -1028,7 +1414,7 @@ sub run_CLIP_adapter_trimming
 
     foreach my $clipfile (@{$opt->{clip}})
     {
-	my $outfile = $opt->{basedir}.basename($clipfile).".trim";
+	my $outfile = getcwd()."/".basename($clipfile).".trim";
 	# -m 20		:= min length of read
 	# --trim-n	:= trim terminal Ns of reads
 	my @cmd = ("cutadapt", "-a", $opt->{adapterclip}, "-m", 20, "--trim-n", "-o", $outfile, $clipfile);
@@ -1049,8 +1435,8 @@ sub run_proteinortho
     my $L = Log::Log4perl::get_logger();
 
     # extract proteins from annotation and genome file
-    $opt->{proteinA} = $opt->{basedir}."/"."proteinA.fa";
-    $opt->{proteinB} = $opt->{basedir}."/"."proteinB.fa";
+    $opt->{proteinA} = getcwd()."/"."proteinA.fa";
+    $opt->{proteinB} = getcwd()."/"."proteinB.fa";
     my @cmd = ("gffread", $opt->{annotationA}, "-y", $opt->{proteinA}, "-F", "-g", $opt->{genomeA});
     run_cmd($L, \@cmd);
     @cmd = ("gffread", $opt->{annotationB}, "-y", $opt->{proteinB}, "-F", "-g", $opt->{genomeB});
@@ -1064,9 +1450,123 @@ sub run_proteinortho
 
     # run proteinortho
     @cmd = ("proteinortho5.pl", "-clean", "-project=microPIECE", "-cpus=".$opt->{threads}, $opt->{proteinA}, $opt->{proteinB});
-    run_cmd($L, \@cmd, $opt->{out});
+    run_cmd($L, \@cmd, getcwd());
 
-    $opt->{proteinortho} = $opt->{basedir}."microPIECE.proteinortho";
+    $opt->{proteinortho} = getcwd()."/"."microPIECE.proteinortho";
+}
+
+sub copy_final_files
+{
+    my ($opt, @sourcefiles) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    foreach my $sourcefile (@sourcefiles)
+    {
+	if (! defined $sourcefile)
+	{
+	    $L->error("Sourcefile '$sourcefile' is not defined");
+	}
+	elsif (! -e $sourcefile)
+	{
+	    $L->error("Sourcefile '$sourcefile' not accessable");
+	} else {
+	    my $destfile = basename($sourcefile);
+	    if (-e $destfile)
+	    {
+		if ($opt->{overwrite} )
+		{
+		    unlink($destfile) || $L->logdie("Unable to remove existing destination: '$destfile': $!");
+		    copy($sourcefile, $destfile) || $L->logdie("Unable to copy '$sourcefile' to '$destfile'");
+		} else {
+		    $L->error("Destination file exists and overwrite was not specified");
+		}
+	    }
+	}
+    }
+}
+
+sub transfer_resultfiles
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    $L->info("Start copying result files into output folder");
+
+    # mature miRNA set
+    # mature_combined_mirbase_novel.fa :=
+    # mature microRNA set, containing novels and miRBase-completed (if mined), together with the known miRNAs from miRBase
+    copy_final_files($opt, $opt->{final_mature});
+
+    # precursor miRNA set
+    # hairpin_combined_mirbase_novel.fa :=
+    # precursor microRNA set, containing novels (if mined), together with the known miRNAs from miRBase
+    copy_final_files($opt, $opt->{final_hairpin});
+
+    # mature miRNA expression per condition
+    # miRNA_expression.csv :=
+    # Semicolon-separated file : rpm;condition;miRNA
+    copy_final_files($opt, $opt->{mining_quantification_result});
+
+    # orthologous prediction file
+    # miRNA_orthologs.csv :=
+    # tab-separated file : query_id subject_id identity aln_length
+    #                      num_mismatches num_gapopen query_start
+    #                      query_end subject_start subject_end evalue
+    #                      bitscore query_aligned_seq
+    #                      subject_aligned_seq query_length
+    #                      subject_length query_coverage
+    #                      subject_coverage
+    copy_final_files($opt, $opt->{mining}{orthologs});
+
+    # miRDeep2 mining result in HTML
+    # result_02_03_2018_t_09_30_01.html:=
+    # the standard output HTML file of miRDeep2
+    copy_final_files($opt, $opt->{mirdeep_output_html}, $opt->{mirdeep_output});
+
+    # all isomir output files
+    # isomir_output_CONDITION.csv
+    # semincolon delimited file containing the following
+    # columns: mirna
+    #          substitutions
+    #          added nucleotids on 3' end
+    #          nucleotides at 5' end different from the annonated sequence
+    #          nucleotides at 3' end different from the annonated sequence
+    #          sequence
+    #          rpm
+    #          condition
+    copy_final_files($opt, @{$opt->{isomir_output_files}});
+
+    # genomic location of miRNAs
+    # miRNA_genomic_position.csv
+    # tab-delimited file containing the following
+    # columns: miRNA
+    #          genomic contig
+    #          identify
+    #          length
+    #          miRNA-length
+    #          number mismatches
+    #          number gapopens
+    #          miRNA-start
+    #          miRNA-stop
+    #          genomic-start
+    #          genomic-stop
+    #          evalue
+    #          bitscore
+    copy_final_files($opt, $opt->{mining}{genomic_location});
+
+    # all library support-level target predictions
+    # *_miranda_output.txt :=
+    # miranda output, reduced to the lines, starting with > only
+    copy_final_files($opt, @{$opt->{miranda_output}});
+
+    # all library support-level CLIP transfer .bed files
+    # *transfered_merged.bed :=
+    # bed-file of the transferred CLIP-regions in speciesB transcriptome
+    copy_final_files($opt, @{$opt->{clip_final_bed}});
+
+    $L->info("Finished copy process");
 }
 
 sub run_cmd
@@ -1119,5 +1619,32 @@ sub run_cmd
     return $stdout;
 }
 
+sub create_tempfile
+{
+    my ($opt) = @_;
+
+    my $filename = File::Temp::tempnam($opt->{tempdir}, "test");
+
+    push(@temp_files, $filename);
+
+    return $filename;
+}
+
+sub clean_tempfiles
+{
+    while (@temp_files)
+    {
+	my $file = shift @temp_files;
+
+	if (-e $file) { unlink($file) || die "$!"; }
+    }
+}
+
+$SIG{INT}=sub{ clean_tempfiles(); };
+
+END {
+    # delete all temporary files
+    clean_tempfiles();
+}
 
 1;

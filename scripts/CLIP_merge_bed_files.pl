@@ -187,7 +187,9 @@ foreach my $key (keys %input)
 	    # Counter + strand
 	    # Counter - strand
 
-	    for (my $i=$start; $i<=$stop; $i++)
+	    # due to bed stop field is 0-based, but exclusive, we
+	    # need to continue as long as $i is less then stop-field
+	    for (my $i=$start; $i<$stop; $i++)
 	    {
 		$genome[$chromosome][$strand][$i][$condition]++;
 	    }
@@ -235,7 +237,7 @@ foreach my $chromosome_key (sort keys %chromosomes)
 	    {
 		# we found a new block
 		$start = $i;
-		my $stop = -1;
+		my $stop = $i;
 
 		my @counts = ($counts_on_position);
 
@@ -251,14 +253,23 @@ foreach my $chromosome_key (sort keys %chromosomes)
 			last;
 		    }
 		}
-		if ($stop == -1)
-		{
-		    $stop = int(@{$genome[$chromosome][$strand]});
-		}
 
-		print $fh join("\t", ($chromosome_key, $start, $stop, sprintf("length=%d;counts=%s", @counts+0, generate_cigar_like_string(\@counts, ["total", @conditions_ordered])), ".", $strand_key)), "\n";
-		$i = $stop+1;
-		$start = -1; $stop = -1;
+		# due to bed stop field is 0-based, but exclusive, we
+                # need to increase stop coordinate by 1
+		print $fh join("\t", (
+				   $chromosome_key,
+				   $start,
+				   $stop+1,
+				   sprintf("length=%d;counts=%s",
+					   @counts+0,
+					   generate_cigar_like_string(\@counts, ["total", @conditions_ordered]
+					   )
+				   ),
+				   ".",
+				   $strand_key
+			       )
+		    ), "\n";
+		$i = $stop; ## will be increased by the for loop, therefore next iteration starts at $stop+1
 	    }
 	}
 	$genome[$chromosome][$strand] = undef; # reduce memory footprint

@@ -1,0 +1,27 @@
+language: perl
+sudo:
+  required
+addons:
+  apt:
+    packages:
+      - cpanminus
+services:
+   - docker
+before_install:
+    - docker pull micropiece/micropiece
+    - git clone https://github.com/microPIECE-team/microPIECE-testset.git /tmp/microPIECE-testset
+    - git clone git://github.com/haarg/perl-travis-helper
+    - source perl-travis-helper/init
+    - build-perl
+    - perl -V
+install:
+    - cpanm Devel::Cover Devel::Cover::Report::Coveralls Test::Script::Run Log::Log4perl
+script:
+    - docker run -it --rm -v $PWD:/opt/microPIECE -v /tmp/microPIECE-testset:/tmp/microPIECE-testset micropiece/micropiece /bin/bash -c 'cd /opt/microPIECE; PERL5OPT="-MDevel::Cover=-coverage,statement,branch,condition,path,subroutine,time" prove -It -Ilib/ t/*.t'
+    - docker run -it --rm -v $PWD:/opt/microPIECE -v /tmp/microPIECE-testset:/tmp/microPIECE-testset micropiece/micropiece /opt/microPIECE/t/run_clip.sh
+    - docker run -it --rm -v $PWD:/opt/microPIECE -v /tmp/microPIECE-testset:/tmp/microPIECE-testset micropiece/micropiece /opt/microPIECE/t/run_complete.sh
+    - docker run -it --rm -v $PWD:/opt/microPIECE -v /tmp/microPIECE-testset:/tmp/microPIECE-testset micropiece/micropiece chmod -R a+wrX /opt/microPIECE/cover_db
+after_success:
+    - export PERL5OPT=""
+    - cover -ignore_re '\.t$|prove|bed.pm'
+    - cover -ignore_re '\.t$|prove|bed.pm' -report coveralls
