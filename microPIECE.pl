@@ -277,7 +277,17 @@ precursor microRNA set, containing novels (if mined), together with the known mi
 
 =item mature miRNA expression per condition: F<miRNA_expression.csv>
 
-Semicolon-separated file --> rpm;condition;miRNA
+Semicolon-separated file containing:
+
+=over 8
+
+=item 1. C<rpm>
+
+=item 2. C<condition>
+
+=item 3. C<miRNA>
+
+=back
 
 =item orthologous prediction file: F<miRNA_orthologs.csv>
 
