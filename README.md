@@ -181,6 +181,24 @@ semincolon delimited file containing:
    7. `rpm`
    8. `condition`
 
+- genomics location of miRNAs: `miRNA_genomic_position.csv`
+
+tab delimited file containing:
+
+   1. `miRNA`
+   2. `genomic contig`
+   3. `identify`
+   4. `length`
+   5. `miRNA-length`
+   6. `number mismatches`
+   7. `number gapopens`
+   8. `miRNA-start`
+   9. `miRNA-stop`
+   10. `genomic-start`
+   11. `genomic-stop`
+   12. `evalue`
+   13. `bitscore`
+
 - miRDeep2 mining result in HTML/CSV `mirdeep_output.html/csv`
 
     the standard output HTML/CSV file of miRDeep2
