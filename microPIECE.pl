@@ -365,6 +365,12 @@ Please report any new issues ad L<new Github-Issue|https://github.com/microPIECE
 
 =over 4
 
+=item v1.1.0 (2018-03-12)
+
+Add isomir detection and copy the final genomic location file to the
+output filter (Fixes
+L<#34|https://github.com/microPIECE-team/microPIECE/issues/34>)
+
 =item v1.0.7 (2018-03-08)
 
 Piranha was lacking of a bin_size parameter. Added parameter C<--piranahbinsize> with a default value of C<20>
