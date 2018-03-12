@@ -287,6 +287,30 @@ tab-separated file --> C<query_id subject_id identity aln_length num_mismatches 
 
 the standard output HTML/CSV file of miRDeep2
 
+=item ISOMIR prediction files: F<isomir_output_CONDITION.csv>
+
+semincolon delimited file containing:
+
+=over 8
+
+=item C<mirna>
+
+=item C<substitutions>
+
+=item C<added nucleotids on 3' end>
+
+=item C<nucleotides at 5' end different from the annonated sequence>
+
+=item C<nucleotides at 3' end different from the annonated sequence>
+
+=item C<sequence>
+
+=item C<rpm>
+
+=item C<condition
+
+=back
+
 =item all library support-level target predictions: F<*_miranda_output.txt>
 
 miranda output, reduced to the lines, starting with > only

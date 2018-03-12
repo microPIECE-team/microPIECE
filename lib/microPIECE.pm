@@ -321,6 +321,16 @@ sub check_requirements {
 	    mining           => 1,
 	    targetprediction => 0
 	},
+	'miraligner'                   => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+         },
+        'java'                         => {
+	    clip             => 0,
+	    mining           => 1,
+	    targetprediction => 0
+        },
 	'wget'                         => {
 	    clip             => 0,
 	    mining           => 1,
@@ -340,7 +350,23 @@ sub check_requirements {
 
 	if ($need2check)
 	{
-	    my $full_path = IPC::Cmd::can_run($prog);
+	    my $full_path;
+	    if ($prog eq "miraligner")
+	    {
+		$opt->{miraligner} = "/opt/seqbuster/modules/miraligner/miraligner.jar";   # default docker path
+		if (exists $ENV{MIRALIGNER} && defined $ENV{MIRALIGNER})
+		{
+		    $opt->{miraligner} = $ENV{MIRALIGNER};
+		}
+		if (-e $opt->{miraligner})
+		{
+		    $full_path = $opt->{miraligner};
+		} else {
+		    $L->WARN("Unable to find 'miraligner.jar'! Please specify its location via MIRALIGNER environmental variable!");
+		}
+	    } else {
+		$full_path = IPC::Cmd::can_run($prog);
+	    }
 	    if ($full_path)
 	    {
 		push(@fulfilled_dependency, { prog => $prog, path => $full_path });
@@ -349,6 +375,7 @@ sub check_requirements {
 	    }
 	}
     }
+
     $L->info(sprintf("Found dependencies: %s", join(", ", map {$_->{prog}."(".$_->{path}.")"} (@fulfilled_dependency))));
     $L->logdie(sprintf("Unable to run due to missing dependencies: %s", join(", ", (@missing_dependency)))) if (@missing_dependency);
 
@@ -444,6 +471,8 @@ sub run_mining {
     run_mining_mirdeep2fasta($opt);
     run_mining_quantification($opt);
 
+    run_mining_isomir($opt);
+
     run_mining_genomicposition($opt);
 
     run_mining_orthologs($opt);
@@ -452,6 +481,138 @@ sub run_mining {
     $L->info("Finished mining step");
 
     chdir($currentdir);
+}
+
+sub get_mirbase_download_or_local_copy
+{
+    my ($opt, $filename) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+    my $delete = 0;
+
+    unless (exists $opt->{mirbasedir} && defined $opt->{mirbasedir} && -e $opt->{mirbasedir}."/".$filename)
+    {
+	my @cmd=("wget", "--quiet", "ftp://mirbase.org/pub/mirbase/CURRENT/".$filename);
+	run_cmd($L, \@cmd);
+	$delete = 1;          # remove downloaded file
+    } else {
+	$filename = $opt->{mirbasedir}."/".$filename;
+    }
+    # decompress the file
+    my $output = getcwd()."/".basename($filename, ".gz");
+    my $status = gunzip $filename => $output || $L->logdie("gunzip failed: $GunzipError");
+
+    # delete the output, if not local copy
+    if ($delete && -e $filename)
+    {
+	unlink($filename) || $L->error("Unable to delete downloaded file '$filename': $!");
+    }
+
+    return $output;
+}
+
+sub run_mining_isomir
+{
+    my ($opt) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    # Create a miRNA.str (miRNA structure file with the novel microRNAs)
+    $opt->{mining}{download}{mirbase_mirna_structure}  = get_mirbase_download_or_local_copy($opt, "miRNA.str.gz");
+    $opt->{mining}{download}{custom_structure} = getcwd()."/custom.str";
+
+    my @cmd=(
+	$opt->{scriptdir}."/ISOMIR_create_mirbase_struct.pl",
+	"--hairpin", $opt->{final_hairpin},
+	"--mature", $opt->{final_mature},
+	"--struct", $opt->{mining}{download}{mirbase_mirna_structure},
+	"--out", $opt->{mining}{download}{custom_structure},
+	);
+    run_cmd($L, \@cmd);
+
+    foreach my $condition (keys %{$opt->{mining}{filtered}})
+    {
+	my @condition_files_from_miraligner = ();
+
+	foreach my $file (@{$opt->{mining}{filtered}{$condition}})
+	{
+	    # run through all short read files and ensure reads have no non-ACGT nucleotids incorporated
+	    my $file_filteredN_collapsed = getcwd()."/".basename($file, ".fq")."_filteredN_collapsed.fq";
+	    my $miraligner_out           = getcwd()."/".basename($file, ".fq")."_miraligner_out";
+	    push(@{$opt->{mining}{filtered4N_collapsed}{$condition}}, $file_filteredN_collapsed);
+
+	    filter_for_N_and_collapse_reads($file, $file_filteredN_collapsed);
+
+	    # run miraligner for each read file
+	    my @cmd = ("java", "-jar", $opt->{miraligner}, "-sub", 1, "-trim", 3, "-add", 3, "-s", $opt->{speciesB_tag}, "-freq", "-i", $file_filteredN_collapsed, "-db", getcwd(), "-o", $miraligner_out);
+	    run_cmd($L, \@cmd);
+
+	    my $expected_output_file = $miraligner_out.".mirna";
+	    unless (-e $expected_output_file)
+	    {
+		$L->logdie("Expected output file '$expected_output_file' does not exist");
+	    }
+	    push(@condition_files_from_miraligner, $expected_output_file);
+	}
+
+	my @cmd = (
+	    $opt->{scriptdir}."/ISOMIR_reformat_isomirs.pl",
+	    join(",", @condition_files_from_miraligner),
+	    $condition
+	    );
+	my $output_file = getcwd()."/isomir_output_".$condition.".csv";
+	run_cmd($L, \@cmd, undef, $output_file);
+
+	push(@{$opt->{isomir_output_files}}, $output_file);
+    }
+}
+
+sub filter_for_N_and_collapse_reads
+{
+    my ($infile, $outfile) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+    my %seq_collapsed = ();
+
+    open(FH, "<", $infile) || $L->logdie("Unable to open file '$infile' for reading: $!");
+    while(!eof(FH))
+    {
+	my $header  = <FH>;
+	my $seq     = <FH>;
+	my $header2 = <FH>;
+	my $qual    = <FH>;
+	chomp($header, $seq, $header2, $qual);
+
+	# check if the sequence contains Ns
+	my $num_nucleotids2keep = $seq =~ tr/AGCTagct/AGCTagct/;
+
+	if ($num_nucleotids2keep == length($seq))
+	{
+	    $seq_collapsed{$seq}{counts}++;
+	    push(@{$seq_collapsed{$seq}{qual}}, $qual);
+	}
+    }
+    close(FH) || $L->logdie("Unable to close file '$infile': $!");
+
+    open(OUT, ">", $outfile) || $L->logdie("Unable to open file '$outfile' for writing: $!");
+    my $counter = 1;
+    foreach my $seq (keys %seq_collapsed)
+    {
+	# get the mean quality for each position
+	my $counts = $seq_collapsed{$seq}{counts};
+	my @sum=();
+	foreach my $current_qual (@{$seq_collapsed{$seq}{qual}})
+	{
+	    for(my $i=0; $i<length($seq); $i++)
+	    {
+		$sum[$i]+=ord(substr($current_qual, $i, 1));
+	    }
+	}
+	my $qual = join("", (map { chr(int($_/$counts)) } (@sum)));
+	printf OUT '@'."seq_%d_x%d\n%s\n+\n%s\n", $counter, $counts, $seq, $qual;
+	$counter++;
+    }
+    close(OUT)|| $L->logdie("Unable to close file '$outfile': $!");
 }
 
 sub run_mining_orthologs
@@ -807,19 +968,7 @@ sub run_mining_downloads
 
     foreach my $key(sort keys %filelist)
     {
-	my $file = $filelist{$key};
-	unless (exists $opt->{mirbasedir} && defined $opt->{mirbasedir} && -e $opt->{mirbasedir}."/".$file)
-	{
-	    my @cmd=("wget", "--quiet", "ftp://mirbase.org/pub/mirbase/CURRENT/".$file);
-	    run_cmd($L, \@cmd);
-	} else {
-	    $file = $opt->{mirbasedir}."/".$file;
-	}
-	# decompress the file
-	my $output = basename($file, ".gz");
-	my $status = gunzip $file => $output || $L->logdie("gunzip failed: $GunzipError");
-
-	$opt->{mining}{download}{$key} = $output;
+	$opt->{mining}{download}{$key}  = get_mirbase_download_or_local_copy($opt, $filelist{$key});
     }
 }
 
@@ -1306,6 +1455,37 @@ sub run_proteinortho
     $opt->{proteinortho} = getcwd()."/"."microPIECE.proteinortho";
 }
 
+sub copy_final_files
+{
+    my ($opt, @sourcefiles) = @_;
+
+    my $L = Log::Log4perl::get_logger();
+
+    foreach my $sourcefile (@sourcefiles)
+    {
+	if (! defined $sourcefile)
+	{
+	    $L->error("Sourcefile '$sourcefile' is not defined");
+	}
+	elsif (! -e $sourcefile)
+	{
+	    $L->error("Sourcefile '$sourcefile' not accessable");
+	} else {
+	    my $destfile = basename($sourcefile);
+	    if (-e $destfile)
+	    {
+		if ($opt->{overwrite} )
+		{
+		    unlink($destfile) || $L->logdie("Unable to remove existing destination: '$destfile': $!");
+		    copy($sourcefile, $destfile) || $L->logdie("Unable to copy '$sourcefile' to '$destfile'");
+		} else {
+		    $L->error("Destination file exists and overwrite was not specified");
+		}
+	    }
+	}
+    }
+}
+
 sub transfer_resultfiles
 {
     my ($opt) = @_;
@@ -1317,32 +1497,17 @@ sub transfer_resultfiles
     # mature miRNA set
     # mature_combined_mirbase_novel.fa :=
     # mature microRNA set, containing novels and miRBase-completed (if mined), together with the known miRNAs from miRBase
-    my $source = $opt->{final_mature};
-    if ($source && -e $source)
-    {
-	my $dest = basename($source);
-	copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
-    }
+    copy_final_files($opt, $opt->{final_mature});
 
     # precursor miRNA set
     # hairpin_combined_mirbase_novel.fa :=
     # precursor microRNA set, containing novels (if mined), together with the known miRNAs from miRBase
-    $source = $opt->{final_hairpin};
-    if ($source && -e $source)
-    {
-	my $dest = basename($source);
-	copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
-    }
+    copy_final_files($opt, $opt->{final_hairpin});
 
     # mature miRNA expression per condition
     # miRNA_expression.csv :=
     # Semicolon-separated file : rpm;condition;miRNA
-    $source = $opt->{mining_quantification_result};
-    if ($source && -e $source)
-    {
-	my $dest = basename($source);
-	copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
-    }
+    copy_final_files($opt, $opt->{mining_quantification_result});
 
     # orthologous prediction file
     # miRNA_orthologs.csv :=
@@ -1353,54 +1518,35 @@ sub transfer_resultfiles
     #                      subject_aligned_seq query_length
     #                      subject_length query_coverage
     #                      subject_coverage
-    $source = $opt->{mining}{orthologs};
-    if ($source && -e $source)
-    {
-	my $dest = basename($source);
-	copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
-    }
+    copy_final_files($opt, $opt->{mining}{orthologs});
 
     # miRDeep2 mining result in HTML
     # result_02_03_2018_t_09_30_01.html:=
     # the standard output HTML file of miRDeep2
-    $source = $opt->{mirdeep_output_html};
-    if ($source && -e $source)
-    {
-	my $dest = basename($source);
-	copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
-    }
-    $source = $opt->{mirdeep_output};
-    if ($source && -e $source)
-    {
-	my $dest = basename($source);
-	copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
-    }
+    copy_final_files($opt, $opt->{mirdeep_output_html}, $opt->{mirdeep_output});
+
+    # all isomir output files
+    # isomir_output_CONDITION.csv
+    # semincolon delimited file containing the following
+    # columns: mirna
+    #          substitutions
+    #          added nucleotids on 3' end
+    #          nucleotides at 5' end different from the annonated sequence
+    #          nucleotides at 3' end different from the annonated sequence
+    #          sequence
+    #          rpm
+    #          condition
+    copy_final_files($opt, @{$opt->{isomir_output_files}});
 
     # all library support-level target predictions
     # *_miranda_output.txt :=
     # miranda output, reduced to the lines, starting with > only
-    foreach my $miranda_file (@{$opt->{miranda_output}})
-    {
-	$source = $miranda_file;
-	if ($source && -e $source)
-	{
-	    my $dest = basename($source);
-	    copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
-	}
-    }
+    copy_final_files($opt, @{$opt->{miranda_output}});
 
     # all library support-level CLIP transfer .bed files
     # *transfered_merged.bed :=
     # bed-file of the transferred CLIP-regions in speciesB transcriptome
-    foreach my $miranda_file (@{$opt->{clip_final_bed}})
-    {
-	$source = $miranda_file;
-	if ($source && -e $source)
-	{
-	    my $dest = basename($source);
-	    copy($source, $dest) || $L->logdie("Unable to copy '$source' to '$dest'");
-	}
-    }
+    copy_final_files($opt, @{$opt->{clip_final_bed}});
 
     $L->info("Finished copy process");
 }
