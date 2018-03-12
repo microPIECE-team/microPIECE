@@ -259,7 +259,7 @@ C<--out> parameter.
 
 =item C<--piranahbinsize>
 
-    Sets the F<Piranah> bin size and has a default value of C<20>.
+Sets the F<Piranah> bin size and has a default value of C<20>.
 
 =back
 
@@ -277,11 +277,61 @@ precursor microRNA set, containing novels (if mined), together with the known mi
 
 =item mature miRNA expression per condition: F<miRNA_expression.csv>
 
-Semicolon-separated file --> rpm;condition;miRNA
+Semicolon-separated file containing:
+
+=over 8
+
+=item 1. C<rpm>
+
+=item 2. C<condition>
+
+=item 3. C<miRNA>
+
+=back
 
 =item orthologous prediction file: F<miRNA_orthologs.csv>
 
-tab-separated file --> C<query_id subject_id identity aln_length num_mismatches num_gapopen query_start query_end subject_start subject_end evalue bitscore query_aligned_seq subject_aligned_seq query_length subject_length query_coverage subject_coverage>
+tab-separated file containing:
+
+=over 8
+
+=item 1. C<query_id>
+
+=item 2. C<subject_id>
+
+=item 3. C<identity>
+
+=item 4. C<alignment length>
+
+=item 5. C<number mismatches>
+
+=item 6. C<number gap openings>
+
+=item 7. C<start position inside query>
+
+=item 8. C<end position inside query>
+
+=item 9. C<start position inside subject>
+
+=item 10. C<end position inside subject>
+
+=item 11. C<evalue>
+
+=item 12. C<bitscore>
+
+=item 13. C<aligned query sequence>
+
+=item 14. C<aligned subject sequence>
+
+=item 15. C<length query sequence>
+
+=item 16. C<length subject sequence>
+
+=item 17. C<coverage for query sequence>
+
+=item 18. C<coverage for subject sequence>
+
+=back
 
 =item miRDeep2 mining result in HTML/CSV F<mirdeep_output.html/csv>
 
@@ -293,21 +343,21 @@ semincolon delimited file containing:
 
 =over 8
 
-=item C<mirna>
+=item 1. C<mirna>
 
-=item C<substitutions>
+=item 2. C<substitutions>
 
-=item C<added nucleotids on 3' end>
+=item 3. C<added nucleotids on 3' end>
 
-=item C<nucleotides at 5' end different from the annonated sequence>
+=item 4. C<nucleotides at 5' end different from the annonated sequence>
 
-=item C<nucleotides at 3' end different from the annonated sequence>
+=item 5. C<nucleotides at 3' end different from the annonated sequence>
 
-=item C<sequence>
+=item 6. C<sequence>
 
-=item C<rpm>
+=item 7. C<rpm>
 
-=item C<condition
+=item 8. C<condition>
 
 =back
 
@@ -365,18 +415,18 @@ Please report any new issues ad L<new Github-Issue|https://github.com/microPIECE
 
 =over 4
 
-=item v1.1.0 (2018-03-12)
+=item L<v1.1.0|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.1.0> (2018-03-12)
 
 Add isomir detection and copy the final genomic location file to the
 output filter (Fixes
 L<#34|https://github.com/microPIECE-team/microPIECE/issues/34>)
 
-=item v1.0.7 (2018-03-08)
+=item L<v1.0.7|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.7> (2018-03-08)
 
 Piranha was lacking of a bin_size parameter. Added parameter C<--piranahbinsize> with a default value of C<20>
 (Fixes L<#66|https://github.com/microPIECE-team/microPIECE/issues/80>)
 
-=item v1.0.6 (2018-03-08)
+=item L<v1.0.6|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.6> (2018-03-08)
 
 Added parameter C<--mirbasedir> and C<--tempdir> to support local
 mirbase files and relocation of directory for temporary files (Fixes
@@ -384,27 +434,27 @@ L<#66|https://github.com/microPIECE-team/microPIECE/issues/66>,
 L<#73|https://github.com/microPIECE-team/microPIECE/issues/73>, and
 L<#76|https://github.com/microPIECE-team/microPIECE/issues/76>)
 
-=item v1.0.5 (2018-03-07)
+=item L<v1.0.5|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.5> (2018-03-07)
 
 Update of documentation and correct spelling of C<--mirna> parameter
 
-=item v1.0.4 (2018-03-07)
+=item L<v1.0.4|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.4> (2018-03-07)
 
 Fixes complete mature in final output (Fixes L<#69|https://github.com/microPIECE-team/microPIECE/issues/69>)
 
-=item v1.0.3 (2018-03-06)
+=item L<v1.0.3|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.3> (2018-03-06)
 
 Add tests for perl scripts in script folder which ensure the correct handling of BED stop coordinates (Fixes L<#65|https://github.com/microPIECE-team/microPIECE/issues/65>)
 
-=item v1.0.2 (2018-03-05)
+=item L<v1.0.2|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.2> (2018-03-05)
 
 Fixes the incorrect sorting of BED files, result was correct, but sorting was performed in the wrong order. (Fixes L<#63|https://github.com/microPIECE-team/microPIECE/issues/63>)
 
-=item v1.0.1 (2018-03-05)
+=item L<v1.0.1|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.1> (2018-03-05)
 
 Fix an error conserning BED file handling of start and stop coordinates. (Fixes L<#59|https://github.com/microPIECE-team/microPIECE/issues/59>)
 
-=item v1.0.0 (2018-03-05)
+=item L<v1.0.0|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.0> (2018-03-05)
 
 =begin html
 
@@ -419,7 +469,7 @@ is archived as L<https://doi.org/10.5281/zenodo.1188484> and submitted to L<The 
 
 =end text
 
-=item v0.9.0 (2018-03-05)
+=item L<v0.9.0|https://github.com/microPIECE-team/microPIECE/releases/tag/v0.9.0> (2018-03-05)
 
 =begin html
 
