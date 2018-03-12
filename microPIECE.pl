@@ -343,21 +343,21 @@ semincolon delimited file containing:
 
 =over 8
 
-=item C<mirna>
+=item 1. C<mirna>
 
-=item C<substitutions>
+=item 2. C<substitutions>
 
-=item C<added nucleotids on 3' end>
+=item 3. C<added nucleotids on 3' end>
 
-=item C<nucleotides at 5' end different from the annonated sequence>
+=item 4. C<nucleotides at 5' end different from the annonated sequence>
 
-=item C<nucleotides at 3' end different from the annonated sequence>
+=item 5. C<nucleotides at 3' end different from the annonated sequence>
 
-=item C<sequence>
+=item 6. C<sequence>
 
-=item C<rpm>
+=item 7. C<rpm>
 
-=item C<condition>
+=item 8. C<condition>
 
 =back
 
