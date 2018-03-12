@@ -307,7 +307,7 @@ semincolon delimited file containing:
 
 =item C<rpm>
 
-=item C<condition
+=item C<condition>
 
 =back
 
