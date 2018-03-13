@@ -20,7 +20,7 @@ Please follow this procedure
 
 When filing an issue, make sure to answer those questions:
 
-1. What version of Perl and chloroExtractor are you using?
+1. What version of Perl and microPIECE are you using?
 2. What operating system are you using?
 3. What did you do?
 4. What did you expect to see?
