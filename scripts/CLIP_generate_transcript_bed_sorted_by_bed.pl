@@ -72,3 +72,47 @@ foreach my $item (sort { $seen{$a}{pos} <=> $seen{$b}{pos} } (keys %seen))
 {
     printf STDERR "%d\t%s\t%d\n", $seen{$item}{pos}, $item, $seen{$item}{counter};
 }
+
+# open the gff and run through the lines, skipping everything, but the
+# requested feature (exon by default)
+if ($progressenabled)
+{
+    $progress = Term::ProgressBar->new({name => "Import of GFF", count => -s $gff, remove => 0, ETA => 'linear'});
+    $progress->minor(0);
+}
+$next_update = 0;
+my @feature4bed = ();
+open(FH, "<", $gff) || die "Unable to open gff input file: $!\n";
+while(<FH>)
+{
+    my $pos = tell(FH);
+    if ($progressenabled)
+    {
+	$next_update = $progress->update($pos) if ($pos >= $next_update);
+    }
+
+    next if (/^#/);
+    my ($chr, undef, $feat, $start, $stop, undef, $strand) = split(/\t/, $_);
+
+    next unless ($feat eq $feature);
+
+    die "Chromosome '$chr' was not in sortby file\n" unless (exists $seen{$chr});
+
+    push(@feature4bed, {
+	order => $seen{$chr}{pos},
+	str   => join("\t", ($chr, $start-1, $stop, ".", ".", $strand)),
+	start => $start,
+	 } );
+}
+close(FH) || die "Unable to close gff input file: $!\n";
+
+if ($progressenabled)
+{
+    $progress->update(-s $gff) if ((-s $gff)>=$next_update);
+}
+
+# Sorting the input according to the sort by file
+foreach my $entry (sort { $a->{order} <=> $b->{order} || $a->{start} <=> $b->{start} || $a->{str} cmp $b->{str} } (@feature4bed))
+{
+    print $entry->{str}, "\n";
+}
