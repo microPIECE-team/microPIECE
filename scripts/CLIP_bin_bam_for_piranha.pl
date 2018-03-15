@@ -23,6 +23,8 @@ if ($? != 0)
     die "Wrong version or no samtools available\n";
 }
 
+use Term::ProgressBar;
+
 foreach my $bam (@bamfiles)
 {
     my $cmd = "samtools view -H $bam";
@@ -35,8 +37,8 @@ foreach my $bam (@bamfiles)
 
     foreach my $seq (@{$seq})
     {
-	print STDERR "Working on $seq->{name}:";
-	# generate a bin of size binsize
+	my $progress = Term::ProgressBar->new({name => $seq->{name}, count => $seq->{len}, remove => 0});
+	$progress->minor(0);
 	my $next_val = 0;
 	for(my $start=1; $start<=$seq->{len}; $start+=$binsize)
 	{
@@ -45,11 +47,9 @@ foreach my $bam (@bamfiles)
 	    {
 		$stop = $seq->{len};
 	    }
-	    if ($start>=$next_val)
-	    {
-		printf STDERR "\rWorking on %s:%d-%d (finished: %.1f%%)", $seq->{name}, $start, $stop, ($start/$seq->{len}*100);
-		$next_val = $start+$seq->{len}/1000;
-	    }
+
+	    $next_val = $progress->update($start) if ($start >= $next_val);
+
 	    foreach my $strand ("-", "+")
 	    {
 		# the bin starts at $start and ends at $stop
@@ -61,7 +61,7 @@ foreach my $bam (@bamfiles)
 		print join("\t", ($seq->{name}, $start-1, $stop, ".", ".", $strand)), "\n";
 	    }
 	}
-	print STDERR " FINISHED\n";
+	$progress->update($seq->{len}) if $seq->{len} >= $next_val;
     }
 }
 
