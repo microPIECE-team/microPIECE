@@ -82,6 +82,7 @@ if ($progressenabled)
 }
 $next_update = 0;
 my @feature4bed = ();
+my %warned = ();
 open(FH, "<", $gff) || die "Unable to open gff input file: $!\n";
 while(<FH>)
 {
@@ -96,7 +97,15 @@ while(<FH>)
 
     next unless ($feat eq $feature);
 
-    die "Chromosome '$chr' was not in sortby file\n" unless (exists $seen{$chr});
+    unless (exists $seen{$chr})
+    {
+        unless (exists $warned{$chr})
+        {
+            warn "Chromosome '$chr' was not in sortby file\n";
+        }
+        $warned{$chr}++;
+        next;
+    }
 
     push(@feature4bed, {
 	order => $seen{$chr}{pos},
