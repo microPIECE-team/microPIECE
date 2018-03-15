@@ -39,3 +39,10 @@ while(<FH>)
     $seen{$next}{counter}++;
 }
 close(FH) || die "Unable to close file '$sort_order_bed': $!\n";
+
+# print a status
+print STDERR "Position\tName\t# seen\n";
+foreach my $item (sort { $seen{$a}{pos} <=> $seen{$b}{pos} } (keys %seen))
+{
+    printf STDERR "%d\t%s\t%d\n", $seen{$item}{pos}, $item, $seen{$item}{counter};
+}
