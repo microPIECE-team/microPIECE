@@ -70,7 +70,6 @@ sub parse_header
     my ($header) = @_;
 
     my @seq = map { /SN:(\S+)\s+LN:(\d+)/; { name => $1, len => int($2) }; } (grep {/^\@SQ\s+SN:/} (split("\n", $$header)));
-    @seq = sort { $a->{name} cmp $b->{name} } (@seq);
 
     return \@seq;
 }
