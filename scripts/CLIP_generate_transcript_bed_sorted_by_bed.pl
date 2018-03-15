@@ -49,7 +49,7 @@ while(<FH>)
 
     next if (/^#/);
     # a line has to be splittable at space/tab
-    next unless (/^(\S+)\s/);
+    next unless (/^(\S+)\s*/);
 
     my $chr = $1;
 
