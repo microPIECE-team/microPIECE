@@ -37,6 +37,7 @@ foreach my $bam (@bamfiles)
     {
 	print STDERR "Working on $seq->{name}:";
 	# generate a bin of size binsize
+	my $next_val = 0;
 	for(my $start=1; $start<=$seq->{len}; $start+=$binsize)
 	{
 	    my $stop = $start+$binsize-1;
@@ -44,14 +45,11 @@ foreach my $bam (@bamfiles)
 	    {
 		$stop = $seq->{len};
 	    }
-	    my $possible_2_skip = check4fastforward($start, $binsize*512, $bam, $seq, $binsize);
-	    if ($possible_2_skip)
+	    if ($start>=$next_val)
 	    {
-		# no reads are found, therefore we can skip that range
-		$start+=$possible_2_skip-$binsize;
-		next;
+		printf STDERR "\rWorking on %s:%d-%d (finished: %.1f%%)", $seq->{name}, $start, $stop, ($start/$seq->{len}*100);
+		$next_val = $start+$seq->{len}/1000;
 	    }
-	    print STDERR "\rWorking on $seq->{name}:$start-$stop";
 	    foreach my $strand ("-", "+")
 	    {
 		# the bin starts at $start and ends at $stop
@@ -60,24 +58,10 @@ foreach my $bam (@bamfiles)
 		{
 		    $strand_samtools = "-f 0x10"
 		}
-		my $cmd = sprintf("samtools view -c -F 0x4 %s %s %s:%d-%d", $strand_samtools, $bam, $seq->{name}, $start, $stop);
-		my $counts =  qx($cmd)+0;
-		if ($? != 0)
-		{
-		    die "Error running command '$cmd'\n";
-		}
-		if ($counts > 0)
-		{
-		    # print BED line
-
-		    # Start needs to be decreased, due to 0-based BED
-		    # vs. 1-based BAM coordinates, but $stop requires no
-		    # modification, due to it is exclusive in BED
-		    print join("\t", ($seq->{name}, $start-1, $stop, ".", $counts, $strand)), "\n";
-		}
+		print join("\t", ($seq->{name}, $start-1, $stop, ".", ".", $strand)), "\n";
 	    }
 	}
-	print STDERR "FINISH\n";
+	print STDERR " FINISHED\n";
     }
 }
 
