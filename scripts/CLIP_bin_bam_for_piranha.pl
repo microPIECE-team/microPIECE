@@ -44,6 +44,13 @@ foreach my $bam (@bamfiles)
 	    {
 		$stop = $seq->{len};
 	    }
+	    my $possible_2_skip = check4fastforward($start, $binsize*512, $bam, $seq, $binsize);
+	    if ($possible_2_skip)
+	    {
+		# no reads are found, therefore we can skip that range
+		$start+=$possible_2_skip-$binsize;
+		next;
+	    }
 	    print STDERR "\rWorking on $seq->{name}:$start-$stop";
 	    foreach my $strand ("-", "+")
 	    {
@@ -82,4 +89,29 @@ sub parse_header
     @seq = sort { $a->{name} cmp $b->{name} } (@seq);
 
     return \@seq;
+}
+
+sub check4fastforward{
+    my ($start, $fast_forward, $bam, $seq, $bin_size) = @_;
+
+    while ($fast_forward>5*$binsize)
+    {
+	if ($start+$fast_forward>$seq->{len})
+	{
+	    return;
+	}
+	my $stop = $start+$fast_forward-1;
+
+	my $cmd = sprintf("samtools view -c -F 0x4 %s %s:%d-%d", $bam, $seq->{name}, $start, $stop);
+	my $counts =  qx($cmd)+0;
+	if ($? != 0)
+	{
+	    die "Error running command '$cmd'\n";
+	}
+
+	return $fast_forward if ($counts == 0);
+	$fast_forward = int($fast_forward>>1);
+    }
+
+    return;
 }
