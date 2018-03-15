@@ -24,21 +24,23 @@ die "Filename provided via --sortby option is not accessable (provided name is '
 # parse the sort order
 my %seen  = ();
 my @order = ();
-open(FH, "<", $sort_order_bed) || die "Unable to open file '$sort_order_bed': $!\n";
+open(FH, "<", $sortby) || die "Unable to open file '$sortby': $!\n";
 while(<FH>)
 {
     next if (/^#/);
     # a line has to be splittable at space/tab
     next unless (/^(\S+)\s/);
 
-    if (! exists $seen{$next})
+    my $chr = $1;
+    
+    if (! exists $seen{$chr})
     {
-	push(@order, $next);
-	$seen{$next}{pos} = int(@order);
+	push(@order, $chr);
+	$seen{$chr}{pos} = int(@order);
     }
-    $seen{$next}{counter}++;
+    $seen{$chr}{counter}++;
 }
-close(FH) || die "Unable to close file '$sort_order_bed': $!\n";
+close(FH) || die "Unable to close file '$sortby': $!\n";
 
 # print a status
 print STDERR "Position\tName\t# seen\n";
