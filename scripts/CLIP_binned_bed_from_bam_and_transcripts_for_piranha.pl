@@ -112,7 +112,7 @@ foreach my $bam (@bamfiles)
 	while (<FH>)
 	{
 	    # ignore lines starting with @
-	    next unless (/^[^@]/);
+	    next if (/^@/);
 	    
 	    # got a mapped read
 	    my ($name, $flag, $chr, $start, $qual) = split("\t", $_);
