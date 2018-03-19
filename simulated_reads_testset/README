@@ -1,0 +1,37 @@
+art_illumina -rs 1337 -ss HS10 -sam -i tca_testset_small.fna -l 50 -f 20 -o hs10_sim
+
+
+    ====================ART====================
+             ART_Illumina (2008-2016)          
+          Q Version 2.5.8 (June 7, 2016)       
+     Contact: Weichun Huang <whduke@gmail.com> 
+    -------------------------------------------
+
+                  Single-end Simulation
+
+Total CPU time used: 0.26
+
+The random seed for the run: 1337
+
+Parameters used during run
+	Read Length:	50
+	Genome masking 'N' cutoff frequency: 	1 in 50
+	Fold Coverage:            20X
+	Profile Type:             Combined
+	ID Tag:                   
+
+Quality Profile(s)
+	First Read:   HiSeq 1000 Length 100 R1 (built-in profile) 
+
+Output files
+
+  FASTQ Sequence File:
+	hs10_sim.fq
+
+  ALN Alignment File:
+	hs10_sim.aln
+
+  SAM Alignment File:
+	hs10_sim.sam
+
+
