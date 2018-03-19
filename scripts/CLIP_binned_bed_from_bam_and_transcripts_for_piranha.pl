@@ -107,7 +107,7 @@ foreach my $bam (@bamfiles)
 	my @counts = ();
 	$#counts = int($seq->{len}/$binsize)+1;
 
-	my $cmd = sprintf("samtools view -c -F 0x4 %s %s:%d-%d", $bam, $seq->{name}, 1, $seq->{len});
+	my $cmd = sprintf("samtools view -F 0x4 %s %s:%d-%d", $bam, $seq->{name}, 1, $seq->{len});
 	open(FH, "$cmd |") || die "Unable to open pipe to '$cmd': $!\n";
 	while (<FH>)
 	{
