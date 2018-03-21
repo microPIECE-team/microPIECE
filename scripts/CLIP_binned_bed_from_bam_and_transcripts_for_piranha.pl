@@ -135,14 +135,25 @@ foreach my $bam (@bamfiles)
 	if ($pseudocounts)
 	{
 	    my $list_of_feature_bins = expand_transcripts(\%imported_transcripts, $seq->{name});
-
+	    my $bins2change = 0;
+	    foreach my $strand (keys %{$imported_transcripts{$seq->{name}}})
+	    {
+		$bins2change += @{$list_of_feature_bins->[$strand]}
+	    }
+	    my $progress = Term::ProgressBar->new({name => $seq->{name}." Pseudocounts", count => $bins2change, remove => 0, ETA => 'linear'});
+	    $progress->minor(0);
+	    my $next_val = 0;
+	    my $bins_changed = 0;
 	    foreach my $strand (keys %{$imported_transcripts{$seq->{name}}})
 	    {
 		foreach my $bin (@{$list_of_feature_bins->[$strand]})
 		{
 		    $counts[$bin][$strand]++;
+		    $bins_changed++;
+		    $next_val = $progress->update($bins_changed) if ($bins_changed >= $next_val);
 		}
 	    }
+	    $progress->update($bins2change) if ($bins2change <= $next_val);
 	}
 
 	$progress = Term::ProgressBar->new({name => $seq->{name}." BEDoutput", count => int(@counts), remove => 0, ETA => 'linear'});
@@ -259,10 +270,7 @@ sub expand_transcripts
     my @result = ();
     foreach my $strand (@strands)
     {
-	foreach my $bin (keys(%{$seen{$strand}}))
-	{
-	    push(@{$result[$strand]}, $bin);
-	}
+	$result[$strand] = [ keys %{$seen{$strand}} ];
     }
 
     return \@result;
