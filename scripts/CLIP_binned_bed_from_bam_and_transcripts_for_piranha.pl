@@ -9,7 +9,7 @@ my @bamfiles     = ();
 my @transcripts  = ();
 my $binsize      = 20;
 my $reqfeature   = "exon";
-my $pseudocounts = 0;  
+my $pseudocounts = 0;
 
 GetOptions(
     'b|bam=s@'         => \@bamfiles,
@@ -35,14 +35,23 @@ use Term::ProgressBar;
 my %imported_transcripts = ();
 foreach my $transcript (@transcripts)
 {
+    my $progress = Term::ProgressBar->new({name => "Transcript import from '$transcript'", count => -s $transcript, remove => 0, ETA => 'linear'});
+    $progress->minor(0);
+    my $next_val = 0;
+
     open(FH, "<", $transcript) || die "Unable to open transcript file '$transcript'\n";
     while (<FH>)
     {
+	my $pos = tell(FH);
+	$next_val = $progress->update($pos) if ($pos >= $next_val);
 	chomp($_);
+
+	# skip header
+	next if (/^#/);
 
 	# as the input is a gff file, we want to consider only the required feature
 	my ($chr, undef, $feature, $start, $end, undef, $strand) = split(/\t/, $_);
-	next unless ($feature eq $reqfeature);
+	next unless (defined $feature && $feature eq $reqfeature);
 
 	# transform the start and end coordinates into BED format (0-based, end-exclusive)
 	($start, $end) = transform2bed($start, $end);
@@ -64,23 +73,7 @@ foreach my $transcript (@transcripts)
 	$pseudocounts = 1;
     }
     close(FH) || die "Unable to close transcript file '$transcript'\n";
-}
-# finally sort the imported transcripts by coordinate
-foreach my $chr (keys %imported_transcripts)
-{
-    foreach my $strand (keys %{$imported_transcripts{$chr}})
-    {
-	my @bins_with_feature = ();
-	
-	foreach my $exon (@{$imported_transcripts{$chr}{$strand}})
-	{
-	    foreach my $bin ($exon->{start}..$exon->{stop})
-	    {
-		$bins_with_feature[$bin]++;
-	    }
-	}
-	$imported_transcripts{$chr}{$strand} = \@bins_with_feature;
-    }
+    $progress->update(-s $transcript) if (-s $transcript <= $next_val);
 }
 
 foreach my $bam (@bamfiles)
@@ -100,7 +93,7 @@ foreach my $bam (@bamfiles)
 
     foreach my $seq (@{$seq})
     {
-	my $progress = Term::ProgressBar->new({name => $seq->{name}, count => $seq->{len}, remove => 0});
+	my $progress = Term::ProgressBar->new({name => $seq->{name}, count => $seq->{len}, remove => 0, ETA => 'linear'});
 	$progress->minor(0);
 	my $next_val = 0;
 
@@ -113,9 +106,12 @@ foreach my $bam (@bamfiles)
 	{
 	    # ignore lines starting with @
 	    next if (/^@/);
-	    
+
 	    # got a mapped read
 	    my ($name, $flag, $chr, $start, $qual) = split("\t", $_);
+
+	    # set the progressbar
+	    $next_val = $progress->update($start) if ($start >= $next_val);
 
 	    # is the read a forward mapped read
 	    # assume forward strand
@@ -130,42 +126,45 @@ foreach my $bam (@bamfiles)
 
 	    # according to Piranha the start position determines the bin
 	    my $bin = int($start/$binsize);
-	    
-	    # set the progressbar
-	    $next_val = $progress->update($start) if ($start >= $next_val);
 
 	    $counts[$bin][$strand]++;
 	}
 	close(FH) || die "Unable to close pipe to '$cmd': $!\n";
+	$progress->update($seq->{len}) if ($seq->{len} <= $next_val);
 
 	if ($pseudocounts)
 	{
+	    my $list_of_feature_bins = expand_transcripts(\%imported_transcripts, $seq->{name});
+
 	    foreach my $strand (keys %{$imported_transcripts{$seq->{name}}})
 	    {
-		foreach my $bin (@{$imported_transcripts{$seq->{name}}{$strand}})
+		foreach my $bin (@{$list_of_feature_bins->[$strand]})
 		{
 		    $counts[$bin][$strand]++;
 		}
 	    }
 	}
-	
+
+	$progress = Term::ProgressBar->new({name => $seq->{name}." BEDoutput", count => int(@counts), remove => 0, ETA => 'linear'});
+	$progress->minor(0);
+	$next_val = 0;
 	for(my $i=0; $i<@counts; $i++)
 	{
+	    $next_val = $progress->update($i) if ($i >= $next_val);
+
 	    # get the start and end coordinate
 	    my $start = $i*$binsize;
 	    my $stop = $start+$binsize;
 
-	    if (defined $counts[$i][0] && $counts[$i][0] > 0)
+	    foreach my $strand (0, 1)
 	    {
-		print join("\t", ($seq->{name}, $start, $stop, ".", $counts[$i][0], "+")), "\n";
+		if (defined $counts[$i] && defined $counts[$i][$strand] && $counts[$i][$strand] > 0)
+		{
+		    print join("\t", ($seq->{name}, $start, $stop, ".", $counts[$i][$strand], ($strand == 0) ? "+" : "-")), "\n";
+		}
 	    }
-
-	    if (defined $counts[$i][1] && $counts[$i][1] > 0)
-	    {
-		print join("\t", ($seq->{name}, $start, $stop, ".", $counts[$i][0], "-")), "\n";
-	    }
-
 	}
+	$progress->update(@counts+0) if (@counts <= $next_val);
     }
 }
 
@@ -211,7 +210,7 @@ sub transform2bed
     {
 	$start--;
     }
-    
+
     if (defined $end)
     {
 	$end = $end;
@@ -228,11 +227,42 @@ sub transformfrombed
     {
 	$start++;
     }
-    
+
     if (defined $end)
     {
 	$end = $end;
     }
 
     return($start, $end);
+}
+
+sub expand_transcripts
+{
+    my ($transcripts, $seqname) = @_;
+    my %seen = ();
+
+    my @strands = keys %{$transcripts->{$seqname}};
+
+    foreach my $strand (@strands)
+    {
+	foreach my $exon (@{$transcripts->{$seqname}{$strand}})
+	{
+	    foreach my $bin ($exon->{start}..$exon->{stop})
+	    {
+		$seen{$strand}{$bin}++;
+	    }
+	}
+    }
+
+    my @result = ();
+    foreach my $strand (@strands)
+    {
+	foreach my $bin (keys(%{$seen{$strand}}))
+	{
+	    push(@{$result[$strand]}, $bin);
+	}
+    }
+
+    return \@result;
+
 }
