@@ -68,7 +68,7 @@ foreach my $transcript (@transcripts)
 	# start and stop are transformed into bins
 	$start = int($start/$binsize);
 	$end   = int(($end-1)/$binsize);
-	push(@{$imported_transcripts{$chr}{$strand}}, { start => $start, stop => $end });
+	push(@{$imported_transcripts{$chr}{$strand}}, ($start, $end));
 
 	$pseudocounts = 1;
     }
@@ -245,9 +245,11 @@ sub expand_transcripts
 
     foreach my $strand (@strands)
     {
-	foreach my $exon (@{$transcripts->{$seqname}{$strand}})
+	for(my $i=0; $i<@{$transcripts->{$seqname}{$strand}}; $i+=2)
 	{
-	    foreach my $bin ($exon->{start}..$exon->{stop})
+	    my $start = $transcripts->{$seqname}{$strand}[$i];
+	    my $stop  = $transcripts->{$seqname}{$strand}[$i+1];
+	    for(my $bin=$start; $bin<=$stop; $bin++)
 	    {
 		$seen{$strand}{$bin}++;
 	    }
