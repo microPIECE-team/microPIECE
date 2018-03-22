@@ -60,8 +60,8 @@ foreach(keys %novel_hash){
 
 	my $header	= sprintf(">%s-new-%d", $species, $novel_count);
 
-	print HAIRPIN "$header\n$hairpin\n";
-	print MATURE "$header-5p\n$mature5p\n$header-3p\n$mature3p\n";
+        print HAIRPIN $header, "\n", $hairpin, "\n";
+        print MATURE  $header, "-5p\n", $mature5p, "\n", $header, "-3p\n", $mature3p, "\n";
 }
 #close(CSV) || die;
 
