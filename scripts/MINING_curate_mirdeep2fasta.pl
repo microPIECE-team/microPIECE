@@ -1,7 +1,8 @@
-#! /usr/bin/perl
+#!/usr/bin/perl
 use strict;
 use warnings;
 use Getopt::Long;
+
 my $csv_file;
 my $cutoff;
 my $mature_file;
@@ -21,7 +22,6 @@ die "Need to specify --cutoff cutoffscore\n" unless (defined $cutoff);
 die "Need to specify --matureout file\n" unless (defined $mature_file);
 die "Need to specify --hairpinout file\n" unless (defined $hairpin_file);
 die "Need to specify --species three-letter-species-code\n" unless (defined $species);
-
 
 # get novel miRNAs above threshold
 my %novel_hash	= %{&parse_mirdeep($csv_file,$cutoff)};
