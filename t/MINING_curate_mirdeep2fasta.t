@@ -10,7 +10,11 @@ use Digest::MD5;
 my @testcases = (
     {
 	input => "MINING_curate_mirdeep2fasta_case1.dat",
-	expected => "212d519b1d185ce0998bf52a33e891b5",
+	expected => "b5f303bb04b2a8947652bcab1a9171f4",
+    },
+    {
+	input => "MINING_curate_mirdeep2fasta_case2.dat",
+	expected => "b5f303bb04b2a8947652bcab1a9171f4",
     }
     );
 

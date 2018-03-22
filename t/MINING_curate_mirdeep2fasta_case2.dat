@@ -1,0 +1,67 @@
+miRDeep2 score	novel miRNAs reported by miRDeep2	novel miRNAs, estimated false positives	novel miRNAs, estimated true positives	known miRNAs in species	known miRNAs in data	known miRNAs detected by miRDeep2	estimated signal-to-noise	excision gearing
+10	10	2 +/- 1	8 +/- 1 (83 +/- 12%)	590	427	254 (59%)	38.2	3
+9	10	2 +/- 1	8 +/- 1 (82 +/- 13%)	590	427	256 (60%)	37.8	3
+8	10	2 +/- 1	8 +/- 1 (82 +/- 14%)	590	427	258 (60%)	37	3
+7	10	2 +/- 1	8 +/- 1 (81 +/- 14%)	590	427	258 (60%)	36.4	3
+6	11	2 +/- 1	9 +/- 1 (82 +/- 13%)	590	427	260 (61%)	36.2	3
+5	18	2 +/- 2	16 +/- 2 (88 +/- 8%)	590	427	300 (70%)	37.6	3
+4	27	3 +/- 2	24 +/- 2 (90 +/- 6%)	590	427	329 (77%)	31.4	3
+3	32	7 +/- 3	25 +/- 3 (78 +/- 8%)	590	427	338 (79%)	16.9	3
+2	37	12 +/- 3	25 +/- 3 (68 +/- 9%)	590	427	340 (80%)	11.7	3
+1	44	17 +/- 4	27 +/- 4 (61 +/- 10%)	590	427	347 (81%)	8.9	3
+0	53	23 +/- 5	30 +/- 5 (56 +/- 9%)	590	427	349 (82%)	7.2	3
+-1	57	31 +/- 5	26 +/- 5 (45 +/- 9%)	590	427	351 (82%)	5.7	3
+-2	66	40 +/- 6	26 +/- 6 (40 +/- 9%)	590	427	351 (82%)	4.8	3
+-3	73	48 +/- 7	25 +/- 7 (34 +/- 9%)	590	427	352 (82%)	4.2	3
+-4	81	55 +/- 7	26 +/- 7 (32 +/- 9%)	590	427	352 (82%)	3.8	3
+-5	85	63 +/- 7	22 +/- 7 (26 +/- 8%)	590	427	352 (82%)	3.5	3
+-6	87	70 +/- 8	17 +/- 8 (20 +/- 9%)	590	427	352 (82%)	3.2	3
+-7	93	75 +/- 8	18 +/- 8 (19 +/- 8%)	590	427	352 (82%)	3.1	3
+-8	95	81 +/- 8	14 +/- 8 (15 +/- 8%)	590	427	352 (82%)	2.9	3
+-9	100	85 +/- 8	15 +/- 8 (15 +/- 8%)	590	427	352 (82%)	2.9	3
+-10	103	89 +/- 8	14 +/- 8 (14 +/- 8%)	590	427	352 (82%)	2.8	3
+
+
+
+novel miRNAs predicted by miRDeep2
+provisional id	miRDeep2 score	estimated probability that the miRNA candidate is a true positive	rfam alert	total read count	mature read count	loop read count	star read count	significant randfold p-value	miRBase miRNA	example miRBase miRNA with the same seed	UCSC browser	NCBI blastn	consensus mature sequence	consensus star sequence	consensus precursor sequence	precursor coordinate
+NC_007424.3_29324	114.2	83 +/- 12%	-	221	200	0	21	yes	-	-	-	-	cuccucgcugguagauggcgggcu	ccgccaugaccggcggggcggcg	ccgccaugaccggcggggcggcgcggcucgaguugugcuccucgcugguagauggcgggcu	NC_007424.3:13942158..13942219:-
+NC_007417.3_5178	328.3	83 +/- 12%	-	649	532	0	117	yes	-	-	-	-	cuucaacucacuuuggacaacu	uuguccaacuugaguauugaga	uuguccaacuugaguauugagaacggaauuaaucucgcucuucaacucacuuuggacaacu	NC_007417.3:14308626..14308687:-
+NC_007424.3_28086	89.7	83 +/- 12%	-	175	50	0	125	yes	-	-	-	-	cggucaguaagucugcugaugcu	uuucagcucucuuacuuuccguc	cggucaguaagucugcugaugcuuuuacgacaguuucagcucucuuacuuuccguc	NC_007424.3:14276628..14276684:+
+NC_007417.3_2806	45.1	83 +/- 12%	-	94	93	0	1	yes	-	hsa-miR-5582-3p	-	-	uaaaacuucacgaacug	cauucagaaguauuaauucgga	uaaaacuucacgaacugucacguaccaugauuucaauucacuucaauuagcgacguuacauucagaaguauuaauucgga	NC_007417.3:5866105..5866185:+
+NW_015452101.1_46214	0.4	56 +/- 9%	-	4140	4138	2	0	no	-	gga-miR-1774	-	-	ucccugcucgggcgcca	gcuuugucggagaucggguug	ucccugcucgggcgccaaaauuuguaauguccuuuuuccgggcggcuuugucggagaucggguug	NW_015452101.1:671..736:+
+NC_007424.3_28116	0.3	56 +/- 9%	-	3	3	0	0	yes	-	sma-miR-8462-5p	-	-	ugauuaaucuuuacuguuacc	caaccauagagauuaaucaag	ugauuaaucuuuacuguuaccauaguuacagcauggcaaccauagagauuaaucaag	NC_007424.3:15097848..15097905:+
+NC_007419.2_12804	0.3	56 +/- 9%	-	408	407	1	0	no	-	bfl-miR-4892	-	-	guaggauaagugggagu	acuuccugccugcga	acuuccugccugcgauugggcuuuauuuaacugaguuaaaguguaggauaagugggagu	NC_007419.2:9640109..9640168:-
+NC_007425.3_29801	0.2	56 +/- 9%	-	18911	18911	0	0	yes	-	-	-	-	guucccggaccacuccc	ucguauuccgguggcaa	ucguauuccgguggcaacuuaaugauauuuugugacguucauuaagugaguuuguucccggaccacuccc	NC_007425.3:2845289..2845359:+
+NC_007419.2_12773	0	56 +/- 9%	-	4	4	0	0	yes	-	ame-miR-3790-5p	-	-	aaaagcgacuuuuuucuugcug	gcagguaaaaaaguaauuuuggc	aaaagcgacuuuuuucuugcuguuggaauaauuggcagguaaaaaaguaauuuuggc	NC_007419.2:9213500..9213557:-
+
+
+
+mature miRBase miRNAs detected by miRDeep2
+tag id	miRDeep2 score	estimated probability that the miRNA is a true positive	rfam alert	total read count	mature read count	loop read count	star read count	significant randfold p-value	mature miRBase miRNA	example miRBase miRNA with the same seed	UCSC browser	NCBI blastn	consensus mature sequence	consensus star sequence	consensus precursor sequence	precursor coordinate
+NC_007424.3_28946	1080044	83 +/- 12%	-	2118452	2095855	0	22597	yes	tca-miR-8-5p	sha-miR-200c	-	-	uaauacugucagguaaagauguc	caucuuaccgggcagcauuaga	caucuuaccgggcagcauuagauuacauuuuauacuucuaauacugucagguaaagauguc	NC_007424.3:8781912..8781973:-
+NC_007417.3_2952	960398.2	83 +/- 12%	-	1883771	1870384	0	13387	yes	tca-miR-10-5p	cpi-miR-10b-5p	-	-	uacccuguagauccgaauuugu	caaauucgguucuagagagguuu	uacccuguagauccgaauuuguuugaaaucaggcgacaaauucgguucuagagagguuu	NC_007417.3:8460382..8460441:+
+NC_007422.5_18806	699490.5	83 +/- 12%	-	1372012	1371975	0	37	yes	tca-miR-31-5p	bma-miR-72	-	-	aggcaagaugucggcauagcuga	ggcuaugucucauccggccaac	aggcaagaugucggcauagcugaagguguuugaaacggcuaugucucauccggccaac	NC_007422.5:5938428..5938486:+
+NC_007418.3_6733	364433.7	83 +/- 12%	-	714813	714478	0	335	yes	tca-bantam-5p	hpo-miR-10021-5p	-	-	ugagaucauugugaaagcugauu	cugguuuucacagugauuugac	cugguuuucacagugauuugacagauauauuugauucugagaucauugugaaagcugauu	NC_007418.3:16990365..16990425:+
+NC_007418.3_8508	298016.6	83 +/- 12%	-	584538	583631	0	907	yes	tca-miR-276-5p	der-miR-276a	-	-	uaggaacuucauaccgugcucu	agcgagguauagaguuccuacg	agcgagguauagaguuccuacgugauuuuucggcuguaggaacuucauaccgugcucu	NC_007418.3:12483937..12483995:-
+NC_007418.3_6695	280475.2	83 +/- 12%	-	550133	549894	1	238	yes	tca-miR-279c-5p	dme-miR-279-3p	-	-	ugacuagaucgaacauucgcu	cggguguucguuucgagucaca	cggguguucguuucgagucacauugugauugauuuugugacuagaucgaacauucgcu	NC_007418.3:15690068..15690126:+
+NC_007420.3_15639	260138.4	83 +/- 12%	-	510241	509166	0	1075	yes	tca-miR-263a-5p	ggo-miR-183	-	-	aauggcacuggaagaauucacggg	cguggacuuugagugccauccu	aauggcacuggaagaauucacgggguucuucgcacucccguggacuuugagugccauccu	NC_007420.3:13500412..13500472:-
+NC_007422.5_18118	225456.2	83 +/- 12%	-	442214	408799	0	33415	yes	tca-miR-281-5p	sma-miR-281-5p	-	-	aagagagcuauccgucgacagu	cugucauggaguugcucucuu	aagagagcuauccgucgacaguauauaauuuacacugucauggaguugcucucuu	NC_007422.5:203927..203982:+
+NC_007421.3_16306	196235.3	83 +/- 12%	-	384898	384031	0	867	yes	tca-miR-100-5p	cbn-miR-52	-	-	aacccguagauccgaacuugug	caaguucuuguuuauggguacc	aacccguagauccgaacuuguggggcuguggucacaaguucuuguuuauggguacc	NC_007421.3:4363293..4363349:+
+NC_007422.5_19503	155861.3	83 +/- 12%	-	305707	304852	0	855	yes	tca-miR-184-5p	cin-miR-184	-	-	uggacggagaacugauaagggc	ccuugucauucucucgcccggu	ccuugucauucucucgcccgguguauuuuaacaacuggacggagaacugauaagggc	NC_007422.5:12944303..12944360:+
+NC_007418.3_5615	136501.5	83 +/- 12%	-	267736	256940	0	10796	yes	tca-miR-14-5p	bmo-miR-3368	-	-	ucagucuuuuucucucuccuau	aggggagcggauuggacuuacu	aggggagcggauuggacuuacuuuuuuucaaacagucagucuuuuucucucuccuau	NC_007418.3:2833775..2833832:+
+NC_007416.3_1577	112414	83 +/- 12%	-	220488	217173	2	3313	yes	tca-miR-9a-5p	dse-miR-9b	-	-	ucuuugguuaucuagcuguauga	uaaagcuagguuaccggaguua	ucuuugguuaucuagcuguaugaguauuguuuaauaacaucauaaagcuagguuaccggaguua	NC_007416.3:6011260..6011324:-
+NC_007418.3_5397	99158.8	83 +/- 12%	-	194487	194476	0	11	yes	tca-miR-2-2-5p	gsa-miR-2c-3p	-	-	ucacagccagcuuugaugag	ucaucaucugguugugaaaug	ucaucaucugguugugaaaugugaauuuauaucauaucacagccagcuuugaugag	NC_007418.3:561351..561407:+
+
+#miRBase miRNAs not detected by miRDeep2
+miRBase precursor id	total read count	5p read counts	3p read counts	remaining reads	UCSC browser	NCBI blastn	miRBase 5p sequence(s)	miRBase 3p sequence(s)	miRBase precursor sequence
+53558	52520	434	604	-	-	ucccugagacccuaacuuguga	acaagcuagcgacucggguauug	auuugccuauucccugagacccuaacuugugauguuaaauggacucucacaagcuagcgacucggguauuggcggau	
+14158	281	13867	10	-	-	cgugcgaucuuuccauuccuacuug	uaguacggaauuaucucac	cucuuuucgcauuaucuuucgugcgaucuuuccauuccuacuuguuguuugauaaguaguacggaauuaucucacauuagauauugggaguuuuc	
+12365	12194	170	1	-	-	ucuuuggugaucuaguuguau	auaaagcugguucagcaaagca	aacagguugcaagucggauauauucuucuuuggugaucuaguuguaugaguguuuuauauaucauaaagcugguucagcaaagcagauugcauucgacucuucgacgagcc	
+2841	2763	14	64	-	-	acugaagcugacgaguuaacugccgg	ucccggauuuuuuccccagccucaa	aaaacugaagcugacgaguuaacugccggguacuuguucccggauuuuuuccccagccucaagaag	
+2846	2415	27	404	-	-	acccaucuucagacaacucugg	cgaguuugcuuuugaugggaga	aguguaggcgauuuugacccaucuucagacaacucuggauuguuuuaaauguccacgaguuugcuuuugaugggagaucaauagucuuuuag	
+2594	2256	1	337	-	-	ugauguuauuuucgaccucc	ucucugguagaaaguacgucau	ggauggaaugauguuauuuucgaccuccaccacccucucugguagaaaguacgucauucaccuc	
+2074	395	1677	2	-	-	cgcaggauuugcuugugaaugg	aaucacaggaaaauucugugcg	ucaaaugggguaauuggcgcccugcgcaggauuugcuugugaaugggugugcuugauucaaucacaggaaaauucugugcggggaguugguuuugucaccaca	
+848	0	848	0	-	-	uggguuauugugugccggu	aaccggccauaaagcccuc	caauuggguuauugugugccggucauuacaucauuacaggucauguaaaccggccauaaagcccucaac	
+1797	792	449	556	-	-	ugccacugaugaauuacugcuagaau	uugaggauucgcaguuucugaggcaa	uaaaaucuuguugccacugaugaauuacugcuagaaucuuccuuuaauuuaaguugaggauucgcaguuucugaggcaaauuagaaaa	
+806	79	725	2	-	-	aggggguacuguaaguacgua	uaguacgaacgguacucacuau	caucagugaaugcuuuguaggggguacuguaaguacguacgauuuuuuuaacguaguacgaacgguacucacuaugaacguuacacaguuu	
