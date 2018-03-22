@@ -65,9 +65,8 @@ foreach(keys %novel_hash){
 }
 #close(CSV) || die;
 
-close(MATURE) || die "$!";
-close(HAIRPIN)|| die "$!";
-
+close(MATURE) || die "Unable to close file '$mature_file': $!\n";
+close(HAIRPIN)|| die "Unable to close file '$hairpin_file': $!\n";
 
 ###########################################################################
 
