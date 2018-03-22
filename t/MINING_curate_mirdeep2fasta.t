@@ -4,7 +4,7 @@ use warnings;
 use Test::Script::Run;
 use Test::More;
 
-use File::Temp;
+use File::Temp qw/ :POSIX /;
 use Digest::MD5;
 
 my @testcases = (
@@ -18,8 +18,8 @@ my @testcases = (
     }
     );
 
-my (undef, $mature)  = File::Temp::tempfile(OPEN => 0);
-my (undef, $hairpin) = File::Temp::tempfile(OPEN => 0);
+my $mature  = tmpnam();
+my $hairpin = tmpnam();
 
 my ($return,$stdout,$stderr)=run_script('../scripts/MINING_curate_mirdeep2fasta.pl');
 isnt(Test::Script::Run::last_script_exit_code(), 0, 'Without arguments is should exit with exit code not equals to 1');
