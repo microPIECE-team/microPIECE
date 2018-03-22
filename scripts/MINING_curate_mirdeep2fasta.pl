@@ -2,6 +2,7 @@
 use strict;
 use warnings;
 use Getopt::Long;
+use Digest::MD5;
 
 my $csv_file;
 my $cutoff;
@@ -59,7 +60,7 @@ for(my $novel_count = 1; $novel_count <= @{$novels}; $novel_count++)
     $mature3p	=~ s/U/T/g;
     $hairpin	=~ s/U/T/g;
 
-    my $header	= sprintf(">%s-new-%d", $species, $novel_count);
+    my $header	= sprintf(">%s-new-%d", $species, $novel->{digest});
 
     print HAIRPIN $header, "\n", $hairpin, "\n";
     print MATURE  $header, "-5p\n", $mature5p, "\n", $header, "-3p\n", $mature3p, "\n";
@@ -112,6 +113,11 @@ sub parse_mirdeep{
 
 		next if ($dataset{score} < $cutoff);
 
+		# calculate a checksum for "hairpin_seq|mature_seq|star_seq"
+		my $ctx = Digest::MD5->new;
+		$ctx->add(join("|", $dataset{precursor_seq}, $dataset{mature_seq}, $dataset{star_seq}));
+		my @checksum = unpack("S*", $ctx->digest); # digest is 16 Bytes... We are using the lowest 16 bit as unsigned number (ranging 0-65535) as digest
+		$dataset{digest} = $checksum[-1];
 		push(@result, \%dataset);
 	    }
 
@@ -121,6 +127,8 @@ sub parse_mirdeep{
 	}
 
 	close(PM) || die "Unable to close file '$file': $!\n";
+
+	@result = sort { $a->{digest} cmp $b->{digest} } (@result);
 
         return(\@result);
 }
