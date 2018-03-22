@@ -530,7 +530,7 @@ sub run_mining_isomir
 	);
     run_cmd($L, \@cmd);
 
-    my $miraligner_db = getcwd()./miraligner_db/;
+    my $miraligner_db = getcwd()."/miraligner_db/";
     $L->logdie("Folder '$miraligner_db' already exists!\n") if (-e $miraligner_db);
     create_folder($miraligner_db) || $L->logdie("Error on directory '$miraligner_db' creation");
 
