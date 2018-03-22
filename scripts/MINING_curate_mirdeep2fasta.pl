@@ -26,8 +26,8 @@ die "Need to specify --species three-letter-species-code\n" unless (defined $spe
 # get novel miRNAs above threshold
 my %novel_hash	= %{&parse_mirdeep($csv_file,$cutoff)};
 
-open(MATURE,">",$mature_file) || die "$!";
-open(HAIRPIN,">",$hairpin_file) || die "$!";
+open(MATURE,">",$mature_file)   || die "Unable to open file '$mature_file': $!\n";
+open(HAIRPIN,">",$hairpin_file) || die "Unable to open file '$hairpin_file': $!\n";
 
 foreach(keys %novel_hash){
 	my $novel_count	= $_;
