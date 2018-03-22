@@ -3,7 +3,7 @@ package microPIECE;
 use strict;
 use warnings;
 
-use version 0.77; our $VERSION = version->declare("v1.1.0");
+use version 0.77; our $VERSION = version->declare("v1.2.0");
 
 use Log::Log4perl;
 use Data::Dumper;
@@ -530,6 +530,13 @@ sub run_mining_isomir
 	);
     run_cmd($L, \@cmd);
 
+    my $miraligner_db = getcwd()."/miraligner_db/";
+    $L->logdie("Folder '$miraligner_db' already exists!\n") if (-e $miraligner_db);
+    create_folder($miraligner_db) || $L->logdie("Error on directory '$miraligner_db' creation");
+
+    # copy the required database files into the database directory
+    copy($opt->{final_hairpin}, $miraligner_db.'/hairpin.fa') || $L->logdie(sprintf("Unable to copy '%s'-->'%s': %s", $opt->{final_hairpin}, $miraligner_db."/hairpin.fa", $!));
+    copy($opt->{mining}{download}{custom_structure}, $miraligner_db.'/miRNA.str') || $L->logdie(sprintf("Unable to copy '%s'-->'%s': %s", $opt->{mining}{download}{custom_structure}, $miraligner_db."/miRNA.str", $!));
     foreach my $condition (keys %{$opt->{mining}{filtered}})
     {
 	my @condition_files_from_miraligner = ();
@@ -544,7 +551,7 @@ sub run_mining_isomir
 	    filter_for_N_and_collapse_reads($file, $file_filteredN_collapsed);
 
 	    # run miraligner for each read file
-	    my @cmd = ("java", "-jar", $opt->{miraligner}, "-sub", 1, "-trim", 3, "-add", 3, "-s", $opt->{speciesB_tag}, "-freq", "-i", $file_filteredN_collapsed, "-db", getcwd(), "-o", $miraligner_out);
+	    my @cmd = ("java", "-jar", $opt->{miraligner}, "-sub", 1, "-trim", 3, "-add", 3, "-s", $opt->{speciesB_tag}, "-freq", "-i", $file_filteredN_collapsed, "-db", $miraligner_db, "-o", $miraligner_out);
 	    run_cmd($L, \@cmd);
 
 	    my $expected_output_file = $miraligner_out.".mirna";
