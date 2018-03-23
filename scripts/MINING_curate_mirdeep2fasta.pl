@@ -22,6 +22,7 @@ die "Need to specify --csv file\n" unless (defined $csv_file);
 die "Input file does not exist\n" unless (-e $csv_file);
 die "Need to specify --cutoff cutoffscore\n" unless (defined $cutoff);
 die "Need to specify --matureout file\n" unless (defined $mature_file);
+die "Mature file exists and will not be overwritten!\n" if (-e $mature_file);
 die "Need to specify --hairpinout file\n" unless (defined $hairpin_file);
 die "Need to specify --species three-letter-species-code\n" unless (defined $species);
 
