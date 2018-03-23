@@ -9,11 +9,11 @@ use Digest::MD5;
 
 my @testcases = (
     {
-	input => "MINING_curate_mirdeep2fasta_case1.dat",
+	input => "t/MINING_curate_mirdeep2fasta_case1.dat",
 	expected => "b5f303bb04b2a8947652bcab1a9171f4",
     },
     {
-	input => "MINING_curate_mirdeep2fasta_case2.dat",
+	input => "t/MINING_curate_mirdeep2fasta_case2.dat",
 	expected => "b5f303bb04b2a8947652bcab1a9171f4",
     }
     );
@@ -44,9 +44,6 @@ like($stderr, qr/Need to specify --species three-letter-species-code/, "Test for
 
 foreach my $current_test (@testcases)
 {
-    my $mature  = tmpnam();
-    my $hairpin = tmpnam();
-
     my ($return,$stdout,$stderr)=run_script('../scripts/MINING_curate_mirdeep2fasta.pl', [
 						"--csv", $current_test->{input}, 
 						"--cutoff", 10, 
@@ -54,9 +51,7 @@ foreach my $current_test (@testcases)
 						"--hairpinout", $hairpin, 
 						"--species", "tca"
 					    ] );
-    is(Test::Script::Run::last_script_exit_code(), 0, 'With value for hairpin is should exit with exit code not equals to 0');
-    diag($stdout);
-    diag($stderr);
+    is(Test::Script::Run::last_script_exit_code(), 0, 'With input values it should run and return 0');
 
     my $got	= parser($mature, $hairpin);
     is($got,$current_test->{expected}, "output for input: '".$current_test->{input}."' as expected");
