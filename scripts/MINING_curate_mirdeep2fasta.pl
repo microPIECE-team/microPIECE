@@ -34,27 +34,9 @@ for(my $novel_count = 1; $novel_count <= @{$novels}; $novel_count++)
 {
     my $novel = $novels->[$novel_count-1];
     
-    my $mature	= uc($novel->{mature_seq});
-    my $star	= uc($novel->{star_seq});
-    my $hairpin	= uc($novel->{precursor_seq});
-
-    my $mature5p;
-    my $mature3p;
-
-    my $mature_idx	= index($hairpin,$mature);
-    my $star_idx	= index($hairpin,$star);
-
-    if($mature_idx < $star_idx){
-	$mature5p=$mature;
-	$mature3p=$star;
-    }
-    elsif($star_idx < $mature_idx){
-	$mature5p=$star;
-	$mature3p=$mature;
-    }
-    else{
-	die("mature and star sequence have the same position on hairpin\n"); # should never happen
-    }
+    my $mature5p = uc($novel->{mature_seq});
+    my $mature3p = uc($novel->{star_seq});
+    my $hairpin	 = uc($novel->{precursor_seq});
 
     $mature5p	=~ s/U/T/g;
     $mature3p	=~ s/U/T/g;
@@ -112,6 +94,20 @@ sub parse_mirdeep{
 		@dataset{@fieldnames} = split("\t", $_);
 
 		next if ($dataset{score} < $cutoff);
+
+		# check if we need to switch mature and star
+		my $mature_idx	= index($dataset{precursor_seq},$dataset{mature_seq});
+		my $star_idx	= index($dataset{precursor_seq},$dataset{star_seq});
+
+		if ($star_idx == $mature_idx)
+		{
+		    die("mature and star sequence have the same position on hairpin\n"); # should never happen
+		}
+		# we need to switch if star is before mature
+		if($star_idx < $mature_idx){
+		    warn("Need to switch mature/star sequence for line '$_'\n");
+		    ($dataset{mature_seq}, $dataset{star_seq}) = ($dataset{star_seq}, $dataset{mature_seq});
+		}
 
 		# calculate a checksum for "hairpin_seq|mature_seq|star_seq"
 		my $ctx = Digest::MD5->new;
