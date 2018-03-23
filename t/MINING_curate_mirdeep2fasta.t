@@ -53,6 +53,10 @@ like($stderr, qr/Mature file exists and will not be overwritten/, "Test for exis
 isnt(Test::Script::Run::last_script_exit_code(), 0, 'With value for hairpin is should exit with exit code not equals to 0');
 like($stderr, qr/Need to specify --species three-letter-species-code/, "Test for missing species");
 
+($return,$stdout,$stderr)=run_script('../scripts/MINING_curate_mirdeep2fasta.pl', ["--csv", $testcases[0]{input}, "--cutoff", 10, "--matureout", $mature, "--hairpinout", $testcases[0]{input} ] );
+isnt(Test::Script::Run::last_script_exit_code(), 0, 'With an existing file for hairpin sequences is should exit with exit code not equals to 0');
+like($stderr, qr/Hairpin file exists and will not be overwritten/, "Test for existing hairpin file");
+
 ($return,$stdout,$stderr)=run_script('../scripts/MINING_curate_mirdeep2fasta.pl', ["--csv", "t/MINING_curate_mirdeep2fasta_collision.dat", "--cutoff", 10, "--matureout", $mature, "--hairpinout", $hairpin, "--species", "tca" ] );
 isnt(Test::Script::Run::last_script_exit_code(), 0, 'Collision should cause the exit code not equals to 0');
 like($stderr, qr/Collision detected/, "Test for collision in numbering");
