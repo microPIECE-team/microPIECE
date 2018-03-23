@@ -38,7 +38,7 @@ We also provide `microPIECE` as [DOCKER image](https://hub.docker.com/r/micropie
 ### Information about the docker images:
 | Branch | Size | Layers | Comment |
 |-|-|-|-|
-|[![](https://images.microbadger.com/badges/version/micropiece/micropiece:v1.1.0.svg)](https://microbadger.com/images/micropiece/micropiece:v1.1.0) | [![](https://images.microbadger.com/badges/image/micropiece/micropiece:v1.1.0.svg)](https://microbadger.com/images/micropiece/micropiece:v1.1.0) | [![](https://images.microbadger.com/badges/commit/micropiece/micropiece:v1.1.0.svg)](https://microbadger.com/images/micropiece/micropiece:v1.1.0) | Latest release [v1.1.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.1.0) |
+|[![](https://images.microbadger.com/badges/version/micropiece/micropiece:v1.2.2.svg)](https://microbadger.com/images/micropiece/micropiece:v1.2.2) | [![](https://images.microbadger.com/badges/image/micropiece/micropiece:v1.2.2.svg)](https://microbadger.com/images/micropiece/micropiece:v1.2.2) | [![](https://images.microbadger.com/badges/commit/micropiece/micropiece:v1.2.2.svg)](https://microbadger.com/images/micropiece/micropiece:v1.2.2) | Latest release [v1.2.2](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.2.2) |
 |[![](https://images.microbadger.com/badges/version/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master) | [![](https://images.microbadger.com/badges/image/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master) | [![](https://images.microbadger.com/badges/commit/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master) | |
 |[![](https://images.microbadger.com/badges/version/micropiece/micropiece:develop.svg)](https://microbadger.com/images/micropiece/micropiece:develop) | [![](https://images.microbadger.com/badges/image/micropiece/micropiece:develop.svg)](https://microbadger.com/images/micropiece/micropiece:develop) | [![](https://images.microbadger.com/badges/commit/micropiece/micropiece:develop.svg)](https://microbadger.com/images/micropiece/micropiece:develop) | |
 
@@ -281,6 +281,26 @@ Complete list of open issues is available on [Github-Issues](https://github.com/
 Please report any new issues ad [new Github-Issue](https://github.com/microPIECE-team/microPIECE/issues/new).
 
 ## Changelog
+
+- [v1.2.2](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.2.2) (2018-03-23)
+
+    Improved collision detection for newly identified miRNAs avoiding crashed caused by genomic copies.
+    (Fixes [#105](https://github.com/microPIECE-team/microPIECE/issues/101))
+
+- [v1.2.1](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.2.1) (2018-03-23)
+
+    Enables stable numbering for newly identified miRNAs based on their precursor and mature sequences
+    (Fixes [#101](https://github.com/microPIECE-team/microPIECE/issues/101))
+
+- [v1.2.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.2.0) (2018-03-22)
+
+    We are using miraligner which requires a java version 1.7, but 1.8 was
+    installed by default. This was fixed by switching to v1.4 of the
+    docker base image. Additionally, miraligner requires fix filenames for
+    its databases. Therefore, the version v1.2.0 solved miraligner related
+    bugs and reenables the isomir detection.  (Fixes
+    [#97](https://github.com/microPIECE-team/microPIECE/issues/97) and
+    [#98](https://github.com/microPIECE-team/microPIECE/issues/98))
 
 - [v1.1.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.1.0) (2018-03-12)
 
