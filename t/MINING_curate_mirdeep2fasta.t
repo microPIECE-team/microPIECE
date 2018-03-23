@@ -55,6 +55,8 @@ foreach my $current_test (@testcases)
 						"--species", "tca"
 					    ] );
     is(Test::Script::Run::last_script_exit_code(), 0, 'With value for hairpin is should exit with exit code not equals to 0');
+    diag($stdout);
+    diag($stderr);
 
     my $got	= parser($mature, $hairpin);
     is($got,$current_test->{expected}, "output for input: '".$current_test->{input}."' as expected");
