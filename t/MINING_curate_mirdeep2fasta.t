@@ -44,6 +44,9 @@ like($stderr, qr/Need to specify --species three-letter-species-code/, "Test for
 
 foreach my $current_test (@testcases)
 {
+    my $mature  = tmpnam();
+    my $hairpin = tmpnam();
+
     my ($return,$stdout,$stderr)=run_script('../scripts/MINING_curate_mirdeep2fasta.pl', [
 						"--csv", $current_test->{input}, 
 						"--cutoff", 10, 
