@@ -56,6 +56,7 @@ close(HAIRPIN)|| die "Unable to close file '$hairpin_file': $!\n";
 sub parse_mirdeep{
         my ($file, $cutoff)     = @_;
         my @result = ();
+	my %seen   = ();
 
         open(PM, "<", $file) || die "Unable to open file '$file': $!\n";
         while(<PM>){
@@ -114,6 +115,8 @@ sub parse_mirdeep{
 		$ctx->add(join("|", $dataset{precursor_seq}, $dataset{mature_seq}, $dataset{star_seq}));
 		my @checksum = unpack("S*", $ctx->digest); # digest is 16 Bytes... We are using the lowest 16 bit as unsigned number (ranging 0-65535) as digest
 		$dataset{digest} = $checksum[-1];
+		die "Collision detected\n" if (exists $seen{$checksum[-1]});
+		$seen{$checksum[-1]}++;
 		push(@result, \%dataset);
 	    }
 
