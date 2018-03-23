@@ -282,6 +282,26 @@ Please report any new issues ad [new Github-Issue](https://github.com/microPIECE
 
 ## Changelog
 
+- [v1.2.2](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.2.2) (2018-03-23)
+
+    Improved collision detection for newly identified miRNAs avoiding crashed caused by genomic copies.
+    (Fixes [#105](https://github.com/microPIECE-team/microPIECE/issues/101))
+
+- [v1.2.1](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.2.1) (2018-03-23)
+
+    Enables stable numbering for newly identified miRNAs based on their precursor and mature sequences
+    (Fixes [#101](https://github.com/microPIECE-team/microPIECE/issues/101))
+
+- [v1.2.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.2.0) (2018-03-22)
+
+    We are using miraligner which requires a java version 1.7, but 1.8 was
+    installed by default. This was fixed by switching to v1.4 of the
+    docker base image. Additionally, miraligner requires fix filenames for
+    its databases. Therefore, the version v1.2.0 solved miraligner related
+    bugs and reenables the isomir detection.  (Fixes
+    [#97](https://github.com/microPIECE-team/microPIECE/issues/97) and
+    [#98](https://github.com/microPIECE-team/microPIECE/issues/98))
+
 - [v1.1.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.1.0) (2018-03-12)
 
     Add isomir detection and copy the final genomic location file to the
