@@ -20,6 +20,11 @@ GetOptions(
 
 # definde the bams and transcripts if comma seperated
 @bamfiles = split(",", join(",", @bamfiles));
+if (@bamfiles>1)
+{
+    warn("Multiple bam files as input is currently not supported. Will create bin only for first bam: ".$bamfiles[0]." and skip the following: ".join(",", @bamfiles[1..@bamfiles-1])."\n");
+    @bamfiles = ($bamfiles[0]);
+}
 @transcripts = split(",", join(",", @transcripts));
 
 # try to call samtools
