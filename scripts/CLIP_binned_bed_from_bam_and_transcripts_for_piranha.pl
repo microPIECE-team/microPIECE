@@ -78,7 +78,7 @@ foreach my $transcript (@transcripts)
 	$pseudocounts = 1;
     }
     close(FH) || die "Unable to close transcript file '$transcript'\n";
-    $progress->update(-s $transcript) if (-s $transcript <= $next_val);
+    #$progress->update(-s $transcript) if (-s $transcript <= $next_val);
 }
 
 foreach my $bam (@bamfiles)
@@ -158,7 +158,7 @@ foreach my $bam (@bamfiles)
 		    $next_val = $progress->update($bins_changed) if ($bins_changed >= $next_val);
 		}
 	    }
-	    $progress->update($bins2change) if ($bins2change <= $next_val);
+	   # $progress->update($bins2change) if ($bins2change <= $next_val);
 	}
 
 	$progress = Term::ProgressBar->new({name => $seq->{name}." BEDoutput", count => int(@counts), remove => 0, ETA => 'linear'});

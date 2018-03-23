@@ -78,37 +78,37 @@ my @testcases = (
 	binsize => 1,
 	bam     => "t/testset_binning/hs10_sim.bam",
 	transcript => "t/testset_binning/tca_testset_small.gff",
-	expected => "be9d43db01c40a03dcc5d1e2322e5506",
+	expected => "048eab4b23833815ddb5b6d827c877a5",
     },
     {
 	binsize => 5,
 	bam     => "t/testset_binning/hs10_sim.bam",
 	transcript => "t/testset_binning/tca_testset_small.gff",
-	expected => "68e1d39df9c684c47a40dce47ae081df",
+	expected => "d116c630c530827ee79e35ba67b2874f",
     },
     {
 	binsize => 20,
 	bam     => "t/testset_binning/hs10_sim.bam",
 	transcript => "t/testset_binning/tca_testset_small.gff",
-	expected => "980eb941363d095a2085b5d2d93ef7ae",
+	expected => "a50f3015698c2ef930f34117f7f3cafe",
     },
     {
 	binsize => 100,
 	bam     => "t/testset_binning/hs10_sim.bam",
 	transcript => "t/testset_binning/tca_testset_small.gff",
-	expected => "a09e9034e1cc1e83cd0d39e928a421e9",
+	expected => "60d6aa2174fdf35374baae4d3ff6f460",
     },
     {
 	binsize => 250,
 	bam     => "t/testset_binning/hs10_sim.bam",
 	transcript => "t/testset_binning/tca_testset_small.gff",
-	expected => "96fda737eb1d8211194e1e4bcb691f49",
+	expected => "4f8e3a5f3b8cede6c2a36b9431111e7e",
     },
     {
 	binsize => 500,
 	bam     => "t/testset_binning/hs10_sim.bam",
 	transcript => "t/testset_binning/tca_testset_small.gff",
-	expected => "83f250501e2f603b5b0736cb5721ea0d",
+	expected => "c75724e0f164c5eab97a87535fa8cd25",
     },
     );
 
@@ -130,7 +130,6 @@ for(my $i=0; $i<@testcases; $i++)
 
     my ($return,$stdout,$stderr)=run_script($script, \@param );
     is(Test::Script::Run::last_script_exit_code(), 0, 'Test for testset '.$i.' should run and return 0');
-    #diag(Dumper({param => \@param, stdout => $stdout, stderr => $stderr})); use Data::Dumper;
 
     my $got	= parser(\$stdout);
     is($got,$current_test->{expected}, "Output for testset ".$i." as expected");
