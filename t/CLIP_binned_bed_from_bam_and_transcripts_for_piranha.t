@@ -38,6 +38,42 @@ my @testcases = (
 	bam     => "t/testset_binning/hs10_sim.bam",
 	expected => "83f250501e2f603b5b0736cb5721ea0d",
     },
+    {
+	binsize => 1,
+	bam     => "t/testset_binning/hs10_sim.bam,t/testset_binning/hs10_sim.bam",
+	expected => "be9d43db01c40a03dcc5d1e2322e5506",
+#	expected => "620ce8de27bc861d88434517be21cda5",
+    },
+    {
+	binsize => 5,
+	bam     => "t/testset_binning/hs10_sim.bam,t/testset_binning/hs10_sim.bam",
+	expected => "68e1d39df9c684c47a40dce47ae081df",
+#	expected => "078b8c5d6275574af94f015eb2bc4ab3",
+    },
+    {
+	binsize => 20,
+	bam     => "t/testset_binning/hs10_sim.bam,t/testset_binning/hs10_sim.bam",
+	expected => "980eb941363d095a2085b5d2d93ef7ae",
+#	expected => "f06e16f9075b2950cfabc196b7c11be9",
+    },
+    {
+	binsize => 100,
+	bam     => "t/testset_binning/hs10_sim.bam,t/testset_binning/hs10_sim.bam",
+	expected => "a09e9034e1cc1e83cd0d39e928a421e9",
+#	expected => "e3610027b051eba616c844f0f62f8586",
+    },
+    {
+	binsize => 250,
+	bam     => "t/testset_binning/hs10_sim.bam,t/testset_binning/hs10_sim.bam",
+	expected => "96fda737eb1d8211194e1e4bcb691f49",
+#	expected => "5cecb7cc4948c1c24bb42ce0976c7ae8",
+    },
+    {
+	binsize => 500,
+	bam     => "t/testset_binning/hs10_sim.bam,t/testset_binning/hs10_sim.bam",
+	expected => "83f250501e2f603b5b0736cb5721ea0d",
+#	expected => "6b7b623a998e2778503c9cd9c513f2f7",
+    },
     );
 
 my $script = 'scripts/CLIP_binned_bed_from_bam_and_transcripts_for_piranha.pl';
@@ -45,10 +81,10 @@ my $script = 'scripts/CLIP_binned_bed_from_bam_and_transcripts_for_piranha.pl';
 for(my $i=0; $i<@testcases; $i++)
 {
     my $current_test = $testcases[$i];
-    
+
     my ($return,$stdout,$stderr)=run_script($script, [
-						"--bam", $current_test->{bam}, 
-						"--size", $current_test->{binsize} 
+						"--bam", $current_test->{bam},
+						"--size", $current_test->{binsize}
 					    ] );
     is(Test::Script::Run::last_script_exit_code(), 0, 'Test for testset '.$i.' should run and return 0');
 
