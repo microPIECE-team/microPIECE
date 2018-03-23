@@ -115,12 +115,29 @@ sub parse_mirdeep{
 
 		# calculate a checksum for "hairpin_seq|mature_seq|star_seq"
 		my $ctx = Digest::MD5->new;
-		$ctx->add(join("|", $dataset{precursor_seq}, $dataset{mature_seq}, $dataset{star_seq}));
+		my $current_seq = join("|", $dataset{precursor_seq}, $dataset{mature_seq}, $dataset{star_seq});
+		$ctx->add($current_seq);
 		my @checksum = unpack("S*", $ctx->digest); # digest is 16 Bytes... We are using the lowest 16 bit as unsigned number (ranging 0-65535) as digest
-		$dataset{digest} = $checksum[-1];
-		die "Collision detected\n" if (exists $seen{$checksum[-1]});
-		$seen{$checksum[-1]}++;
-		push(@result, \%dataset);
+		my $new_number = $checksum[-1];
+
+		$dataset{digest} = $new_number;
+		if (exists $seen{$new_number})
+		{
+		    # we found a collision
+		    # now check, if the sequences are identical
+		    my $former_hit = $seen{$new_number};
+		    my $former_seq = join("|", ($result[$former_hit]{precursor_seq}, $result[$former_hit]{mature_seq}, $result[$former_hit]{star_seq}));
+		    if ($former_seq eq $current_seq)
+		    {
+			# both sequences are identical, therefore we are assuming genomic copies
+			warn("Collision detected, but assuming to have found a genomic copy for line '$_'\n");
+		    } else {
+			die("Collision found, but sequences are different for line '$_'\n");
+		    }
+		} else {
+		    $seen{$new_number} = int(@result);
+		    push(@result, \%dataset);
+		}
 	    }
 
 	    # we will arrive here, if we already parsed the novel
