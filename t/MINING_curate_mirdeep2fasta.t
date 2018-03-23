@@ -33,6 +33,10 @@ like($stderr, qr/Need to specify --csv file/, "Test for missing csv file");
 isnt(Test::Script::Run::last_script_exit_code(), 0, 'With file for query is should exit with exit code not equals to 0');
 like($stderr, qr/Need to specify --cutoff cutoffscore/, "Test for missing cutoff");
 
+($return,$stdout,$stderr)=run_script('../scripts/MINING_curate_mirdeep2fasta.pl', ["--csv", $testcases[0]{input}."non_existing" ] );
+isnt(Test::Script::Run::last_script_exit_code(), 0, 'With non existing file for query is should exit with exit code not equals to 0');
+like($stderr, qr/Input file does not exist/, "Test for non-existing input file");
+
 ($return,$stdout,$stderr)=run_script('../scripts/MINING_curate_mirdeep2fasta.pl', ["--csv", $testcases[0]{input}, "--cutoff", 10 ] );
 isnt(Test::Script::Run::last_script_exit_code(), 0, 'With value for cufoff is should exit with exit code not equals to 0');
 like($stderr, qr/Need to specify --matureout file/, "Test for missing matureout file");
