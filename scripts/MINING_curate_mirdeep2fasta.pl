@@ -19,6 +19,7 @@ GetOptions(
 ) || die;
 
 die "Need to specify --csv file\n" unless (defined $csv_file);
+die "Input file does not exist\n" unless (-e $csv_file);
 die "Need to specify --cutoff cutoffscore\n" unless (defined $cutoff);
 die "Need to specify --matureout file\n" unless (defined $mature_file);
 die "Need to specify --hairpinout file\n" unless (defined $hairpin_file);
