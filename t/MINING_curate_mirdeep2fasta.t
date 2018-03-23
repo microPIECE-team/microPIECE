@@ -45,6 +45,10 @@ like($stderr, qr/Need to specify --matureout file/, "Test for missing matureout 
 isnt(Test::Script::Run::last_script_exit_code(), 0, 'With value for mature is should exit with exit code not equals to 0');
 like($stderr, qr/Need to specify --hairpinout file/, "Test for missing hairpinout file");
 
+($return,$stdout,$stderr)=run_script('../scripts/MINING_curate_mirdeep2fasta.pl', ["--csv", $testcases[0]{input}, "--cutoff", 10, "--matureout", $testcases[0]{input} ] );
+isnt(Test::Script::Run::last_script_exit_code(), 0, 'With an existing file for mature sequences is should exit with exit code not equals to 0');
+like($stderr, qr/Mature file exists and will not be overwritten/, "Test for existing mature file");
+
 ($return,$stdout,$stderr)=run_script('../scripts/MINING_curate_mirdeep2fasta.pl', ["--csv", $testcases[0]{input}, "--cutoff", 10, "--matureout", $mature, "--hairpinout", $hairpin ] );
 isnt(Test::Script::Run::last_script_exit_code(), 0, 'With value for hairpin is should exit with exit code not equals to 0');
 like($stderr, qr/Need to specify --species three-letter-species-code/, "Test for missing species");
@@ -66,6 +70,8 @@ foreach my $current_test (@testcases)
 
     my $got	= parser($mature, $hairpin);
     is($got,$current_test->{expected}, "output for input: '".$current_test->{input}."' as expected");
+    unlink($mature) || die "Unable to unlink mature file '$mature': $!\n";
+    unlink($hairpin) || die "Unable to unlink hairpin file '$hairpin': $!\n";
 }
 
 done_testing();
