@@ -62,7 +62,7 @@ while(<CSV>){
 			$p5_seq = $mature_seq;
 			$p3_seq = $star_seq;
 		}
-		print ">$mature_name-5p\n$p5_seq\n>$mature_name-3p\n$p3_seq\n";
+		print ">$precursor_name-5p\n$p5_seq\n>$precursor_name-3p\n$p3_seq\n";
 		# remove already identified mature sequences from total mature sequences that cointain only one arm in the hairpin
 		delete($mature_hash{$mature_name});
 	}
