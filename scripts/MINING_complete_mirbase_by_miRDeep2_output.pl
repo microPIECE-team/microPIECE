@@ -40,7 +40,7 @@ while(<CSV>){
 	my (undef, undef, undef, undef, undef, undef, undef, undef, undef, $mature_name, undef, undef, undef, $mature_seq, $star_seq, $hairpin_seq, undef) = split("\t",$_);
 	#check for miRBase annotations that have only one mature sequence
 	my $precursor_name 	= $mature_name;
-	$precursor_name		=~s/-.p$//;
+	$precursor_name		=~s/-[35]p$//;
 	next unless (exists $pair_hash{$precursor_name});
 	next if( $pair_hash{$precursor_name} == 2);
 	$mature_seq	= uc($mature_seq);
