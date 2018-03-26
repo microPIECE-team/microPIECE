@@ -40,7 +40,7 @@ while(<CSV>){
 	my (undef, undef, undef, undef, undef, undef, undef, undef, undef, $mature_name, undef, undef, undef, $mature_seq, $star_seq, $hairpin_seq, undef) = split("\t",$_);
 	#check for miRBase annotations that have only one mature sequence
 	my $precursor_name 	= $mature_name;
-	$precursor_name		=~s/-.p$//;
+	$precursor_name		=~s/-[35]p$//;
 	next unless (exists $pair_hash{$precursor_name});
 	next if( $pair_hash{$precursor_name} == 2);
 	$mature_seq	= uc($mature_seq);
@@ -62,7 +62,7 @@ while(<CSV>){
 			$p5_seq = $mature_seq;
 			$p3_seq = $star_seq;
 		}
-		print ">$mature_name-5p\n$p5_seq\n>$mature_name-3p\n$p3_seq\n";
+		print ">$precursor_name-5p\n$p5_seq\n>$precursor_name-3p\n$p3_seq\n";
 		# remove already identified mature sequences from total mature sequences that cointain only one arm in the hairpin
 		delete($mature_hash{$mature_name});
 	}
