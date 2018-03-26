@@ -210,23 +210,6 @@ sub transform2bed
     return($start, $end);
 }
 
-sub transformfrombed
-{
-    my ($start, $end) = @_;
-
-    if (defined $start)
-    {
-	$start++;
-    }
-
-    if (defined $end)
-    {
-	$end = $end;
-    }
-
-    return($start, $end);
-}
-
 sub expand_transcripts
 {
     my ($transcripts, $seqname) = @_;
