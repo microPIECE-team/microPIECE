@@ -415,10 +415,15 @@ Please report any new issues ad L<new Github-Issue|https://github.com/microPIECE
 
 =over 4
 
+=item L<v1.2.3|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.2.3> (2018-03-26)
+
+Fix transformation of precursor sequences based on mirbase #22 precursor sequences with a single mature.
+(Fixes L<#109|https://github.com/microPIECE-team/microPIECE/issues/109>)
+
 =item L<v1.2.2|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.2.2> (2018-03-23)
 
 Improved collision detection for newly identified miRNAs avoiding crashed caused by genomic copies.
-(Fixes L<#105|https://github.com/microPIECE-team/microPIECE/issues/101>)
+(Fixes L<#105|https://github.com/microPIECE-team/microPIECE/issues/105>)
 
 =item L<v1.2.1|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.2.1> (2018-03-23)
 
