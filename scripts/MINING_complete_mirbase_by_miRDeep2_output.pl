@@ -3,13 +3,15 @@ use strict;
 use warnings;
 use Getopt::Long;
 my $mirdeep_csv;
-my $mature_fasta;
+my $mature_dat;
 my $precursor_copies = "";
+my $species = "";
 
 GetOptions(
 	"mirdeep_out=s"		=>\$mirdeep_csv,
-	"mature_fasta=s"	=>\$mature_fasta,
-	"precursor_copies=s"	=>\$precursor_copies) || die;
+	"mature_dat=s"	        =>\$mature_dat,
+	"precursor_copies=s"	=>\$precursor_copies,
+        "species=s"             =>\$species) || die;
 
 # split the list of given precursors that have genomic copies
 my @precursor_list	= split(",",$precursor_copies);
