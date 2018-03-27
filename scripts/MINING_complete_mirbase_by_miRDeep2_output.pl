@@ -17,7 +17,9 @@ GetOptions(
 	"mirbase_dat=s"	        =>\$mirbase_dat,
         "species=s"             =>\$species) || die;
 
-my $mirbase_dat_content = mining::parse_dat($mirbase_dat, $species);
+my $mirbase_dat_content = mining::parse_mirbase_dat($mirbase_dat, $species);
+
+__END__
 
 # split the list of given precursors that have genomic copies
 my @precursor_list	= split(",",$precursor_copies);

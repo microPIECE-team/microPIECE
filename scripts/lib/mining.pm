@@ -3,7 +3,7 @@ package mining;
 use strict;
 use warnings;
 
-sub parse_dat
+sub parse_mirbase_dat
 {
     my ($infile, $species) = @_;
 
@@ -21,7 +21,7 @@ sub parse_dat
 	    last if (/^\/\/$/);
 	}
 
-	my $block_content = parse_block(\$lines, $species);
+	my $block_content = parse_mirbase_dat_block(\$lines, $species);
 	push(@input, $block_content) if ($block_content);
     }
     close(FH) || die "Unable to close file '$infile' after reading: $!\n";
@@ -29,7 +29,7 @@ sub parse_dat
     return \@input;
 }
 
-sub parse_block
+sub parse_mirbase_dat_block
 {
     my ($ref_lines, $req_species) = @_;
 
