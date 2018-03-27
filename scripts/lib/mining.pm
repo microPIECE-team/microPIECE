@@ -59,4 +59,33 @@ sub parse_block
     return ( { precursor => $precursor, species => $species, len => $precursor_len, matures => \@matures, seq => $seq } );
 }
 
+sub parse_fasta
+{
+    my ($infile) = @_;
+
+    my %output;
+    my $current_header;
+    open(FH,"<",$infile) || die "Unable to open file '$infile' for reading: $!\n";
+    while(<FH>)
+    {
+	chomp;
+	if(/^>/)
+	{
+	    if ($_ =~ /^>(\S+)/)
+	    {
+		$current_header = $1;
+	    } else {
+		die "Something went wrong while parsing line '$_'\n";
+	    }
+	}
+	else
+	{
+	    $output{$current_header} .= $_
+	}
+    }
+    close(FH)|| die "Unable to close file '$infile' after reading: $!\n";
+    return(\%pf_hash);
+}
+
+
 1;
