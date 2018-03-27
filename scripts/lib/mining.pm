@@ -84,7 +84,7 @@ sub parse_fasta
 	}
     }
     close(FH)|| die "Unable to close file '$infile' after reading: $!\n";
-    return(\%pf_hash);
+    return(\%output);
 }
 
 
