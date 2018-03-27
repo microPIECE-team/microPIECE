@@ -19,126 +19,99 @@ GetOptions(
 
 my $mirbase_dat_content = mining::parse_mirbase_dat($mirbase_dat, $species);
 
-__END__
-
-# split the list of given precursors that have genomic copies
-my @precursor_list	= split(",",$precursor_copies);
-my %precursor_hash;	#{precursor} = 1
-foreach my $precursor (@precursor_list){
-	$precursor =~s/mir/miR/;
-	$precursor =~s/-\d$//;
-	$precursor_hash{$precursor} += 1;
+my %mature2precursorIndex = ();
+for(my $i=0; $i<@{$mirbase_dat_content}; $i++)
+{
+    foreach my $mature (@{$mirbase_dat_content->[$i]{matures}})
+    {
+	push(@{$mature2precursorIndex{$mature->{name}}}, $i);
+    }
 }
 
-my %mature_hash		= %{&parse_fasta($mature_fasta)};
-my %pair_hash		= %{&get_pairs(\%mature_hash)};
+my $mirdeep_content = mining::parse_mirdeep_known($mirdeep_csv);
 
-open(CSV,"<",$mirdeep_csv) || die;
-my $line_bool = 0;
-while(<CSV>){
-	chomp;
-	if(/^mature miRBase miRNAs detected by miRDeep2/){
-		$line_bool = 1;
-		next;
+foreach my $mirdeep_line (@{$mirdeep_content})
+{
+    unless (exists $mature2precursorIndex{$mirdeep_line->{mirbase_mirna}})
+    {
+	die "Unable to find an entry for $mirdeep_line->{mirbase_mirna}\n";
+    }
+
+    # get a list of potential precursor
+    my @precursor = @{$mature2precursorIndex{$mirdeep_line->{mirbase_mirna}}};
+
+    # filter for precursors without two mature sequence
+    my @precursor_2_complete = grep { int(@{$mirbase_dat_content->[$_]{matures}}) < 2 } (@precursor);
+
+    # for the precursors_2_complete, we want add another mature from mirdeep
+    if (@precursor_2_complete)
+    {
+
+	# check for a minimum of 10 reads each for mature/star sequence or sum of both > 0 and both minimum 5
+	if (
+	    ($mirdeep_line->{mature_count} >= 10 && $mirdeep_line->{star_count} >= 10)
+	    ||
+	    ($mirdeep_line->{mature_count}+$mirdeep_line->{star_count}>=100 && $mirdeep_line->{mature_count}>=5 && $mirdeep_line->{star_count}>=5)
+	    )
+	{
+	    warn(sprintf("Mature/star sequences for '%s' do have enough counts (%d/%d) to fulfil requirement for adding mature sequence\n", $mirdeep_line->{mirbase_mirna}, $mirdeep_line->{mature_count}, $mirdeep_line->{star_count}));
+	} else {
+	    warn(sprintf("Mature/star sequences for '%s' do not have enough counts (%d/%d) to fulfil requirement for adding mature sequence\n", $mirdeep_line->{mirbase_mirna}, $mirdeep_line->{mature_count}, $mirdeep_line->{star_count}));
+	    next;
 	}
-	next if ($line_bool ==0);
-	next if (/^tag/);
-	if(/^$/){
-		$line_bool = 0;
-		next;
+
+	warn("Adding missing mature sequences for mirDeep2 mature ".$mirdeep_line->{mirbase_mirna}."\n");
+
+	if (@precursor > 1 && @precursor_2_complete != @precursor)
+	{
+	    warn("Multiple potential precursors with some not having 2 matures for '".$mirdeep_line->{mirbase_mirna}."\n");
 	}
-	my (undef, undef, undef, undef, undef, undef, undef, undef, undef, $mature_name, undef, undef, undef, $mature_seq, $star_seq, $hairpin_seq, undef) = split("\t",$_);
-	#check for miRBase annotations that have only one mature sequence
-	my $precursor_name 	= $mature_name;
-	$precursor_name		=~s/-[35]p$//;
-	next unless (exists $pair_hash{$precursor_name});
-	next if( $pair_hash{$precursor_name} == 2);
-	$mature_seq	= uc($mature_seq);
-	$star_seq	= uc($star_seq);
-	$hairpin_seq	= uc($hairpin_seq);
-	my $p5_seq;
-	my $p3_seq;
-	# as miRDeep2 reports mature and star sequences instead of 5p and 3p, it is necessary to identify the arm of the mature and star sequence
-	if(exists $mature_hash{$mature_name}){
-		my $hairpin_mid	= (length($hairpin_seq))/2;
-		my $mature_idx  = index($hairpin_seq,$mature_seq);
-		# if the mature sequence index is located on the right side of the hairpin, its defined as 3p and the star sequence is defined as 5p
-		if($mature_idx >= $hairpin_mid){
-			$p5_seq = $star_seq;
-			$p3_seq = $mature_seq;
+
+	foreach my $precursor (@precursor_2_complete)
+	{
+	    my $entry = $mirbase_dat_content->[$precursor];
+
+	    my $matures = $entry->{matures};
+
+	    # add the missing mature
+	    my $new_mature_entry = {
+		name  => $entry->{precursor},
+		start => index($entry->{seq}, $mirdeep_line->{star_seq}),
+		stop  => index($entry->{seq}, $mirdeep_line->{star_seq})+length($mirdeep_line->{star_seq})-1,
+		seq   => $mirdeep_line->{star_seq}
+	    };
+
+	    # check the positions:
+	    if ($matures->[0]{name} =~ /-3p$/)
+	    {
+		if ($new_mature_entry->{start} < $matures->[0]{start})
+		{
+		    # as expected, the new gets -5p
+		    $new_mature_entry->{name} .= "-5p";
+		} else {
+		    die "Unexpected new mature in line '".join(",", $mirdeep_line)."\n";
 		}
-		# if not, then the mature sequence is defined as 5p and the star sequence as 3p
-		else{
-			$p5_seq = $mature_seq;
-			$p3_seq = $star_seq;
+	    } elsif ($matures->[0]{name} =~ /-5p$/) {
+		if ($new_mature_entry->{start} > $matures->[0]{start})
+		{
+		    # as expected, the new gets -3p
+		    $new_mature_entry->{name} .= "-3p";
+		} else {
+		    die "Unexpected new mature in line '".join(",", $mirdeep_line)."\n";
 		}
-		print ">$precursor_name-5p\n$p5_seq\n>$precursor_name-3p\n$p3_seq\n";
-		# remove already identified mature sequences from total mature sequences that cointain only one arm in the hairpin
-		delete($mature_hash{$mature_name});
+	    } else {
+		warn "Unable to determine if 3p/5p for name ".$matures->[0]{name}.", but will rename both matures correctly\n";
+		if ($new_mature_entry->{start} > $matures->[0]{start})
+		{
+		    $new_mature_entry->{name} .= "-3p";
+		    $matures->[0]{name}       .= "-5p";
+		} else {
+		    $new_mature_entry->{name} .= "-5p";
+		    $matures->[0]{name}       .= "-3p";
+		}
+	    }
+
+	    push(@{$matures}, $new_mature_entry);
 	}
+    }
 }
-close(CSV) || die;
-
-
-foreach my $mature_ID (keys %mature_hash){
-	my $precursor_ID	= $mature_ID;
-	my $mature_arm		= substr($mature_ID,-2);
-	$precursor_ID		=~s/-.p$//;
-
-	# check if microRNA was provided by the user to have genomic copies 
-	if(exists $precursor_hash{$precursor_ID}){
-		# loop over all copies and copy mature sequences with new header : tca-mir-3811c-3p => tca-mir-3811c-1-3p and tca-mir-3811c-2-3p
-		for(my $i=1;$i<=$precursor_hash{$precursor_ID};$i++){
-			print ">$precursor_ID-$i-$mature_arm\n$mature_hash{$mature_ID}\n";
-		}
-	}
-	#print all "normal" mature microRNAs
-	else{
-		print ">$mature_ID\n$mature_hash{$mature_ID}\n";
-	}
-}
-
-
-sub parse_fasta{
-	my $pf_file	= $_[0];
-	my %pf_hash;
-	my $pf_header;
-	open(PF,"<",$pf_file) || die;
-	while(<PF>){
-		chomp;
-		if(/^>/){
-			$pf_header = (split(" ",$_))[0];
-			$pf_header =~s/^>//;
-		}
-		else{
-			$pf_hash{$pf_header} = $_
-		}
-	}
-	close(PF)|| die;
-	return(\%pf_hash);
-}
-
-
-sub get_pairs{
-	my %gp_mature	= %{$_[0]}; 	# {tca-miR-21-3p} ..
-	my %gp_pair;			# {tca-miR-21} = count
-	foreach my $gp_mature_key (keys %gp_mature){
-		$gp_mature_key	=~s/-.p$//;
-		$gp_pair{$gp_mature_key}+=1;
-	}
-	return(\%gp_pair);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
