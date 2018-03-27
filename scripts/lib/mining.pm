@@ -37,7 +37,7 @@ sub parse_mirbase_dat_block
     return unless ($$ref_lines =~ /^ID\s+(\S+)\s+(\S+);\s+(\S+);\s+(\S+);\s+(\d+)\s+BP.\s*$/m);
     my ($precursor, undef, undef, $species, $precursor_len) = ($1, $2, $3, $4, $5);
 
-    return unless (uc($species) eq uc($req_species));
+    return if ($req_species && uc($species) ne uc($req_species));
 
     # second we want to obtain the accession
     return unless ($$ref_lines =~ /^AC\s+(\S+);/m);
