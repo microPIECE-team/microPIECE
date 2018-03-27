@@ -3,6 +3,57 @@ package mining;
 use strict;
 use warnings;
 
+=pod
+
+=head2 SUBROUTINE C<parse_mirbase_dat()>
+
+Will parse the *.dat files from mirBASE and return a reduced structure.
+
+=head3 PARAMETER
+
+=over 4
+
+=item C<infile>
+
+A filename of the input file
+
+=item C<species>
+
+A three letter code for a species. If one is provided, only species
+matching the three letter code are returned. This filter step is
+skipped, if species is not provided (or C<undef>) or an empty string.
+
+=back
+
+=head3 OUTPUT
+
+The function will return an array reference containing hash references
+with precursor information. Each precursor hash contain the following
+key/value pairs:
+
+    {
+      precursor => "tca-...",       # precursor name
+      len       => 121,             # length in basepairs
+      seq       => "acug...",       # sequence of the precursor
+      species   => "TCA",           # species tag
+      matures   => [ ]              # matures belonging to the precursor
+    }
+
+The matures are represented as array containing hash references with
+the following information:
+
+    [
+        {
+            name  => "tca-...",      # mature name (non unique)
+            start => 30,             # start coordinate in precursor sequence
+            stop  => 50,             # end coordinate in precursor sequence
+            seq   => "acug..."       # sequence
+        },
+        ...
+    ]
+
+=cut
+
 sub parse_mirbase_dat
 {
     my ($infile, $species) = @_;
@@ -28,6 +79,14 @@ sub parse_mirbase_dat
 
     return \@input;
 }
+
+=pod
+
+=head2 SUBROUTINE C<_parse_mirbase_dat_block()>
+
+Internal function that will parse a single *.dat block.
+
+=cut
 
 sub _parse_mirbase_dat_block
 {
@@ -58,6 +117,36 @@ sub _parse_mirbase_dat_block
 
     return ( { precursor => $precursor, species => $species, len => $precursor_len, matures => \@matures, seq => $seq } );
 }
+
+=pod
+
+=head2 SUBROUTINE C<parse_fasta()>
+
+The subroutine will parse a fasta file and return a hash reference.
+
+=head3 PARAMETER
+
+=over 4
+
+=item C<infile>
+
+A filename of the input file
+
+=back
+
+=head3 OUTPUT
+
+The function will return a hash reference containing the following
+key/value pairs:
+
+    {
+      sequenceID => "actg...",
+                                # sequenceID are the non-white characters behind the leading ">" in
+                                # the fasta header. The corresponding value is the sequence with all
+                                # whitespaces stripped out
+    }
+
+=cut
 
 sub parse_fasta
 {
