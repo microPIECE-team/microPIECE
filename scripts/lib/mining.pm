@@ -3,6 +3,8 @@ package mining;
 use strict;
 use warnings;
 
+use Digest::MD5;
+
 =pod
 
 =head2 SUBROUTINE C<parse_mirbase_dat()>
@@ -284,7 +286,10 @@ sub _parse_mirdeep{
 	}
 
 	# identify the known block
-	next unless (/^tag id/);
+	while(<PM>)
+	{
+	    last if (/^tag id/);
+	}
 
 	while(<PM>)
 	{
@@ -300,8 +305,6 @@ sub _parse_mirdeep{
 		"score",                                  # miRDeep2 score
 		"probability",                            # estimated probability that the miRNA candidate is a true positive
 		"rfam_alert",                             # rfam alert
-		"pred_mature_in_accordance_with_mirbase", # If the predicted miRDeep2 sequence overlaps with the miRBase annotated mature sequence than this is indicated by 'TRUE'.
-		# If the predicted miRDeep2 star sequence overlaps with the miRBase annotated mature sequence this is inidicated by 'STAR'.
 		"total_read_count",                       # total read count
 		"mature_count",                           # mature read count
 		"loop_count",                             # loop read count
