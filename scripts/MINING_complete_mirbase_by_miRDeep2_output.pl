@@ -112,6 +112,9 @@ foreach my $mirdeep_line (@{$mirdeep_content})
 	    }
 
 	    push(@{$matures}, $new_mature_entry);
+
+	    # add to the description to the entry
+	    $entry->{description} .= " Added mature sequence fulfilling the mirbase high confidence criteria";
 	}
     }
 }
