@@ -23,4 +23,15 @@ foreach my $header (sort { $dat->{$a} cmp $dat->{$b} || $a cmp $b } keys %{$dat}
 }
 is($ctx->hexdigest(), "0a0a768296513b79e2e1b338044fd134", 'Fasta import can ge exported as expected');
 
+$dat = mining::parse_mirbase_dat("t/miRNA_high_conf.dat", "");
+
+@{$dat} = sort {$a->{seq} cmp $b->{seq} || $a->{precursor} cmp $b->{precursor} } @{$dat};
+$ctx = Digest::MD5->new;
+foreach my $entry (@{$dat})
+{
+    my $fasta_block = ">".$entry->{precursor}."\n".uc($entry->{seq})."\n";
+    $ctx->add($fasta_block);
+}
+is($ctx->hexdigest(), "0a0a768296513b79e2e1b338044fd134", 'mirbase *.dat import contains all haipins');
+
 done_testing;
