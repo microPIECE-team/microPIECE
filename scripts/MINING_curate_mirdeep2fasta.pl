@@ -46,6 +46,11 @@ for(my $novel_count = 1; $novel_count <= @{$novels}; $novel_count++)
     my $mature3p = uc($novel->{star_seq});
     my $hairpin	 = uc($novel->{precursor_seq});
 
+    if (index($hairpin, $mature5p) > index($hairpin, $mature3p))
+    {
+	($mature5p, $mature3p) = ($mature3p, $mature5p);
+    }
+
     $mature5p	=~ s/U/T/g;
     $mature3p	=~ s/U/T/g;
     $hairpin	=~ s/U/T/g;

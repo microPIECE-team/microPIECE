@@ -10,15 +10,15 @@ use Digest::MD5;
 my @testcases = (
     {
 	input => "t/MINING_curate_mirdeep2fasta_case1.dat",
-	expected => "a545dbc1e0ea240c00dd54032707ed44",
+	expected => "b5f303bb04b2a8947652bcab1a9171f4",
     },
     {
 	input => "t/MINING_curate_mirdeep2fasta_case2.dat",
-	expected => "a545dbc1e0ea240c00dd54032707ed44",
+	expected => "b5f303bb04b2a8947652bcab1a9171f4",
     },
     {
 	input => "t/MINING_curate_mirdeep2fasta_case3.dat",
-	expected => "a545dbc1e0ea240c00dd54032707ed44",
+	expected => "f19cbf40b8ccdef97113360eefe1cf25",
     }
     );
 

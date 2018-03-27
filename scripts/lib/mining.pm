@@ -261,11 +261,6 @@ sub _parse_mirdeep{
 	    {
 		die("mature and star sequence have the same position on hairpin\n"); # should never happen
 	    }
-	    # we need to switch if star is before mature
-	    if($star_idx < $mature_idx){
-		warn("Need to switch mature/star sequence for line '$_'\n");
-		($dataset{mature_seq}, $dataset{star_seq}) = ($dataset{star_seq}, $dataset{mature_seq});
-	    }
 
 	    # calculate a checksum for "hairpin_seq|mature_seq|star_seq"
 	    my $ctx = Digest::MD5->new;
@@ -339,11 +334,6 @@ sub _parse_mirdeep{
 	    if ($star_idx == $mature_idx)
 	    {
 		die("mature and star sequence have the same position on hairpin\n"); # should never happen
-	    }
-	    # we need to switch if star is before mature
-	    if($star_idx < $mature_idx){
-		warn("Need to switch mature/star sequence for line '$_'\n");
-		($dataset{mature_seq}, $dataset{star_seq}) = ($dataset{star_seq}, $dataset{mature_seq});
 	    }
 
 	    push(@{$result{known}}, \%dataset);
