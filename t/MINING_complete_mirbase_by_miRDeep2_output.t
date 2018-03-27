@@ -58,4 +58,24 @@ foreach my $entry (@tmp)
 }
 is($ctx->hexdigest(), "fb0a6f1793a8c284df4834c6cfbbe3e4", 'mirbase *.dat import contains all matures');
 
+@tmp = ();
+foreach my $entry (@{$dat})
+{
+    foreach my $mature (@{$entry->{matures}})
+    {
+	push(@tmp, { name => $mature->{name}, seq => $mature->{seq} });
+    }
+}
+@tmp = sort { $a->{seq} cmp $b->{seq} || $a->{name} cmp $b->{name} } (@tmp);
+
+$ctx = Digest::MD5->new;
+%seen = ();
+foreach my $entry (@tmp)
+{
+    my $fasta_block = ">".$entry->{name}."\n".uc($entry->{seq})."\n";
+    $ctx->add($fasta_block) unless (exists $seen{$fasta_block});
+    $seen{$fasta_block}++;
+}
+is($ctx->hexdigest(), "fb0a6f1793a8c284df4834c6cfbbe3e4", 'mirbase *.dat import contains all matures');
+
 done_testing;
