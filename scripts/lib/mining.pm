@@ -350,5 +350,51 @@ sub _parse_mirdeep{
     return(\%result);
 }
 
+sub export_mirbase_dat
+{
+    my ($file, $data) = @_;
+
+    open(FH, ">>", $file) || die "Unable to open file '$file': $!\n";
+    foreach my $entry (@{$data})
+    {
+	my $buffer = "";
+
+	$buffer .= sprintf("ID   %s    standard; RNA; %s; %d BP.\nXX\n", $entry->{precursor}, $entry->{species}, length($entry->{seq}));
+	if (exists $entry->{description})
+	{
+	    $buffer .= sprintf("DE   %s\nXX\n", $entry->{description});
+	}
+	$buffer .= "FH   Key             Location/Qualifiers\nFH\n";
+	foreach my $mature (@{$entry->{matures}})
+	{
+	    $buffer .= sprintf("FT   miRNA           %d..%d\n", $mature->{start}, $mature->{stop});
+	    $buffer .= sprintf('FT                   /product="%s"'."\n", $mature->{name});
+	}
+	$buffer.= "XX\n";
+
+	# add sequence information
+	my $counterA = $entry->{seq} =~ tr/Aa/Aa/;
+	my $counterC = $entry->{seq} =~ tr/Cc/Cc/;
+	my $counterG = $entry->{seq} =~ tr/Gg/Gg/;
+	my $counterT = $entry->{seq} =~ tr/Tt/Tt/;
+	my $counterOthers = length($entry->{seq})-$counterA-$counterC-$counterG-$counterT;
+
+	$buffer .= sprintf("SQ   Sequence %d BP; %d A; %d C; %d G; %d T; %d other;\n", length($entry->{seq}), $counterA, $counterC, $counterG, $counterT, $counterOthers);
+	for(my $i=0; $i<length($entry->{seq}); $i+=60)
+	{
+	    my $subseq = substr($entry->{seq}, $i, 60);
+	    my $end    = $i+length($subseq);
+	    # group of 10 characters
+	    $subseq =~s/(.{10})/$1 /g;
+	    $subseq = "     ".$subseq;
+	    my $numberlength=80-length($subseq);
+	    $buffer .= sprintf("%s% ".$numberlength."d\n", $subseq, $end);
+	}
+	$buffer .= "//\n";
+
+	print FH $buffer;
+    }
+    close(FH) || die "Unable to close file '$file': $!\n";
+}
 
 1;
