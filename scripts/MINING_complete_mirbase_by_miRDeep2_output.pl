@@ -9,17 +9,15 @@ use lib "$FindBin::Bin/lib";
 use mining;
 
 my $mirdeep_csv;
-my $mature_dat;
-my $precursor_copies = "";
+my $mirbase_dat;
 my $species = "";
 
 GetOptions(
 	"mirdeep_out=s"		=>\$mirdeep_csv,
-	"mirbase_dat=s"	        =>\$mature_dat,
-	"precursor_copies=s"	=>\$precursor_copies,
+	"mirbase_dat=s"	        =>\$mirbase_dat,
         "species=s"             =>\$species) || die;
 
-my $mirbase_dat_content = mining::parse_dat($mature_dat, $species);
+my $mirbase_dat_content = mining::parse_dat($mirbase_dat, $species);
 
 # split the list of given precursors that have genomic copies
 my @precursor_list	= split(",",$precursor_copies);
