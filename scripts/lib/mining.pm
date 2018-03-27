@@ -21,7 +21,7 @@ sub parse_mirbase_dat
 	    last if (/^\/\/$/);
 	}
 
-	my $block_content = parse_mirbase_dat_block(\$lines, $species);
+	my $block_content = _parse_mirbase_dat_block(\$lines, $species);
 	push(@input, $block_content) if ($block_content);
     }
     close(FH) || die "Unable to close file '$infile' after reading: $!\n";
@@ -29,7 +29,7 @@ sub parse_mirbase_dat
     return \@input;
 }
 
-sub parse_mirbase_dat_block
+sub _parse_mirbase_dat_block
 {
     my ($ref_lines, $req_species) = @_;
 
