@@ -79,6 +79,15 @@ sub parse_mirbase_dat
     }
     close(FH) || die "Unable to close file '$infile' after reading: $!\n";
 
+    # generate the mature sequences
+    foreach my $entry (@input)
+    {
+	foreach my $mature (@{$entry->{matures}})
+	{
+	    $mature->{seq} = substr($entry->{seq}, $mature->{start}-1, $mature->{stop}-$mature->{start}+1);
+	}
+    }
+
     return \@input;
 }
 
