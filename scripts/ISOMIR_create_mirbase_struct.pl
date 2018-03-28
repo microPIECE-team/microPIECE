@@ -75,7 +75,7 @@ foreach my $entry (@{$mirnas})
 
     }
 
-    printf OUT "%s %s %s\n\n", $entry->{precursor}, $energy, join(" ", @mature_infos);
+    printf OUT ">%s %s %s\n\n", $entry->{precursor}, $energy, join(" ", @mature_infos);
     print  OUT draw($seq, $struct), "\n\n";
 }
 
