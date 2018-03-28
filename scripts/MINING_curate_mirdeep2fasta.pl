@@ -55,10 +55,11 @@ for(my $novel_count = 1; $novel_count <= @{$novels}; $novel_count++)
     $mature3p	=~ s/U/T/g;
     $hairpin	=~ s/U/T/g;
 
-    my $header	= sprintf(">%s-new-%d", $species, $novel->{digest});
+    my $header	= sprintf("%s-new-%s", $species, $novel->{digest});
 
-    print HAIRPIN $header, "\n", $hairpin, "\n";
-    print MATURE  $header, "-5p\n", $mature5p, "\n", $header, "-3p\n", $mature3p, "\n";
+    print HAIRPIN ">", $header, "\n", $hairpin, "\n";
+    print MATURE  ">", $header, "-5p\n", $mature5p, "\n";
+    print MATURE  ">", $header, "-3p\n", $mature3p, "\n";
 }
 close(MATURE) || die "Unable to close file '$mature_file': $!\n";
 close(HAIRPIN)|| die "Unable to close file '$hairpin_file': $!\n";
