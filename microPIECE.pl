@@ -74,7 +74,7 @@ GetOptions(
     'speciesBtag=s'        => \$opt->{speciesB_tag},
     'mirbasedir=s'         => \$opt->{mirbasedir},
     'tempdir=s'            => \$opt->{tempdir},
-    'piranahbinsize=i'     => \$opt->{piranha_bin_size},
+    'piranhabinsize=i'     => \$opt->{piranha_bin_size},
     ) || pod2usage(1);
 
 # split clip files if required
@@ -257,9 +257,9 @@ The folder specified by C<--tempdir> is used for temporary files. The
 default value is F<tmp/> inside the output folder specified by the
 C<--out> parameter.
 
-=item C<--piranahbinsize>
+=item C<--piranhabinsize>
 
-Sets the F<Piranah> bin size and has a default value of C<20>.
+Sets the F<Piranha> bin size and has a default value of C<20>.
 
 =back
 
@@ -415,6 +415,10 @@ Please report any new issues ad L<new Github-Issue|https://github.com/microPIECE
 
 =over 4
 
+=item scheduled for next release
+
+Fix of typo in C<--piranhabinsize> option (Fixes L<#116|https://github.com/microPIECE-team/microPIECE/issues/116>)
+
 =item L<v1.2.3|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.2.3> (2018-03-26)
 
 Fix transformation of precursor sequences based on mirbase #22 precursor sequences with a single mature.
@@ -448,7 +452,7 @@ L<#34|https://github.com/microPIECE-team/microPIECE/issues/34>)
 
 =item L<v1.0.7|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.7> (2018-03-08)
 
-Piranha was lacking of a bin_size parameter. Added parameter C<--piranahbinsize> with a default value of C<20>
+Piranha was lacking of a bin_size parameter. Added parameter C<--piranhabinsize> with a default value of C<20>
 (Fixes L<#66|https://github.com/microPIECE-team/microPIECE/issues/80>)
 
 =item L<v1.0.6|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.0.6> (2018-03-08)

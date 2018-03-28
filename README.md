@@ -281,6 +281,10 @@ Complete list of open issues is available on [Github-Issues](https://github.com/
 Please report any new issues ad [new Github-Issue](https://github.com/microPIECE-team/microPIECE/issues/new).
 
 ## Changelog
+- scheduled for next release
+
+    Fix of typo in `--piranhabinsize` option (Fixes [#116](https://github.com/microPIECE-team/microPIECE/issues/116))
+
 - [v1.2.3](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.2.3) (2018-03-26)
 
     Fix transformation of precursor sequences based on mirbase #22 precursor sequences with a single mature.
