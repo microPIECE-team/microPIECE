@@ -11,11 +11,14 @@ use mining;
 my $mirdeep_csv;
 my $mirbase_dat;
 my $species = "";
+my $datout;
 
 GetOptions(
 	"mirdeep_out=s"		=>\$mirdeep_csv,
 	"mirbase_dat=s"	        =>\$mirbase_dat,
-        "species=s"             =>\$species) || die;
+        "species=s"             =>\$species,
+        "datout=s"              =>\$datout
+    ) || die;
 
 my $mirbase_dat_content = mining::parse_mirbase_dat($mirbase_dat, $species);
 
@@ -123,3 +126,10 @@ my $output = "";
 mining::export_fasta(\$output, undef, $mirbase_dat_content);
 
 print $output;
+
+my $dat_output = "";
+mining::export_mirbase_data(\$dat_output, $mirbase_dat_content);
+
+open(FH, ">", $datout) || die "Unable to open file '$datout': $!\n";
+print FH $dat_output;
+close(FH) || die "Unable to close file '$datout': $!\n";

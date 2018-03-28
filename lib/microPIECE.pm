@@ -803,7 +803,12 @@ sub run_mining_complete
     $opt->{mining}{completion}{completed} = getcwd()."/mature_mirbase_completed.fa";
     $opt->{mining}{completion}{dat}       = getcwd()."/final_mirbase_pseudofile.dat";
 
-    my @cmd = ($opt->{scriptdir}."MINING_complete_mirbase_by_miRDeep2_output.pl", "-mirdeep_out", $opt->{mirdeep_output}, "--mirbase_dat", $opt->{mining}{mirbase_dat}, "--species", $opt->{speciesB_tag});
+    my @cmd = ($opt->{scriptdir}."MINING_complete_mirbase_by_miRDeep2_output.pl",
+	       "-mirdeep_out",  $opt->{mirdeep_output},
+	       "--mirbase_dat", $opt->{mining}{mirbase_dat},
+	       "--species",     $opt->{speciesB_tag},
+	       "--datout",      $opt->{mining}{completion}{dat}
+	);
     my $output = run_cmd($L, \@cmd, undef, $opt->{mining}{completion}{completed});
 }
 
