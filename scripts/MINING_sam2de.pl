@@ -56,7 +56,11 @@ foreach(keys %sam_hash){	# {condition} = \@(rep1,rep2,rep3,rep4)
 		foreach(keys %sh_mir_hash){	# per replicate
 			my $sh_rep_mir_id	= $_;
 			my $sh_rep_mir_count	= $sh_mir_hash{$sh_rep_mir_id};
-			my $sh_rep_mir_RPM	= $sh_rep_mir_count / $sh_read_total_count * 1000000;
+			my $sh_rep_mir_RPM	= 0;
+			if ($sh_read_total_count>0)
+			{
+			   $sh_rep_mir_RPM	= $sh_rep_mir_count / $sh_read_total_count * 1000000;
+			}
 			$con_rpm_mir_hash{$sh_rep_mir_id}	+= $sh_rep_mir_RPM;
 		#	print "$sh_rep_mir_id | mir count : $sh_rep_mir_count | mir PRM $sh_rep_mir_RPM\n";
 		}	
