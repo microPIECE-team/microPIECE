@@ -15,12 +15,16 @@ my $mature_file;
 my $hairpin_file;
 my $species;
 
+my $datout;
+my $dat_info = [];
+
 GetOptions(
     "csv=s"        => \$csv_file,
     "cutoff=i"     => \$cutoff,
     "matureout=s"  => \$mature_file,
     "hairpinout=s" => \$hairpin_file,
     "species=s"    => \$species,
+    "datout=s"     => \$datout,
 ) || die;
 
 die "Need to specify --csv file\n" unless (defined $csv_file);
@@ -31,6 +35,7 @@ die "Mature file exists and will not be overwritten!\n" if (-e $mature_file);
 die "Need to specify --hairpinout file\n" unless (defined $hairpin_file);
 die "Hairpin file exists and will not be overwritten!\n" if (-e $hairpin_file);
 die "Need to specify --species three-letter-species-code\n" unless (defined $species);
+die "Need to specify --datout file\n" unless (defined $datout);
 
 # get novel miRNAs above threshold
 my $novels = mining::parse_mirdeep_novels($csv_file, $cutoff);
