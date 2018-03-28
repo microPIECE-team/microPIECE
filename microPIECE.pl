@@ -417,6 +417,8 @@ Please report any new issues ad L<new Github-Issue|https://github.com/microPIECE
 
 =item scheduled for next release
 
+Using F<miRNA.dat> from mirBASE as source for mature/precursor sequence and relationship (Fixes L<#127|https://github.com/microPIECE-team/microPIECE/issues/127>)
+
 Fix of division-by-zero bug for empty mapping files (Fixes L<#118|https://github.com/microPIECE-team/microPIECE/issues/118>)
 
 Fix of typo in C<--piranhabinsize> option (Fixes L<#116|https://github.com/microPIECE-team/microPIECE/issues/116>)
