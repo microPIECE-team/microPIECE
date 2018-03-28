@@ -801,7 +801,7 @@ sub run_mining_complete
 
     $opt->{mining}{completion}{completed} = getcwd()."/mature_mirbase_completed.fa";
 
-    my @cmd = ($opt->{scriptdir}."MINING_complete_mirbase_by_miRDeep2_output.pl", "-mirdeep_out", $opt->{mirdeep_output}, "-mature_fasta", $opt->{mining}{splitted}{mature});
+    my @cmd = ($opt->{scriptdir}."MINING_complete_mirbase_by_miRDeep2_output.pl", "-mirdeep_out", $opt->{mirdeep_output}, "--mirbase_dat", $opt->{mining}{mirbase_dat}, "--species", $opt->{speciesB_tag});
     my $output = run_cmd($L, \@cmd, undef, $opt->{mining}{completion}{completed});
 }
 
@@ -977,6 +977,9 @@ sub run_mining_downloads
     {
 	$opt->{mining}{download}{$key}  = get_mirbase_download_or_local_copy($opt, $filelist{$key});
     }
+
+    # download current dat file
+    $opt->{mining}{mirbase_dat} = get_mirbase_download_or_local_copy($opt, "miRNA.dat.gz");
 }
 
 # If a set of ncRNAs (with exception of miRNAs, of course) is provided,
