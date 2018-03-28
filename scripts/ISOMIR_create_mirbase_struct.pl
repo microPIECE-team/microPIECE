@@ -1,17 +1,22 @@
-#! /usr/bin/perl
+#!/usr/bin/env perl
 use strict;
 use warnings;
 use RNA::HairpinFigure qw/draw/;
 use Getopt::Long;
 use File::Temp qw(tmpnam);
 
+use FindBin;
+use lib "$FindBin::Bin/lib";
+
+use mining;
+
 #>cel-let-7 (-42.90)   [cel-let-7-5p:17-38] [cel-let-7-3p:60-81]
 #
-#------uaca    gga             U              ---  aaua 
+#------uaca    gga             U              ---  aaua
 #          cugu   uccggUGAGGUAG AGGUUGUAUAGUUu   gg    u
-#          ||||   ||||||||||||| ||||||||||||||   ||     
+#          ||||   ||||||||||||| ||||||||||||||   ||
 #          gaca   aggCCAUUCCAUC UUUAACGUAUCaag   cc    u
-#agcuucucaa    --g             U              ugg  acca 
+#agcuucucaa    --g             U              ugg  acca
 
 
 #my $name   = 'hsa-mir-92a-1 MI0000093 Homo sapiens miR-92a-1 stem-loop';
@@ -25,148 +30,53 @@ use File::Temp qw(tmpnam);
 #GGUUGGCAUAAGGUGGUACCAUGUAACAUUUUAACCCAUAGUACGACCCAUGCCGACUCA
 #(((((((((..(((.((((.(((.............))).)))).))).))))))))).. (-21.92)
 
-my $hairpin_file;
-my $mature_file;
-my $struct_file;
-my $custom_tmp;
+my $output;
+my $mirbase_dat;
 
 GetOptions(
-    "hairpin=s"	=> \$hairpin_file,
-    "mature=s"	=> \$mature_file,
-    "struct=s"	=> \$struct_file,
-    "out=s"         => \$custom_tmp
+    "mirbasedat=s" => \$mirbase_dat,
+    "out=s"        => \$output
     ) || die;
 
-die "Need to specify a existing hairpin file via --hairpin parameter\n" unless (defined $hairpin_file && -e $hairpin_file);
-die "Need to specify a existing mature file via --mature parameter\n" unless (defined $mature_file && -e $mature_file);
-die "Need to specify a existing structure file via --struct parameter\n" unless (defined $struct_file && -e $struct_file);
-die "Need to specify a non-existing output file via --out parameter\n" unless (defined $custom_tmp && ( ! -e $custom_tmp ));
+die "Need to specify a existing mirbase file via --mirbasedat parameter\n" unless (defined $mirbase_dat && -e $mirbase_dat);
+die "Need to specify a non-existing output file via --out parameter\n" unless (defined $output && ( ! -e $output ));
 
 my $rnafold		= "RNAfold -noPS";
 
+my $mirnas = mining::parse_mirbase_dat($mirbase_dat, undef);
 
-my %hairpin_hash	= %{&read_fasta($hairpin_file)};
-my %mature_hash		= %{&read_fasta($mature_file)};
+my $foldinput = tmpnam();
 
-my %structure_hash	= %{&parse_structure($struct_file)};
+open(OUT,">",$output) || die "Unable to open file '$output' for writing: $!\n";
 
-open(OUT,">",$custom_tmp) || die;
+foreach my $entry (@{$mirnas})
+{
+    open(FH, ">", $foldinput) || die "Unable to open file '$foldinput': $!\n";
+    print FH ">temp\n", $entry->{seq}, "\n";
+    close(FH) || die "Unable to close file '$foldinput': $!\n";
 
-foreach(keys %hairpin_hash){
-	my $hairpin_id		= $_;
-	my $hairpin_seq		= $hairpin_hash{$hairpin_id};
-	if(not exists $mature_hash{"$hairpin_id-5p"}){
-		print OUT "$structure_hash{$hairpin_id}";
-		print STDERR "Missing one arm of $hairpin_id : Using miRBase entry instead.\n";
-	}
-	elsif(not exists $mature_hash{"$hairpin_id-3p"}){
-		print OUT "$structure_hash{$hairpin_id}";
-		print STDERR "Missing one arm of $hairpin_id : Using miRBase entry instead.\n";
-	}
-	else{
-		my $mature5p_id		= "$hairpin_id-5p";
-		$mature5p_id		=~s/>//;
-		my $mature3p_id		= "$hairpin_id-3p";
-		$mature3p_id		=~s/>//;
-		my $mature5p_seq	= $mature_hash{">$mature5p_id"};
-		my $mature3p_seq	= $mature_hash{">$mature3p_id"};
-		my $mature5p_start	= index($hairpin_seq,$mature5p_seq)+1;
-		my $mature5p_stop	= $mature5p_start + length($mature5p_seq)-1;
-		my $mature3p_start	= index($hairpin_seq,$mature3p_seq)+1;
-		my $mature3p_stop	= $mature3p_start + length($mature3p_seq)-1;
-		my $tmp_hairpin_fa	= tmpnam();
-		open(TMP,">",$tmp_hairpin_fa) || die;
-		print TMP "$hairpin_id\n$hairpin_seq";
-		close(TMP) || die;
-		my $tmp_struct_rna	= tmpnam();
-		my $cmd = "$rnafold < $tmp_hairpin_fa > $tmp_struct_rna";
-		system($cmd);
-		die "Error running command: '$cmd'\n" unless ($? == 0);
-		my $hairpin_struct;	#((..))
-		my $hairpin_energy;	#(-20.00)
-		open(RNA,"<",$tmp_struct_rna) || die;
-		while(<RNA>){
-			chomp;
-			my $rna_line 	= $_;
-			next if ($.==1);
-			next if ($.==2);
-			my @rna_split	= split(" ",$rna_line);
-			$hairpin_struct	= $rna_split[0];
-			$hairpin_energy	= $rna_split[1];
-		}
-		close(RNA) || die;
-		# case and strucutre are taken from miRBase miRNA.str file 
-		# according to that file, mature sequences are upper case and the rest of the hairpin is lowercase
-		my $hairpin_caseSens	= "";
-		$hairpin_caseSens	= lc(substr($hairpin_seq,0,($mature5p_start-1))).uc(substr($hairpin_seq,($mature5p_start-1),($mature5p_stop-$mature5p_start+1))).lc(substr($hairpin_seq,$mature5p_stop,($mature3p_start-$mature5p_stop-1))).uc(substr($hairpin_seq,($mature3p_start-1),($mature3p_stop-$mature3p_start+1))).lc(substr($hairpin_seq,($mature3p_stop)));
+    my $cmd = "$rnafold <$foldinput";
+    open(RNAFOLD, "$cmd|") || die "Unable to open pipe via '$cmd': $!\n";
+    <RNAFOLD>;
+    <RNAFOLD>;
+    my ($struct, $energy) = split(/\s+/, scalar <RNAFOLD>);
+    close(RNAFOLD) || die "Unable to close pipe: $!\n";
 
-		$mature5p_id		=~s/mir/miR/;
-		$mature3p_id		=~s/mir/miR/;
-		my $hairpin_figure	= draw($hairpin_caseSens,$hairpin_struct);
-		print OUT "$hairpin_id $hairpin_energy   [$mature5p_id:$mature5p_start-$mature5p_stop] [$mature3p_id:$mature3p_start-$mature3p_stop]";
-		print OUT "\n\n";
-		print OUT "$hairpin_figure\n\n";
-	}	
+    # generate the plot
+    my $seq = lc($entry->{seq});
+    my @mature_infos = ();
+    foreach my $mature (@{$entry->{matures}})
+    {
+	my $start = $mature->{start}-1;
+	my $len   = $mature->{stop}-$mature->{start}+1;
+	substr($seq, $start, $len, uc(substr($seq, $start, $len)));
+
+	push(@mature_infos, sprintf("[%s:%d-%d]", $mature->{name}, $mature->{start}, $mature->{stop}));
+
+    }
+
+    printf OUT "%s %s %s\n\n", $entry->{precursor}, $energy, join(" ", @mature_infos);
+    print  OUT draw($seq, $struct), "\n\n";
 }
 
-close(OUT) || die;
- 
-
-
-
-# {cel-let-7}	= 
-#>cel-let-7 (-42.90)   [cel-let-7-5p:17-38] [cel-let-7-3p:60-81]
-#
-#------uaca    gga             U              ---  aaua
-#          cugu   uccggUGAGGUAG AGGUUGUAUAGUUu   gg    u
-#          ||||   ||||||||||||| ||||||||||||||   ||
-#          gaca   aggCCAUUCCAUC UUUAACGUAUCaag   cc    u
-#agcuucucaa    --g             U              ugg  acca
-sub parse_structure{
-	my $ps_file	= $_[0];
-	my %ps_hash;
-	my $ps_id	= "";
-	open(PS,"<",$ps_file) || die;
-	while(<PS>){
-		chomp;
-		my $ps_line	= $_;
-		if(/^>/){
-			my @ps_split	= split(" ",$ps_line);
-			$ps_id		= $ps_split[0];
-			#$ps_id		=~s/^>//;
-			$ps_hash{$ps_id}= "$ps_line\n";
-		}
-		else{
-			$ps_hash{$ps_id}.= "$ps_line\n";
-		}
-	}
-	close(PS) || die;
-	return(\%ps_hash);
-}
-
-
-
-
-# {mirID}       = seq;
-sub read_fasta{
-        my $rf_file     = $_[0];
-        my %rf_hash;    #{mirID} = seq	
-	my $rf_header	= "";
-        open(RF,"<",$rf_file) || die;
-        while(<RF>){
-                chomp;
-		my $rf_line             = $_;
-                my @rf_split            = split(" ",$rf_line);
-                if(/^>/){
-			$rf_header	= $rf_split[0];
-			$rf_header	=lc($rf_header);
-			$rf_hash{$rf_header}	= "";
-		}
-		else{
-			$rf_hash{$rf_header}	.= $rf_line;
-		}
-        }
-        close(RF) || die;
-        return(\%rf_hash);
-}
-
+close(OUT) || die "Unable to close file '$output' after writing: $!\n";
