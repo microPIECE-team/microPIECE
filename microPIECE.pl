@@ -417,6 +417,8 @@ Please report any new issues ad L<new Github-Issue|https://github.com/microPIECE
 
 =item scheduled for next release
 
+Fix of division-by-zero bug for empty mapping files (Fixes L<#118|https://github.com/microPIECE-team/microPIECE/issues/118>)
+
 Fix of typo in C<--piranhabinsize> option (Fixes L<#116|https://github.com/microPIECE-team/microPIECE/issues/116>)
 
 =item L<v1.2.3|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.2.3> (2018-03-26)
