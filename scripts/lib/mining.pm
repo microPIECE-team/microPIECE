@@ -372,7 +372,10 @@ sub export_fasta
     foreach my $entry (@{$data})
     {
 	# print the precursor
-	my $fasta_block = ">".$entry->{precursor}."\n".$entry->{seq}."\n";
+	my $seq = $entry->{seq};
+	$seq = uc($seq);    # upper case
+	$seq =~ tr/U/T/;    # replace Us by Ts
+	my $fasta_block = ">".$entry->{precursor}."\n".$seq."\n";
 	unless (exists $seen{precursor}{$fasta_block})
 	{
 	    print HAIRPIN $fasta_block;
@@ -384,7 +387,10 @@ sub export_fasta
 	{
 	    # start and stop have to exist, seq not, therefore, we
 	    # will generate the sequence on the fly
-	    my $fasta_block = ">".$mature->{name}."\n".substr($entry->{seq}, $mature->{start}-1, $mature->{stop}-$mature->{start}+1)."\n";
+	    my $seq = substr($entry->{seq}, $mature->{start}-1, $mature->{stop}-$mature->{start}+1);
+	    $seq = uc($seq);    # upper case
+	    $seq =~ tr/U/T/;    # replace Us by Ts
+	    my $fasta_block = ">".$mature->{name}."\n".$seq."\n";
 	    unless (exists $seen{mature}{$fasta_block})
 	    {
 		print MATURE $fasta_block;
