@@ -38,15 +38,15 @@ We also provide `microPIECE` as [DOCKER image](https://hub.docker.com/r/micropie
 ### Information about the docker images:
 | Branch | Size | Layers | Comment |
 |-|-|-|-|
-|[![](https://images.microbadger.com/badges/version/micropiece/micropiece:v1.2.3.svg)](https://microbadger.com/images/micropiece/micropiece:v1.2.3) | [![](https://images.microbadger.com/badges/image/micropiece/micropiece:v1.2.3.svg)](https://microbadger.com/images/micropiece/micropiece:v1.2.3) | [![](https://images.microbadger.com/badges/commit/micropiece/micropiece:v1.2.3.svg)](https://microbadger.com/images/micropiece/micropiece:v1.2.3) | Latest release [v1.2.3](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.2.3) |
+|[![](https://images.microbadger.com/badges/version/micropiece/micropiece:v1.3.0.svg)](https://microbadger.com/images/micropiece/micropiece:v1.3.0) | [![](https://images.microbadger.com/badges/image/micropiece/micropiece:v1.3.0.svg)](https://microbadger.com/images/micropiece/micropiece:v1.3.0) | [![](https://images.microbadger.com/badges/commit/micropiece/micropiece:v1.3.0.svg)](https://microbadger.com/images/micropiece/micropiece:v1.3.0) | Latest release [v1.3.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.3.0) |
 |[![](https://images.microbadger.com/badges/version/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master) | [![](https://images.microbadger.com/badges/image/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master) | [![](https://images.microbadger.com/badges/commit/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master) | |
 |[![](https://images.microbadger.com/badges/version/micropiece/micropiece:develop.svg)](https://microbadger.com/images/micropiece/micropiece:develop) | [![](https://images.microbadger.com/badges/image/micropiece/micropiece:develop.svg)](https://microbadger.com/images/micropiece/micropiece:develop) | [![](https://images.microbadger.com/badges/commit/micropiece/micropiece:develop.svg)](https://microbadger.com/images/micropiece/micropiece:develop) | |
 
 
 ```
-docker pull micropiece/micropiece:v1.2.3
+docker pull micropiece/micropiece:v1.3.0
 git clone git@github.com:microPIECE-team/microPIECE-testset.git testset
-docker run -it --rm -v $PWD:/data micropiece/micropiece:v1.2.3 microPIECE.pl   \
+docker run -it --rm -v $PWD:/data micropiece/micropiece:v1.3.0 microPIECE.pl   \
   --genomeA testset/NC_035109.1_reduced_AAE_genome.fa  \
   --genomeB testset/NC_007416.3_reduced_TCA_genome.fa   \
   --annotationA testset/NC_035109.1_reduced_AAE_genome.gff   \
@@ -282,6 +282,10 @@ Please report any new issues ad [new Github-Issue](https://github.com/microPIECE
 
 ## Changelog
 - scheduled for next release
+
+    No features
+
+- [v1.3.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.3.0) (2018-03-29)
 
     Creating all structures on the fly using pseudo-mirBASE-dat as input.
 

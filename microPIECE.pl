@@ -417,6 +417,10 @@ Please report any new issues ad L<new Github-Issue|https://github.com/microPIECE
 
 =item scheduled for next release
 
+No features planed
+
+=item L<v1.3.0|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.3.0> (2018-03-29)
+
 Creating all structures on the fly using pseudo-mirBASE-dat as input.
 
 Using F<miRNA.dat> from mirBASE as source for mature/precursor sequence and relationship (Fixes L<#127|https://github.com/microPIECE-team/microPIECE/issues/127>)
