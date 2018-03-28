@@ -350,7 +350,54 @@ sub _parse_mirdeep{
     return(\%result);
 }
 
-sub export_mirbase_dat
+sub export_fasta
+{
+    my ($file_mature, $file_hairpin, $data) = @_;
+
+    # use a dummy, if a file is not specified
+    unless (defined $file_mature)
+    {
+	$file_mature = \do{my $mature = ""};
+    }
+    unless (defined $file_hairpin)
+    {
+	$file_hairpin = \do{my $hairpin = ""};
+    }
+
+    open(MATURE, ">", $file_mature) || die "Unable to open file '$file_mature': $!\n";
+    open(HAIRPIN, ">", $file_hairpin) || die "Unable to open file '$file_hairpin': $!\n";
+
+    my %seen = ( matures => {}, precursor => {} );
+
+    foreach my $entry (@{$data})
+    {
+	# print the precursor
+	my $fasta_block = ">".$entry->{precursor}."\n".$entry->{seq}."\n";
+	unless (exists $seen{precursor}{$fasta_block})
+	{
+	    print HAIRPIN $fasta_block;
+	}
+	$seen{precursor}{$fasta_block}++;
+
+	# print the matures
+	foreach my $mature (@{$entry->{matures}})
+	{
+	    # start and stop have to exist, seq not, therefore, we
+	    # will generate the sequence on the fly
+	    my $fasta_block = ">".$mature->{name}."\n".substr($entry->{seq}, $mature->{start}-1, $mature->{stop}-$mature->{stop}+1)."\n";
+	    unless (exists $seen{mature}{$fasta_block})
+	    {
+		print MATURE $fasta_block;
+	    }
+	    $seen{mature}{$fasta_block}++;
+	}
+    }
+
+    close(HAIRPIN) || die "Unable to close file '$file_hairpin': $!\n";
+    close(MATURE) || die "Unable to close file '$file_mature': $!\n";
+}
+
+sub export_mirbase_data
 {
     my ($file, $data) = @_;
 
