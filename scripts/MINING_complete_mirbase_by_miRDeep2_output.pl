@@ -120,6 +120,6 @@ foreach my $mirdeep_line (@{$mirdeep_content})
 }
 
 my $output = "";
-mining::export_mirbase_dat(\$output, $mirbase_dat_content);
+mining::export_fasta(\$output, undef, $mirbase_dat_content);
 
 print $output;
