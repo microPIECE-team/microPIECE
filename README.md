@@ -44,9 +44,9 @@ We also provide `microPIECE` as [DOCKER image](https://hub.docker.com/r/micropie
 
 
 ```
-docker pull micropiece/micropiece:master
+docker pull micropiece/micropiece:v1.2.3
 git clone git@github.com:microPIECE-team/microPIECE-testset.git testset
-docker run -it --rm -v $PWD:/data micropiece/micropiece microPIECE.pl   \
+docker run -it --rm -v $PWD:/data micropiece/micropiece:v1.2.3 microPIECE.pl   \
   --genomeA testset/NC_035109.1_reduced_AAE_genome.fa  \
   --genomeB testset/NC_007416.3_reduced_TCA_genome.fa   \
   --annotationA testset/NC_035109.1_reduced_AAE_genome.gff   \
