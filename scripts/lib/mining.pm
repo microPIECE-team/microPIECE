@@ -384,7 +384,7 @@ sub export_fasta
 	{
 	    # start and stop have to exist, seq not, therefore, we
 	    # will generate the sequence on the fly
-	    my $fasta_block = ">".$mature->{name}."\n".substr($entry->{seq}, $mature->{start}-1, $mature->{stop}-$mature->{stop}+1)."\n";
+	    my $fasta_block = ">".$mature->{name}."\n".substr($entry->{seq}, $mature->{start}-1, $mature->{stop}-$mature->{start}+1)."\n";
 	    unless (exists $seen{mature}{$fasta_block})
 	    {
 		print MATURE $fasta_block;
