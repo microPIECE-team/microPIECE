@@ -24,6 +24,7 @@ my @testcases = (
 
 my $mature  = tmpnam();
 my $hairpin = tmpnam();
+my $datout  = tmpnam();
 
 my ($return,$stdout,$stderr)=run_script('../scripts/MINING_curate_mirdeep2fasta.pl');
 isnt(Test::Script::Run::last_script_exit_code(), 0, 'Without arguments is should exit with exit code not equals to 1');
@@ -57,7 +58,11 @@ like($stderr, qr/Need to specify --species three-letter-species-code/, "Test for
 isnt(Test::Script::Run::last_script_exit_code(), 0, 'With an existing file for hairpin sequences is should exit with exit code not equals to 0');
 like($stderr, qr/Hairpin file exists and will not be overwritten/, "Test for existing hairpin file");
 
-($return,$stdout,$stderr)=run_script('../scripts/MINING_curate_mirdeep2fasta.pl', ["--csv", "t/MINING_curate_mirdeep2fasta_collision.dat", "--cutoff", 10, "--matureout", $mature, "--hairpinout", $hairpin, "--species", "tca" ] );
+($return,$stdout,$stderr)=run_script('../scripts/MINING_curate_mirdeep2fasta.pl', ["--csv", $testcases[0]{input}, "--cutoff", 10, "--matureout", $mature, "--hairpinout", $hairpin, "--species", "tca" ] );
+isnt(Test::Script::Run::last_script_exit_code(), 0, 'With an existing species is should exit with exit code not equals to 0');
+like($stderr, qr/Need to specify --datout file/, "Test for missing datout file");
+
+($return,$stdout,$stderr)=run_script('../scripts/MINING_curate_mirdeep2fasta.pl', ["--csv", "t/MINING_curate_mirdeep2fasta_collision.dat", "--cutoff", 10, "--matureout", $mature, "--hairpinout", $hairpin, "--species", "tca", "--datout", $datout ] );
 is(Test::Script::Run::last_script_exit_code(), 0, 'Collision should be indicated, but due to same sequence, it should not cause the exit code not equals to 0');
 like($stderr, qr/Collision detected, but assuming to have found a genomic copy/, "Test for collision in numbering");
 unlink($mature) || die "Unable to unlink mature file '$mature': $!\n";
@@ -70,7 +75,8 @@ foreach my $current_test (@testcases)
 						"--cutoff", 10, 
 						"--matureout", $mature, 
 						"--hairpinout", $hairpin, 
-						"--species", "tca"
+						"--species", "tca",
+						"--datout", $datout
 					    ] );
     is(Test::Script::Run::last_script_exit_code(), 0, 'With input values it should run and return 0');
 
