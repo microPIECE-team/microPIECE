@@ -415,6 +415,10 @@ Please report any new issues ad L<new Github-Issue|https://github.com/microPIECE
 
 =over 4
 
+=item scheduled for next release
+
+Fix of typo in C<--piranhabinsize> option (Fixes L<#116|https://github.com/microPIECE-team/microPIECE/issues/116>)
+
 =item L<v1.2.3|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.2.3> (2018-03-26)
 
 Fix transformation of precursor sequences based on mirbase #22 precursor sequences with a single mature.
