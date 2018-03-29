@@ -110,6 +110,33 @@ uaa     -au    aa   -         -   GGU       -uu -  a
 
 ),
     },
+    {
+	input =>
+q(ID   tca-mir-1    standard; RNA; TCA; 72 BP.
+XX
+FH   Key             Location/Qualifiers
+FH
+FT   miRNA           11..32
+FT                   /product="tca-miR-1-5p"
+FT   miRNA           47..68
+FT                   /product="tca-miR-1-3p"
+XX
+SQ   Sequence 72 BP; 19 A; 14 C; 17 G; 0 T; 22 other;
+     uucgcgaguu ccgugcuucc uuacuuccca uagugcuuua aacguaugga auguaaagaa        60
+     guauggagcg aa                                                            72
+//
+),
+	expected =>
+q(>tca-mir-1 (-28.20)   [tca-miR-1-5p:11-32] [tca-miR-1-3p:47-68]
+
+uucgcga            C    UUC     -  gc
+       guuCCGUGCUUC UUAC   CCAUA gu  u
+       |||||||||||| ||||   ||||| ||  u
+       cGAGGUAUGAAG AAUG   GGUau ca  u
+----aag            A    UAA     g  aa
+
+),
+    },
     );
 
 my $dat  = tmpnam();
@@ -124,22 +151,31 @@ my $script = "../scripts/ISOMIR_create_mirbase_struct.pl";
 my ($return,$stdout,$stderr)=run_script($script);
 isnt(Test::Script::Run::last_script_exit_code(), 0, 'Without arguments is should exit with exit code not equals to 1');
 #like($stderr, qr/Need to specify --csv file/, "Test for missing csv file");
+foreach ($dat) { unlink($_) || die "Unable to delete '$_': $!\n"; }
 
-($return,$stdout,$stderr)=run_script($script, [
-						"--mirbasedat", $dat,
-						"--out", $out
-					    ] );
-is(Test::Script::Run::last_script_exit_code(), 0, 'With input values it should run and return 0');
-my $got = "";
-open(FH, "<", $out) || die;
-while (<FH>) { $got .= $_; }
-close(FH) || die;
+foreach my $testcase (@testcases)
+{
+    open(FH, ">", $dat) || die;
+    print FH $testcase->{input};
+    close(FH) || die;
 
-my $expected = $testcases[0]{expected};
+    ($return,$stdout,$stderr)=run_script($script, [
+					     "--mirbasedat", $dat,
+					     "--out", $out
+					 ] );
+    is(Test::Script::Run::last_script_exit_code(), 0, 'With input values it should run and return 0');
+    my $got = "";
+    open(FH, "<", $out) || die;
+    while (<FH>) { $got .= $_; }
+    close(FH) || die;
 
-$got      =~ s/\s+/ /g;
-$expected =~ s/\s+/ /g;
+    my $expected = $testcase->{expected};
 
-is($got,$expected, "output as expected");
+    $got      =~ s/\s+/ /g;
+    $expected =~ s/\s+/ /g;
+
+    is($got,$expected, "output as expected");
+    foreach ($dat, $out) { unlink($_) || die "Unable to delete '$_': $!\n"; }
+}
 
 done_testing();

@@ -283,7 +283,7 @@ Please report any new issues ad [new Github-Issue](https://github.com/microPIECE
 ## Changelog
 - scheduled for next release
 
-    No features
+    Fix the requirement of an accession inside mirBASE dat file (Fixes [#134](https://github.com/microPIECE-team/microPIECE/issues/134))
 
 - [v1.3.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.3.0) (2018-03-29)
 
