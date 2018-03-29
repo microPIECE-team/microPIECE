@@ -283,7 +283,7 @@ Please report any new issues ad [new Github-Issue](https://github.com/microPIECE
 ## Changelog
 - scheduled for next release
 
-    No features
+    Avoiding error message while copying the out file for genomic location into base folder (Fixes [#117](https://github.com/microPIECE-team/microPIECE/issues/117)) 
 
 - [v1.3.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.3.0) (2018-03-29)
 
