@@ -132,12 +132,25 @@ if ($? != 0)
 }
 
 use Term::ProgressBar;
+# check if a terminal width can be estimated
+my %global_term_settings = (
+    ETA => 'linear',
+    remove => 0,
+    );
+
+my $progress = Term::ProgressBar->new({ %global_term_settings, name => "Test", count => 100});
+my $width = $progress->term_width();
+if (! defined $width || $width > 150)
+{
+    $global_term_settings{term_width} = 150;
+}
+
 
 # import the transcripts
 my %imported_transcripts = ();
 foreach my $transcript (@transcripts)
 {
-    my $progress = Term::ProgressBar->new({name => "Transcript import from '$transcript'", count => -s $transcript, remove => 0, ETA => 'linear'});
+    my $progress = Term::ProgressBar->new({%global_term_settings, name => "Transcript import from '$transcript'", count => -s $transcript});
     $progress->minor(0);
     my $next_val = 0;
 
@@ -195,7 +208,7 @@ foreach my $bam (@bamfiles)
 
     foreach my $seq (@{$seq})
     {
-	my $progress = Term::ProgressBar->new({name => $seq->{name}, count => $seq->{len}, remove => 0, ETA => 'linear'});
+	my $progress = Term::ProgressBar->new({%global_term_settings, name => $seq->{name}, count => $seq->{len} });
 	$progress->minor(0);
 	my $next_val = 0;
 
@@ -242,7 +255,7 @@ foreach my $bam (@bamfiles)
 	    {
 		$bins2change += @{$list_of_feature_bins->[$strand]}
 	    }
-	    my $progress = Term::ProgressBar->new({name => $seq->{name}." Pseudocounts", count => $bins2change, remove => 0, ETA => 'linear'});
+	    my $progress = Term::ProgressBar->new({%global_term_settings, name => $seq->{name}." Pseudocounts", count => $bins2change});
 	    $progress->minor(0);
 	    my $next_val = 0;
 	    my $bins_changed = 0;
@@ -258,7 +271,7 @@ foreach my $bam (@bamfiles)
 	   # $progress->update($bins2change) if ($bins2change <= $next_val);
 	}
 
-	$progress = Term::ProgressBar->new({name => $seq->{name}." BEDoutput", count => int(@counts), remove => 0, ETA => 'linear'});
+	$progress = Term::ProgressBar->new({%global_term_settings, name => $seq->{name}." BEDoutput", count => int(@counts)});
 	$progress->minor(0);
 	$next_val = 0;
 	for(my $i=0; $i<@counts; $i++)
