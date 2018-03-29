@@ -151,7 +151,7 @@ my $script = "../scripts/ISOMIR_create_mirbase_struct.pl";
 my ($return,$stdout,$stderr)=run_script($script);
 isnt(Test::Script::Run::last_script_exit_code(), 0, 'Without arguments is should exit with exit code not equals to 1');
 #like($stderr, qr/Need to specify --csv file/, "Test for missing csv file");
-foreach ($dat, $out) { unlink($_) || die "Unable to delete '$_': $!\n"; }
+foreach ($dat) { unlink($_) || die "Unable to delete '$_': $!\n"; }
 
 foreach my $testcase (@testcases)
 {
