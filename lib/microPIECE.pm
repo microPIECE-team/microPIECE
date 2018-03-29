@@ -518,14 +518,11 @@ sub run_mining_isomir
     my $L = Log::Log4perl::get_logger();
 
     # Create a miRNA.str (miRNA structure file with the novel microRNAs)
-    $opt->{mining}{download}{mirbase_mirna_structure}  = get_mirbase_download_or_local_copy($opt, "miRNA.str.gz");
     $opt->{mining}{download}{custom_structure} = getcwd()."/custom.str";
 
     my @cmd=(
 	$opt->{scriptdir}."/ISOMIR_create_mirbase_struct.pl",
-	"--hairpin", $opt->{final_hairpin},
-	"--mature", $opt->{final_mature},
-	"--struct", $opt->{mining}{download}{mirbase_mirna_structure},
+	"--mirbasedat", $opt->{mining}{completion}{dat},
 	"--out", $opt->{mining}{download}{custom_structure},
 	);
     run_cmd($L, \@cmd);
