@@ -91,6 +91,7 @@ my @transcripts  = ();
 my $binsize      = 20;
 my $reqfeature   = "exon";
 my $pseudocounts = 0;
+my $silent       = 0;
 
 GetOptions(
     'b|bam=s@'         => \@bamfiles,
@@ -99,6 +100,7 @@ GetOptions(
     'r|reqfeature=s'   => \$reqfeature,
     'V|version'        => \$version,
     'h|help|?'         => \$help,
+    'q|quiet'          => \$silent,
     ) || pod2usage(2);
 
 pod2usage(1) if $help;
@@ -136,6 +138,7 @@ use Term::ProgressBar;
 my %global_term_settings = (
     ETA => 'linear',
     remove => 0,
+    silent => $silent,
     );
 
 my $progress = Term::ProgressBar->new({ %global_term_settings, name => "Test", count => 100});
