@@ -653,7 +653,7 @@ sub run_mining_genomicposition
     my $blastoutput = run_cmd($L, \@cmd);
 
     # filter the hits and store them
-    $opt->{mining}{genomic_location} = "miRNA_genomic_position.csv";
+    $opt->{mining}{genomic_location} = getcwd()."/"."miRNA_genomic_position.csv";
     open(FH, ">", $opt->{mining}{genomic_location}) || $L->logdie("Unable to open file '$opt->{mining}{genomic_location}': $!");
     foreach my $line (split(/\n/, $blastoutput))
     {
