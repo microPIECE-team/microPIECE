@@ -1508,6 +1508,11 @@ sub transfer_resultfiles
 
     $L->info("Start copying result files into output folder");
 
+    # pseudo mirBASE dat file
+    # final_mirbase_pseudofile.dat :=
+    # A pseudo mirBASE dat file containing all precursor sequences with their named mature sequences and their coordinates.
+    copy_final_files($opt, $opt->{mining}{completion}{dat});
+
     # mature miRNA set
     # mature_combined_mirbase_novel.fa :=
     # mature microRNA set, containing novels and miRBase-completed (if mined), together with the known miRNAs from miRBase

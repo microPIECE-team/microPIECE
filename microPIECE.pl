@@ -267,6 +267,20 @@ Sets the F<Piranha> bin size and has a default value of C<20>.
 
 =over 4
 
+=item pseudo mirBASE dat file: F<final_mirbase_pseudofile.dat>
+
+A pseudo mirBASE dat file containing all precursor sequences with their named mature sequences and their coordinates. It only contain the fields:
+
+=over 4
+
+=item C<ID>
+
+=item C<FH> and C<FT>
+
+=item C<SQ>
+
+=back
+
 =item mature miRNA set: F<mature_combined_mirbase_novel.fa>
 
 mature microRNA set, containing novels and miRBase-completed (if mined), together with the known miRNAs from miRBase
@@ -416,6 +430,8 @@ Please report any new issues ad L<new Github-Issue|https://github.com/microPIECE
 =over 4
 
 =item scheduled for next release
+
+Copying pseudo mirBASE dat file C<final_mirbase_pseudofile.dat> into output folder (Fixes L<#131|https://github.com/microPIECE-team/microPIECE/issues/131>)
 
 Corrected C<RNA::HairpinFigure> output (Fixes L<#137|https://github.com/microPIECE-team/microPIECE/issues/137>)
 
