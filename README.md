@@ -173,6 +173,14 @@ docker run -it --rm -v $PWD:/data micropiece/micropiece:v1.3.0 microPIECE.pl   \
 
 ### OUTPUT
 
+- pseudo mirBASE dat file: `final_mirbase_pseudofile.dat`
+
+    A pseudo mirBASE dat file containing all precursor sequences with their named mature sequences and their coordinates. It only contain the fields:
+
+    - `ID`
+    - `FH` and `FT`
+    - `SQ`
+
 - mature miRNA set: `mature_combined_mirbase_novel.fa`
 
     mature microRNA set, containing novels and miRBase-completed (if mined), together with the known miRNAs from miRBase
