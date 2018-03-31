@@ -291,6 +291,10 @@ Please report any new issues ad [new Github-Issue](https://github.com/microPIECE
 ## Changelog
 - scheduled for next release
 
+    No features planed
+
+- [v1.4.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.4.0) (2018-03-31)
+
     Copying pseudo mirBASE dat file `final_mirbase_pseudofile.dat` into output folder (Fixes [#131](https://github.com/microPIECE-team/microPIECE/issues/131))
 
     Corrected `RNA::HairpinFigure` output (Fixes [#137](https://github.com/microPIECE-team/microPIECE/issues/137))
