@@ -431,6 +431,8 @@ Please report any new issues ad L<new Github-Issue|https://github.com/microPIECE
 
 =item scheduled for next release
 
+Copying pseudo mirBASE dat file C<final_mirbase_pseudofile.dat> into output folder (Fixes L<#131|https://github.com/microPIECE-team/microPIECE/issues/131>)
+
 Corrected C<RNA::HairpinFigure> output (Fixes L<#137|https://github.com/microPIECE-team/microPIECE/issues/137>)
 
 Fix the requirement of an accession inside mirBASE dat file (Fixes L<#134|https://github.com/microPIECE-team/microPIECE/issues/134>)
