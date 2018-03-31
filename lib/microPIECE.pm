@@ -3,7 +3,7 @@ package microPIECE;
 use strict;
 use warnings;
 
-use version 0.77; our $VERSION = version->declare("v1.3.0");
+use version 0.77; our $VERSION = version->declare("v1.4.0");
 
 use Log::Log4perl;
 use Data::Dumper;
@@ -653,7 +653,7 @@ sub run_mining_genomicposition
     my $blastoutput = run_cmd($L, \@cmd);
 
     # filter the hits and store them
-    $opt->{mining}{genomic_location} = "miRNA_genomic_position.csv";
+    $opt->{mining}{genomic_location} = getcwd()."/"."miRNA_genomic_position.csv";
     open(FH, ">", $opt->{mining}{genomic_location}) || $L->logdie("Unable to open file '$opt->{mining}{genomic_location}': $!");
     foreach my $line (split(/\n/, $blastoutput))
     {
@@ -1507,6 +1507,11 @@ sub transfer_resultfiles
     my $L = Log::Log4perl::get_logger();
 
     $L->info("Start copying result files into output folder");
+
+    # pseudo mirBASE dat file
+    # final_mirbase_pseudofile.dat :=
+    # A pseudo mirBASE dat file containing all precursor sequences with their named mature sequences and their coordinates.
+    copy_final_files($opt, $opt->{mining}{completion}{dat});
 
     # mature miRNA set
     # mature_combined_mirbase_novel.fa :=

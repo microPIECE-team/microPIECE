@@ -76,7 +76,7 @@ foreach my $entry (@{$mirnas})
     }
 
     printf OUT ">%s %s %s\n\n", $entry->{precursor}, $energy, join(" ", @mature_infos);
-    print  OUT draw($seq, $struct), "\n\n";
+    print  OUT mining::fix_hairpin(draw($seq, $struct), $seq), "\n\n";
 }
 
 close(OUT) || die "Unable to close file '$output' after writing: $!\n";

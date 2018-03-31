@@ -110,8 +110,11 @@ sub _parse_mirbase_dat_block
     return if ($req_species && uc($species) ne uc($req_species));
 
     # second we want to obtain the accession
-    return unless ($$ref_lines =~ /^AC\s+(\S+);/m);
-    my $accession = $1;
+    my $accession = "";
+    if ($$ref_lines =~ /^AC\s+(\S+);/m)
+    {
+	$accession = $1;
+    }
 
     # get the FT blocks for a mircoRNA
     my @matures = ();
@@ -448,6 +451,68 @@ sub export_mirbase_data
 	print FH $buffer;
     }
     close(FH) || die "Unable to close file '$file': $!\n";
+}
+
+sub fix_hairpin
+{
+    my ($structure, $sequence) = @_;
+
+    # split the structure into its lines
+    my @lines = split(/\n/, $structure);
+
+    # and each line into its characters
+    @lines = map { [split("", $_)] } (@lines);
+
+    # split the input sequence into its characters
+    my @seq = split("", $sequence);
+
+    my $width = int(@{$lines[0]});
+
+    # now go through the lines 1 and 2 and substitute each character
+    # found, with the next character from our input sequence and
+    # second test lines 4 and 5 for the same condition and use the
+    # last character from the sequence as substitution character
+    for(my $x=0; $x<$width; $x++)
+    {
+	# test if y=0 or y=1 contains the character
+	my $y;
+	if ($lines[0][$x] !~ /[-\s]/)
+	{
+	    $y = 0;
+	} elsif ($lines[1][$x] !~ /[-\s]/)
+	{
+	    $y = 1;
+	}
+
+	# set the next character from our input sequence
+	$lines[$y][$x] = shift @seq if (defined $y);
+
+	# test if y=3 or y=4 contains the character
+	$y=undef;
+	if ($lines[3][$x] !~ /[-\s]/)
+	{
+	    $y = 3;
+	} elsif ($lines[4][$x] !~ /[-\s]/)
+	{
+	    $y = 4;
+	}
+
+	# set the next character from our input sequence
+	$lines[$y][$x] = pop @seq if (defined $y)
+    }
+
+    # if sequence still contain a letter, it should be on line 3 at
+    # the very last position
+    if (@seq)
+    {
+	if ($lines[2][$width-1] !~ /[-\s]/)
+	{
+	    $lines[2][$width-1] = shift @seq;
+	}
+    }
+
+    # last join each line and all lines together
+    return join("\n", map { join("", @{$_}) } (@lines));
 }
 
 1;
