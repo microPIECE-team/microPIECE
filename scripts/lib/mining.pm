@@ -110,8 +110,11 @@ sub _parse_mirbase_dat_block
     return if ($req_species && uc($species) ne uc($req_species));
 
     # second we want to obtain the accession
-    return unless ($$ref_lines =~ /^AC\s+(\S+);/m);
-    my $accession = $1;
+    my $accession = "";
+    if ($$ref_lines =~ /^AC\s+(\S+);/m)
+    {
+	$accession = $1;
+    }
 
     # get the FT blocks for a mircoRNA
     my @matures = ();

@@ -285,6 +285,8 @@ Please report any new issues ad [new Github-Issue](https://github.com/microPIECE
 
     Corrected `RNA::HairpinFigure` output (Fixes [#137](https://github.com/microPIECE-team/microPIECE/issues/137))
 
+    Fix the requirement of an accession inside mirBASE dat file (Fixes [#134](https://github.com/microPIECE-team/microPIECE/issues/134))
+
     Avoiding error message while copying the out file for genomic location into base folder (Fixes [#117](https://github.com/microPIECE-team/microPIECE/issues/117)) 
 
 - [v1.3.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.3.0) (2018-03-29)
