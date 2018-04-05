@@ -179,6 +179,20 @@ docker run -it --rm -v $PWD:/data micropiece/micropiece:v1.4.0 microPIECE.pl   \
 
     Sets the `Piranah` bin size and has a default value of `20`.
 
+- `--CLIPminProcessLength` and `--CLIPmaxProcessLength`
+
+    Both are integer values and set the lower and upper limit for the
+    processed peak length. Peaks having a width below
+    `--CLIPminProcessLength` or above `--CLIPmaxProcessLength` are
+    ignored. Default values are 22 for `--CLIPminProcessLength` and 50
+    for `--CLIPmaxProcessLength`.
+
+- `--CLIPminlength`
+
+    An integer value specifying the minimal length of a CLIP peak to be
+    processed. Default value is 0, meaning no minimal length for CLIP
+    peaks.
+
 ### OUTPUT
 
 - pseudo mirBASE dat file: `final_mirbase_pseudofile.dat`
@@ -298,6 +312,8 @@ Please report any new issues ad [new Github-Issue](https://github.com/microPIECE
 
 ## Changelog
 - scheduled for next release
+
+    Add command line options `--CLIPminProcessLength`, `--CLIPmaxProcessLength`, and `--CLIPminlength` for length limits used in `run_CLIP_process` and `run_CLIP_clip_mapper` steps enabling processing of peaks with user defined widths (Fixes [#145](https://github.com/microPIECE-team/microPIECE/issues/145))
 
     Dynamic naming of output files based on minlength variable in `run_CLIP_clip_mapper` (Fixes [#146](https://github.com/microPIECE-team/microPIECE/issues/146))
 

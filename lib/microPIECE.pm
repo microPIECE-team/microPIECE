@@ -3,7 +3,7 @@ package microPIECE;
 use strict;
 use warnings;
 
-use version 0.77; our $VERSION = version->declare("v1.4.2");
+use version 0.77; our $VERSION = version->declare("v1.4.3");
 
 use Log::Log4perl;
 use Data::Dumper;
@@ -1221,7 +1221,21 @@ sub run_CLIP_process
     my $L = Log::Log4perl::get_logger();
 
     my $min = 22;
+    if (exists $opt->{CLIPminProcessLength} && defined $opt->{CLIPminProcessLength})
+    {
+	$min = $opt->{CLIPminProcessLength};
+    }
     my $max = 50;
+    if (exists $opt->{CLIPmaxProcessLength} && defined $opt->{CLIPmaxProcessLength})
+    {
+	$max = $opt->{CLIPmaxProcessLength};
+    }
+
+    # check if min <= $max
+    if ($min > $max)
+    {
+	$L->logdie("Minimum length should be less than maximum length. You might specify other values using --CLIPmaxProcessLength or --CLIPminProcessLength parameter");
+    }
 
     my @inputfiles = glob("clip_merged_*of*BEDfilter_mapGFF_minLen*.bed");
 
@@ -1280,6 +1294,10 @@ sub run_CLIP_clip_mapper
     my $L = Log::Log4perl::get_logger();
 
     my $minlength = 0;
+    if (exists $opt->{CLIPminlength} && defined $opt->{CLIPminlength})
+    {
+	$minlength = $opt->{CLIPminlength};
+    }
 
     my @inputfiles = glob("clip_merged_*of*BEDfilter.bed");
 
