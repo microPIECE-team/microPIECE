@@ -66,7 +66,7 @@ sub generate_input
 	    $strand = "+";
 	}
 
-	my $bedline = join("\t", (".", $start, $len+$start-1, ".", ".", $strand))."\n";
+	my $bedline = join("\t", (".", $start, $len+$start, ".", ".", $strand))."\n";
 	push(@{$ret_val{in}}, $bedline);
 
 	if ($len >= $min_val && $len <= $max_val)
