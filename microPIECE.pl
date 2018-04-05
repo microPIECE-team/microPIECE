@@ -459,6 +459,8 @@ Please report any new issues ad L<new Github-Issue|https://github.com/microPIECE
 
 =item scheduled for next release
 
+Add command line options C<--CLIPminProcessLength>, C<--CLIPmaxProcessLength>, and C<--CLIPminlength> for length limits used in C<run_CLIP_process> and C<run_CLIP_clip_mapper> steps enabling processing of peaks with user defined widths (Fixes L<#145|https://github.com/microPIECE-team/microPIECE/issues/145>)
+
 Dynamic naming of output files based on minlength variable in C<run_CLIP_clip_mapper> (Fixes L<#146|https://github.com/microPIECE-team/microPIECE/issues/146>)
 
 Correct calculation of length of a bed feature and moving F<scripts/CLIP_bedtool_discard_sizes.pl> into F<lib/microPIECE.pm> (Fixes L<#147|https://github.com/microPIECE-team/microPIECE/issues/147>)
