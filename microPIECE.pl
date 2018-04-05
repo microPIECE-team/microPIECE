@@ -431,7 +431,7 @@ Please report any new issues ad L<new Github-Issue|https://github.com/microPIECE
 
 =item scheduled for next release
 
-No features planed
+Correct calculation of length of a bed feature and moving F<scripts/CLIP_bedtool_discard_sizes.pl> into F<lib/microPIECE.pm> (Fixes L<#147|https://github.com/microPIECE-team/microPIECE/issues/147>)
 
 =item L<v1.4.0|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.4.0> (2018-03-31)
 

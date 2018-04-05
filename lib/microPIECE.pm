@@ -3,7 +3,7 @@ package microPIECE;
 use strict;
 use warnings;
 
-use version 0.77; our $VERSION = version->declare("v1.4.0");
+use version 0.77; our $VERSION = version->declare("v1.4.1");
 
 use Log::Log4perl;
 use Data::Dumper;
@@ -1230,8 +1230,8 @@ sub run_CLIP_process
 	my $sorted_bed = sprintf("%s%s_min%i_max%i_sort.bed",      getcwd()."/", basename($file, ".bed"), $min, $max);
 	my $fasta =      sprintf("%s%s_min%i_max%i_sort.fasta",    getcwd()."/", basename($file, ".bed"), $min, $max);
 	my $fastaUC =    sprintf("%s%s_min%i_max%i_sort_UC.fasta", getcwd()."/", basename($file, ".bed"), $min, $max);
-	my @cmd = ($opt->{scriptdir}."CLIP_bedtool_discard_sizes.pl", $file, $min, $max);
-	my $output = run_cmd($L, \@cmd);
+
+	my $output = CLIP_bedtool_discard_sizes($file, $min, $max);
 
 	# sort the file
 	my @dat = ();
@@ -1251,7 +1251,7 @@ sub run_CLIP_process
 	close(FH) || $L->logdie("Unable to close '$sorted_bed': $!");
 
 	# run bedtools getfasta
-	@cmd = ("bedtools", "getfasta", "-s", "-name", "-fi", $opt->{genomeA}, "-bed", $sorted_bed, );
+	my @cmd = ("bedtools", "getfasta", "-s", "-name", "-fi", $opt->{genomeA}, "-bed", $sorted_bed, );
 	my $fastaoutput = run_cmd($L, \@cmd);
 
 	open(FH, ">", $fasta) || $L->logdie("Unable to open '$fasta': $!");
@@ -1657,6 +1657,40 @@ sub clean_tempfiles
 
 	if (-e $file) { unlink($file) || die "$!"; }
     }
+}
+
+sub CLIP_bedtool_discard_sizes
+{
+    my ($bedfile, $min, $max) = @_;
+
+    my $output = "";
+
+    my $L = Log::Log4perl::get_logger();
+
+    open(BED ,"<",$bedfile) || $L->logdie("Unable to open file '$bedfile': $!");
+    while(<BED>){
+	chomp;
+
+	# ignore comment line
+	if ($_ =~ /^#/)
+	{
+	    $output.= $_."\n";
+	    next;
+	}
+
+	my $bed_line	= $_;
+	my @bed_array	= split("\t",$bed_line);
+	my $bed_start	= $bed_array[1];
+	my $bed_stop	= $bed_array[2];
+	my $bed_len	= $bed_stop-$bed_start;
+	next if($bed_len < $min);
+	next if($bed_len > $max);
+
+	$output.= $bed_line."\n";
+    }
+    close(BED)|| $L->logdie("Unable to close file '$bedfile': $!");
+
+    return $output;
 }
 
 $SIG{INT}=sub{ clean_tempfiles(); };
