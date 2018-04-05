@@ -50,6 +50,9 @@ my $opt = {
     mirbasedir         => undef,
     tempdir            => undef,
     piranha_bin_size   => 20,
+
+    CLIPminProcessLength => undef,
+    CLIPmaxProcessLength => undef,
 };
 
 GetOptions(
@@ -75,6 +78,9 @@ GetOptions(
     'mirbasedir=s'         => \$opt->{mirbasedir},
     'tempdir=s'            => \$opt->{tempdir},
     'piranhabinsize=i'     => \$opt->{piranha_bin_size},
+
+    'CLIPmaxProcessLength=i' => \$opt->{CLIPmaxProcessLength},
+    'CLIPminProcessLength=i' => \$opt->{CLIPminProcessLength},
     ) || pod2usage(1);
 
 # split clip files if required
@@ -260,6 +266,14 @@ C<--out> parameter.
 =item C<--piranhabinsize>
 
 Sets the F<Piranha> bin size and has a default value of C<20>.
+
+=item C<--CLIPminProcessLength> and C<--CLIPmaxProcessLength>
+
+Both are integer values and set the lower and upper limit for the
+processed peak length. Peaks having a width below
+C<--CLIPminProcessLength> or above C<--CLIPmaxProcessLength> are
+ignored. Default values are 22 for C<--CLIPminProcessLength> and 50
+for C<--CLIPmaxProcessLength>.
 
 =back
 

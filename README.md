@@ -179,6 +179,14 @@ docker run -it --rm -v $PWD:/data micropiece/micropiece:v1.4.0 microPIECE.pl   \
 
     Sets the `Piranah` bin size and has a default value of `20`.
 
+- `--CLIPminProcessLength` and `--CLIPmaxProcessLength`
+
+    Both are integer values and set the lower and upper limit for the
+    processed peak length. Peaks having a width below
+    `--CLIPminProcessLength` or above `--CLIPmaxProcessLength` are
+    ignored. Default values are 22 for `--CLIPminProcessLength` and 50
+    for `--CLIPmaxProcessLength`.
+
 ### OUTPUT
 
 - pseudo mirBASE dat file: `final_mirbase_pseudofile.dat`
