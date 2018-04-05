@@ -3,7 +3,7 @@ package microPIECE;
 use strict;
 use warnings;
 
-use version 0.77; our $VERSION = version->declare("v1.4.2");
+use version 0.77; our $VERSION = version->declare("v1.4.3");
 
 use Log::Log4perl;
 use Data::Dumper;
