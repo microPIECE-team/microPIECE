@@ -3,7 +3,7 @@ package microPIECE;
 use strict;
 use warnings;
 
-use version 0.77; our $VERSION = version->declare("v1.4.1");
+use version 0.77; our $VERSION = version->declare("v1.4.2");
 
 use Log::Log4perl;
 use Data::Dumper;
@@ -1223,7 +1223,7 @@ sub run_CLIP_process
     my $min = 22;
     my $max = 50;
 
-    my @inputfiles = glob("clip_merged_*of*BEDfilter_mapGFF_minLen0.bed");
+    my @inputfiles = glob("clip_merged_*of*BEDfilter_mapGFF_minLen*.bed");
 
     foreach my $file (@inputfiles)
     {
@@ -1285,7 +1285,7 @@ sub run_CLIP_clip_mapper
 
     foreach my $file (@inputfiles)
     {
-	my $outputname = getcwd()."/".basename($file, ".bed")."_mapGFF_minLen0.bed";
+	my $outputname = sprintf("%s/%s_mapGFF_minLen%i.bed", getcwd(), basename($file, ".bed"), $minlength);
 	my @cmd = ($opt->{scriptdir}."CLIP_mapper.pl", $file, $opt->{annotationA}, $minlength);
 	run_cmd($L, \@cmd, undef, $outputname);
     }

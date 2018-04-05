@@ -299,6 +299,8 @@ Please report any new issues ad [new Github-Issue](https://github.com/microPIECE
 ## Changelog
 - scheduled for next release
 
+    Dynamic naming of output files based on minlength variable in `run_CLIP_clip_mapper` (Fixes [#146](https://github.com/microPIECE-team/microPIECE/issues/146))
+
     Correct calculation of length of a bed feature and moving `scripts/CLIP_bedtool_discard_sizes.pl` into `lib/microPIECE.pm` (Fixes [#147](https://github.com/microPIECE-team/microPIECE/iss
 ues/147))
 
