@@ -30,7 +30,15 @@ For the minimal workflow it needs a genome file, as well as its annotation file 
 
 ## Installation
 Please install the dependencies and run
-`git clone git@github.com:microPIECE-team/microPIECE.git`
+```
+git clone -b v1.4.0 git@github.com:microPIECE-team/microPIECE.git
+```
+or download the latest release as `*.tar.gz` or `*.zip` file:
+```
+curl -L -o microPIECE_v1.4.0.tar.gz https://github.com/microPIECE-team/microPIECE/archive/v1.4.0.tar.gz
+# or
+curl -L -o microPIECE_v1.4.0.zip https://github.com/microPIECE-team/microPIECE/archive/v1.4.0.zip
+```
 
 ## Docker
 We also provide `microPIECE` as [DOCKER image](https://hub.docker.com/r/micropiece/micropiece/). We tested the image on Ubuntu, Debian and MacOS. For the latter one, the `Piranha` command `make test` fails during the build, but when entering the container, the test succeds. Therefore, we temporarily excluded this statement.
@@ -38,15 +46,15 @@ We also provide `microPIECE` as [DOCKER image](https://hub.docker.com/r/micropie
 ### Information about the docker images:
 | Branch | Size | Layers | Comment |
 |-|-|-|-|
-|[![](https://images.microbadger.com/badges/version/micropiece/micropiece:v1.3.0.svg)](https://microbadger.com/images/micropiece/micropiece:v1.3.0) | [![](https://images.microbadger.com/badges/image/micropiece/micropiece:v1.3.0.svg)](https://microbadger.com/images/micropiece/micropiece:v1.3.0) | [![](https://images.microbadger.com/badges/commit/micropiece/micropiece:v1.3.0.svg)](https://microbadger.com/images/micropiece/micropiece:v1.3.0) | Latest release [v1.3.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.3.0) |
+|[![](https://images.microbadger.com/badges/version/micropiece/micropiece:v1.4.0.svg)](https://microbadger.com/images/micropiece/micropiece:v1.4.0) | [![](https://images.microbadger.com/badges/image/micropiece/micropiece:v1.4.0.svg)](https://microbadger.com/images/micropiece/micropiece:v1.4.0) | [![](https://images.microbadger.com/badges/commit/micropiece/micropiece:v1.4.0.svg)](https://microbadger.com/images/micropiece/micropiece:v1.4.0) | Latest release [v1.4.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.4.0) |
 |[![](https://images.microbadger.com/badges/version/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master) | [![](https://images.microbadger.com/badges/image/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master) | [![](https://images.microbadger.com/badges/commit/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master) | |
 |[![](https://images.microbadger.com/badges/version/micropiece/micropiece:develop.svg)](https://microbadger.com/images/micropiece/micropiece:develop) | [![](https://images.microbadger.com/badges/image/micropiece/micropiece:develop.svg)](https://microbadger.com/images/micropiece/micropiece:develop) | [![](https://images.microbadger.com/badges/commit/micropiece/micropiece:develop.svg)](https://microbadger.com/images/micropiece/micropiece:develop) | |
 
 
 ```
-docker pull micropiece/micropiece:v1.3.0
+docker pull micropiece/micropiece:v1.4.0
 git clone git@github.com:microPIECE-team/microPIECE-testset.git testset
-docker run -it --rm -v $PWD:/data micropiece/micropiece:v1.3.0 microPIECE.pl   \
+docker run -it --rm -v $PWD:/data micropiece/micropiece:v1.4.0 microPIECE.pl   \
   --genomeA testset/NC_035109.1_reduced_AAE_genome.fa  \
   --genomeB testset/NC_007416.3_reduced_TCA_genome.fa   \
   --annotationA testset/NC_035109.1_reduced_AAE_genome.gff   \
