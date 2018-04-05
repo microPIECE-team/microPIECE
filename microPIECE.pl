@@ -106,6 +106,12 @@ if($opt->{version}){
 	exit 0;
 }
 
+# CLIPmin/maxProcessLength
+if (defined $opt->{CLIPminProcessLength} && defined $opt->{CLIPmaxProcessLength} && $opt->{CLIPminProcessLength} > $opt->{CLIPmaxProcessLength})
+{
+    $L->logdie("Minimum length should be less than maximum length. You might specify other values using --CLIPmaxProcessLength or --CLIPminProcessLength parameter");
+}
+
 microPIECE::hello();
 STDOUT->flush();
 
