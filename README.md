@@ -187,6 +187,12 @@ docker run -it --rm -v $PWD:/data micropiece/micropiece:v1.4.0 microPIECE.pl   \
     ignored. Default values are 22 for `--CLIPminProcessLength` and 50
     for `--CLIPmaxProcessLength`.
 
+- `--CLIPminlength`
+
+    An integer value specifying the minimal length of a CLIP peak to be
+    processed. Default value is 0, meaning no minimal length for CLIP
+    peaks.
+
 ### OUTPUT
 
 - pseudo mirBASE dat file: `final_mirbase_pseudofile.dat`

@@ -283,6 +283,12 @@ C<--CLIPminProcessLength> or above C<--CLIPmaxProcessLength> are
 ignored. Default values are 22 for C<--CLIPminProcessLength> and 50
 for C<--CLIPmaxProcessLength>.
 
+=item C<--CLIPminlength>
+
+An integer value specifying the minimal length of a CLIP peak to be
+processed. Default value is 0, meaning no minimal length for CLIP
+peaks.
+
 =back
 
 =head1 OUTPUT
