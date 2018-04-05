@@ -53,6 +53,7 @@ my $opt = {
 
     CLIPminProcessLength => undef,
     CLIPmaxProcessLength => undef,
+    CLIPminlength        => undef,
 };
 
 GetOptions(
@@ -81,6 +82,7 @@ GetOptions(
 
     'CLIPmaxProcessLength=i' => \$opt->{CLIPmaxProcessLength},
     'CLIPminProcessLength=i' => \$opt->{CLIPminProcessLength},
+    'CLIPminlength=i'        => \$opt->{CLIPminlength},
     ) || pod2usage(1);
 
 # split clip files if required

@@ -1294,6 +1294,10 @@ sub run_CLIP_clip_mapper
     my $L = Log::Log4perl::get_logger();
 
     my $minlength = 0;
+    if (exists $opt->{CLIPminlength} && defined $opt->{CLIPminlength})
+    {
+	$minlength = $opt->{CLIPminlength};
+    }
 
     my @inputfiles = glob("clip_merged_*of*BEDfilter.bed");
 
