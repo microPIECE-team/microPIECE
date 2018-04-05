@@ -299,7 +299,8 @@ Please report any new issues ad [new Github-Issue](https://github.com/microPIECE
 ## Changelog
 - scheduled for next release
 
-    No features planed
+    Correct calculation of length of a bed feature and moving `scripts/CLIP_bedtool_discard_sizes.pl` into `lib/microPIECE.pm` (Fixes [#147](https://github.com/microPIECE-team/microPIECE/iss
+ues/147))
 
 - [v1.4.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.4.0) (2018-03-31)
 
