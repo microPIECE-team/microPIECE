@@ -1682,7 +1682,7 @@ sub CLIP_bedtool_discard_sizes
 	my @bed_array	= split("\t",$bed_line);
 	my $bed_start	= $bed_array[1];
 	my $bed_stop	= $bed_array[2];
-	my $bed_len	= $bed_stop-$bed_start+1;
+	my $bed_len	= $bed_stop-$bed_start;
 	next if($bed_len < $min);
 	next if($bed_len > $max);
 
