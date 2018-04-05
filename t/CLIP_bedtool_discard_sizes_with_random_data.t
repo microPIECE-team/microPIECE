@@ -1,10 +1,11 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::Script::Run;
 use Test::More;
 
 use File::Temp;
+
+use microPIECE;
 
 # the script only works on fields 2&3 of the bed file, therefore all
 # other information are irrelevant and should be random values
@@ -23,11 +24,7 @@ my ($fh, $filename) = File::Temp::tempfile();
 print $fh @{$input->{in}};
 close($fh) || die;
 
-my ($return,$stdout,$stderr)=run_script('../scripts/CLIP_bedtool_discard_sizes.pl');
-is(Test::Script::Run::last_script_exit_code(), 2, 'Without arguments is should exit with exit code 2');
-
-($return,$stdout,$stderr)=run_script('../scripts/CLIP_bedtool_discard_sizes.pl' ,[$filename, $min_val, $max_val]);
-is(Test::Script::Run::last_script_exit_code(), 0, 'With single file/condition is should exit with exit code 0');
+my $stdout = microPIECE::CLIP_bedtool_discard_sizes($filename, $min_val, $max_val);
 
 my $got	= [ sort split("\n", $stdout) ];
 my $expected = [ sort split("\n", join("", @{$input->{expected}})) ];
