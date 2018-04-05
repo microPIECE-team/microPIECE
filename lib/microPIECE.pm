@@ -1665,7 +1665,9 @@ sub CLIP_bedtool_discard_sizes
 
     my $output = "";
 
-    open(BED ,"<",$bedfile) || die;
+    my $L = Log::Log4perl::get_logger();
+
+    open(BED ,"<",$bedfile) || $L->logdie("Unable to open file '$bedfile': $!");
     while(<BED>){
 	chomp;
 
@@ -1686,7 +1688,7 @@ sub CLIP_bedtool_discard_sizes
 
 	$output.= $bed_line."\n";
     }
-    close(BED)|| die;
+    close(BED)|| $L->logdie("Unable to close file '$bedfile': $!");
 
     return $output;
 }
