@@ -1285,7 +1285,7 @@ sub run_CLIP_clip_mapper
 
     foreach my $file (@inputfiles)
     {
-	my $outputname = getcwd()."/".basename($file, ".bed")."_mapGFF_minLen0.bed";
+	my $outputname = sprintf("%s/%s_mapGFF_minLen%i.bed", getcwd(), basename($file, ".bed"), $minlength);
 	my @cmd = ($opt->{scriptdir}."CLIP_mapper.pl", $file, $opt->{annotationA}, $minlength);
 	run_cmd($L, \@cmd, undef, $outputname);
     }
