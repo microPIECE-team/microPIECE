@@ -1223,7 +1223,7 @@ sub run_CLIP_process
     my $min = 22;
     my $max = 50;
 
-    my @inputfiles = glob("clip_merged_*of*BEDfilter_mapGFF_minLen0.bed");
+    my @inputfiles = glob("clip_merged_*of*BEDfilter_mapGFF_minLen*.bed");
 
     foreach my $file (@inputfiles)
     {
