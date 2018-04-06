@@ -142,13 +142,41 @@ my %chromosomes = ();
 my %strands    = ();
 my %conditions = ();
 
+my %input_sorted = ();
+my $max_length = 0;
 
 foreach my $key (keys %input)
 {
     foreach my $file (@{$input{$key}})
     {
 	WARN("Working on file '$file'");
+	WARN("Sorting file '$file'");
 	open(FH, "<", $file) || LOGDIE("Unable to open file '$file': $!");
+	my @temp = <FH>;
+	@temp = map { [ split("\t", $_) ] } (@temp);
+
+	# sort by chromosome, followed by strand, followed by start coordinate, followed by stop coordinate
+	@temp = sort { $a->[0] cmp $b->[0] || $a->[5] cmp $b->[5] || $a->[1] <=> $b->[1] || $a->[2] <=> $b->[2] } (@temp);
+
+	# estimate chromosomes and their maximum coordinate
+	foreach my $set (@temp)
+	{
+	    $chromosomes{$set->[0]} = $set->[2] unless (exists $chromosomes{$set->[0]} && $chromosomes{$set->[0]} >= $set->[2]);
+	    $max_length = $set->[2] if ($max_length < $set->[2]);
+	}
+
+	push(@{$input_sorted{$key}} , join("", map { join("\t", @{$_}) } (@temp)));
+    }
+}
+
+my @chromosome_order = sort {$a cmp $b} (keys %chromosomes);
+WARN(sprintf("Found a total of %d chromosomes with a maximum length (covered) of %d bp. Expected chromosome order: %s", int(@chromosome_order), $max_length, join(", ", map {"'$_'"} (@chromosome_order))));
+
+foreach my $key (keys %input_sorted)
+{
+    foreach my $file (@{$input_sorted{$key}})
+    {
+	open(FH, "<", \$file) || LOGDIE("Unable to open file FILEHANDLE: $!");
 	while(<FH>)
 	{
 	    # go through the bed files
@@ -194,7 +222,7 @@ foreach my $key (keys %input)
 		$genome[$chromosome][$strand][$i][$condition]++;
 	    }
 	}
-	close(FH) || LOGDIE("Unable to close file '$file': $!");
+	close(FH) || LOGDIE("Unable to close FILEHANDLE: $!");
     }
 }
 
