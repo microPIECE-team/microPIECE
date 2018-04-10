@@ -1411,7 +1411,6 @@ sub run_CLIP_mapping
     {
 	my $trimmedfile = getcwd()."/".basename($clipfile).".trim";
 	my $bamfile     = getcwd()."/".basename($clipfile).".bam";
-	my $bedfile     = getcwd()."/".basename($clipfile).".bed";
 	# -N 1		:= look for splice sites
 	# -B 5		:= batch mode 5, allocate positions, genome and suffix array
 	# -O		:= ordered output
@@ -1425,9 +1424,6 @@ sub run_CLIP_mapping
 
 	@cmd = ("samtools", "sort", "-o", $bamfile, $samtools_output);
 	run_cmd($L, \@cmd);
-
-	@cmd = ("bedtools", "bamtobed", "-i", $bamfile);
-	run_cmd($L, \@cmd, undef, $bedfile);
     }
 
     clean_tempfiles();
