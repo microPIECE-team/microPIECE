@@ -1424,6 +1424,9 @@ sub run_CLIP_mapping
 
 	@cmd = ("samtools", "sort", "-o", $bamfile, $samtools_output);
 	run_cmd($L, \@cmd);
+
+	@cmd = ("samtools", "index", $bamfile);
+	run_cmd($L, \@cmd);
     }
 
     clean_tempfiles();
