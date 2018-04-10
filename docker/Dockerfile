@@ -9,7 +9,7 @@ RUN echo "VCS_REF: "${VCS_REF}", BUILD_DATE: "${BUILD_DATE}", micropiece_version
 
 LABEL maintainer="frank.foerster@ime.fraunhofer.de" \
       description="Container for the microPIECE package" \
-      version="1.4.0" \
+      version="1.5.0" \
       org.label-schema.vcs-ref=$VCS_REF \
       org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.vcs-url="https://github.com/microPIECE-team/microPIECE"
