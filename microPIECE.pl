@@ -467,6 +467,8 @@ Dynamic naming of output files based on minlength variable in C<run_CLIP_clip_ma
 
 Correct calculation of length of a bed feature and moving F<scripts/CLIP_bedtool_discard_sizes.pl> into F<lib/microPIECE.pm> (Fixes L<#147|https://github.com/microPIECE-team/microPIECE/issues/147>)
 
+Add an optimized pre-binning step with pseudocounts for bins covered by an exon as preparation for C<Piranha> (Fixes L<#132|https://github.com/microPIECE-team/microPIECE/issues/132> and L<#155|https://github.com/microPIECE-team/microPIECE/issues/155>)
+
 =item L<v1.4.0|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.4.0> (2018-03-31)
 
 Copying pseudo mirBASE dat file C<final_mirbase_pseudofile.dat> into output folder (Fixes L<#131|https://github.com/microPIECE-team/microPIECE/issues/131>)
