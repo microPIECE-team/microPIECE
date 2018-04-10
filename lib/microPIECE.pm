@@ -3,7 +3,7 @@ package microPIECE;
 use strict;
 use warnings;
 
-use version 0.77; our $VERSION = version->declare("v1.4.4");
+use version 0.77; our $VERSION = version->declare("v1.4.5");
 
 use Log::Log4perl;
 use Data::Dumper;
@@ -1352,10 +1352,16 @@ sub run_CLIP_piranha
 
     foreach my $clipfile (@{$opt->{clip}})
     {
-	my $bedfile           = getcwd()."/".basename($clipfile).".bed";
+	my $bamfile           = getcwd()."/".basename($clipfile).".bam";
+	my $prebinned         = getcwd()."/".basename($clipfile).".prebinned.bed";
 	my $piranhafile       = getcwd()."/".basename($clipfile).".piranha.bed";
 	my $sortedpiranhafile = getcwd()."/".basename($clipfile).".piranha.sorted.bed";
-	my @cmd = ("Piranha","-b", $opt->{piranha_bin_size}, "-o", $piranhafile, "-s", $bedfile);
+	# run the prebinning
+	my @cmd = ($opt->{scriptdir}."CLIP_binned_bed_from_bam_and_transcripts_for_piranha.pl", "--bam", $bamfile, "--size", $opt->{piranha_bin_size}, "--transcripts", $opt->{annotationA});
+	run_cmd($L, \@cmd, undef, $prebinned);
+
+	# run Piranha with prebinned bed
+	@cmd = ("Piranha", "-o", $piranhafile, "-s", $prebinned);
 	if (exists $opt->{testrun} && $opt->{testrun})
 	{
 	    $L->warn("TESTRUN was activated though --testrun option. This increases the p-value threshold for Piranha to 20%!!! Please use only for the provided testset and NOT(!!!) for real analysis!!!");
@@ -1405,7 +1411,6 @@ sub run_CLIP_mapping
     {
 	my $trimmedfile = getcwd()."/".basename($clipfile).".trim";
 	my $bamfile     = getcwd()."/".basename($clipfile).".bam";
-	my $bedfile     = getcwd()."/".basename($clipfile).".bed";
 	# -N 1		:= look for splice sites
 	# -B 5		:= batch mode 5, allocate positions, genome and suffix array
 	# -O		:= ordered output
@@ -1420,8 +1425,8 @@ sub run_CLIP_mapping
 	@cmd = ("samtools", "sort", "-o", $bamfile, $samtools_output);
 	run_cmd($L, \@cmd);
 
-	@cmd = ("bedtools", "bamtobed", "-i", $bamfile);
-	run_cmd($L, \@cmd, undef, $bedfile);
+	@cmd = ("samtools", "index", $bamfile);
+	run_cmd($L, \@cmd);
     }
 
     clean_tempfiles();

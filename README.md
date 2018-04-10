@@ -322,6 +322,8 @@ Please report any new issues ad [new Github-Issue](https://github.com/microPIECE
     Correct calculation of length of a bed feature and moving `scripts/CLIP_bedtool_discard_sizes.pl` into `lib/microPIECE.pm` (Fixes [#147](https://github.com/microPIECE-team/microPIECE/iss
 ues/147))
 
+    Add an optimized pre-binning step with pseudocounts for bins covered by an exon as preparation for `Piranha` (Fixes [#132](https://github.com/microPIECE-team/microPIECE/issues/132) and [#155](https://github.com/microPIECE-team/microPIECE/issues/155))
+
 - [v1.4.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.4.0) (2018-03-31)
 
     Copying pseudo mirBASE dat file `final_mirbase_pseudofile.dat` into output folder (Fixes [#131](https://github.com/microPIECE-team/microPIECE/issues/131))
