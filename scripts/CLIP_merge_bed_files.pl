@@ -8,7 +8,7 @@ use Pod::Usage;
 
 =head1 NAME
 
-046_merge_bed_files.pl - merging bed files, while maintaining count information
+CLIP_merge_bed_files.pl - merging bed files, while maintaining count information
 
 =head1 DESCRIPTION
 
@@ -18,7 +18,7 @@ resulting bed file.
 
 =head1 SYNOPSIS
 
-   046_merge_bed_files.pl [options] --input inputclass=filename1,filename2
+   CLIP_merge_bed_files.pl [options] --input inputclass=filename1,filename2
 
    Options:
      --help
@@ -27,7 +27,7 @@ resulting bed file.
      --log
 
    # Example defining to classes with two files each and output to merged.bed
-   046_merge_bed_files.pl
+   CLIP_merge_bed_files.pl
       --input 24h=file1.bed,file2.bed \
       --input 72h=file3.bed,file4.bed \
       --output merged.bed
