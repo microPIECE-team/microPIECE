@@ -1352,10 +1352,16 @@ sub run_CLIP_piranha
 
     foreach my $clipfile (@{$opt->{clip}})
     {
-	my $bedfile           = getcwd()."/".basename($clipfile).".bed";
+	my $bamfile           = getcwd()."/".basename($clipfile).".bam";
+	my $prebinned         = getcwd()."/".basename($clipfile).".prebinned.bed";
 	my $piranhafile       = getcwd()."/".basename($clipfile).".piranha.bed";
 	my $sortedpiranhafile = getcwd()."/".basename($clipfile).".piranha.sorted.bed";
-	my @cmd = ("Piranha","-b", $opt->{piranha_bin_size}, "-o", $piranhafile, "-s", $bedfile);
+	# run the prebinning
+	my @cmd = ($opt->{scriptdir}."CLIP_binned_bed_from_bam_and_transcripts_for_piranha.pl", "--bam", $bamfile, "--size", $opt->{piranha_bin_size}, "--transcripts", $opt->{annotationA});
+	run_cmd($L, \@cmd, undef, $prebinned);
+
+	# run Piranha with prebinned bed
+	@cmd = ("Piranha", "-o", $piranhafile, "-s", $prebinned);
 	if (exists $opt->{testrun} && $opt->{testrun})
 	{
 	    $L->warn("TESTRUN was activated though --testrun option. This increases the p-value threshold for Piranha to 20%!!! Please use only for the provided testset and NOT(!!!) for real analysis!!!");
