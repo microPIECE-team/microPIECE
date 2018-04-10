@@ -2,8 +2,13 @@
 
 use strict;
 use warnings;
+use Pod::Usage;
 
 use Getopt::Long;
+
+use version 0.77; our $VERSION = version->declare("v1.5.0");
+my $version      = 0;
+my $help         = 0;
 
 my @bamfiles     = ();
 my @transcripts  = ();
@@ -16,7 +21,16 @@ GetOptions(
     's|size=i'         => \$binsize,
     't|transcripts=s@' => \@transcripts,
     'r|reqfeature=s'   => \$reqfeature,
-    ) || die;
+    'V|version'        => \$version,
+    'h|help|?'         => \$help,
+    ) || pod2usage(2);
+
+pod2usage(1) if $help;
+if ($version)
+{
+    print $VERSION, "\n";
+    exit;
+}
 
 # definde the bams and transcripts if comma seperated
 @bamfiles = split(",", join(",", @bamfiles));
