@@ -4,6 +4,82 @@ use strict;
 use warnings;
 use Pod::Usage;
 
+=pod
+
+=head1 NAME
+
+CLIP_binned_bed_from_bam_and_transcripts_for_piranha.pl - Pre binning of a BAM file with optional pseudocounts for transcript sites
+
+=head1 DESCRIPTION
+
+This script is used to divide a BAM file into bins of a specified size
+(default 20). Additionally, pseudocounts can be added on every
+position covered by a transcript. Therefore, an input GFF file can be
+specified. Output is printed to STDOUT.
+
+=head1 SYNOPSIS
+
+   CLIP_binned_bed_from_bam_and_transcripts_for_piranha.pl [options] --bam bamfile
+
+   Options:
+     --help
+     --bam
+     --size
+     --transcripts
+     --reqfeature
+
+   # Example defining to classes with two files each and output to merged.bed
+   CLIP_binned_bed_from_bam_and_transcripts_for_piranha.pl
+      --bam         INPUT-BAM.bam \
+      --size        32 \
+      --transcripts ANNOTATION.gff \
+      --reqfeature  mRNA
+
+=head1 OPTIONS
+
+=over 8
+
+=item C<--bam|-b>
+
+Specifies the input file. Should be a BAM file with a prepared index. Use
+C<samtools index BAMFILENAME> to generate the required index.
+Specifying a bam is mandatory.
+
+=item C<--size|-s>
+
+Specifies the binsize. A bins counter is increased for each read start
+located inside that bin. This is following the binning/counting of
+C<Piranha>. Bins with a count size of C<0> are excluded from the
+output.
+
+=item C<--transcripts|-t>
+
+Specifies the transcript annotations. It has to be a GFF3
+file. Required fields are C<chr (column 1)>, C<feature (column 3)>,
+C<start (column 4)>, C<stop (column 5)>, and C<strand (column
+7)>. Other fields are ignored.  Additionally, only lines with a
+feature matching the C<--reqfeature> (default exon) are considered.  A
+pseudocount of 1 is added to all bins, containing one of required
+feature.
+
+=item C<--reqfeature|-r>
+
+Specifies the feature required from the transcript annotations. The
+default value is "exon", meaning only lines with exon as feature will
+result in a pseudocount of 1 for all bins covered.
+
+=item C<--help|-h|-?>
+
+Print that help message
+
+=item C<--version|-V>
+
+Print that help message
+
+=back
+
+=cut
+
 use Getopt::Long;
 
 use version 0.77; our $VERSION = version->declare("v1.5.0");
