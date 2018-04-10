@@ -137,10 +137,9 @@ if ($output ne "-")
     }
 }
 
-my @genome = ();
 my %chromosomes = ();
+my @genome = ();
 my %strands    = ();
-my %conditions = ();
 
 my %input_sorted = ();
 my $max_length = 0;
@@ -163,103 +162,91 @@ foreach my $key (keys %input)
 	{
 	    $chromosomes{$set->[0]} = $set->[2] unless (exists $chromosomes{$set->[0]} && $chromosomes{$set->[0]} >= $set->[2]);
 	    $max_length = $set->[2] if ($max_length < $set->[2]);
+
+	    # store strands
+	    $strands{$set->[5]}++;
 	}
 
-	push(@{$input_sorted{$key}} , join("", map { join("\t", @{$_}) } (@temp)));
+	push(@{$input_sorted{$key}{dat}} , \@temp);
+	push(@{$input_sorted{$key}{pos}} , 0);
     }
 }
 
 my @chromosome_order = sort {$a cmp $b} (keys %chromosomes);
 WARN(sprintf("Found a total of %d chromosomes with a maximum length (covered) of %d bp. Expected chromosome order: %s", int(@chromosome_order), $max_length, join(", ", map {"'$_'"} (@chromosome_order))));
 
-foreach my $key (keys %input_sorted)
-{
-    foreach my $file (@{$input_sorted{$key}})
-    {
-	open(FH, "<", \$file) || LOGDIE("Unable to open file FILEHANDLE: $!");
-	while(<FH>)
-	{
-	    # go through the bed files
-	    chomp;
+# map condition to number
+my @conditions_ordered = sort (keys %input_sorted);
+my %condition2number;
+@condition2number{@conditions_ordered} = (0..(int(@conditions_ordered)-1));
 
-	    # NW_001809801.1	79510	79534	XM_001647792.1	1	+
-	    # NW_001809801.1	79527	79534	XM_001647792.1	1	+
-	    # NW_001809801.1	248783	248807	XM_001647796.1	1	-
-            # NW_001809801.1	533942	533950	XM_001647802.1	1	-
-            # NW_001809801.1	2779750	2779790	XM_001647839.1	1	+
+# map strand to number
+my @strands_ordered = sort (keys %strands);
+my %strand2number;
+@strand2number{@strands_ordered} = (0..(int(@strands_ordered)-1));
 
-	    my ($chromosome, $start, $stop, $mrna_ids, undef, $strand) = split(/\t/, $_);
-
-	    # check if chromosome is already known
-	    unless (exists $chromosomes{$chromosome})
-	    {
-		$chromosomes{$chromosome} = int(keys %chromosomes);
-	    }
-	    $chromosome = $chromosomes{$chromosome};
-
-	    # check if strand is already known
-	    unless (exists $strands{$strand})
-	    {
-		$strands{$strand} = int(keys %strands);
-	    }
-	    $strand = $strands{$strand};
-
-	    # check if condition/key is already known
-	    unless (exists $conditions{$key})
-	    {
-		$conditions{$key} = int(keys %conditions);
-	    }
-	    my $condition = $conditions{$key};
-
-	    # for each chromosomal position we need to consider:
-	    # Counter + strand
-	    # Counter - strand
-
-	    # due to bed stop field is 0-based, but exclusive, we
-	    # need to continue as long as $i is less then stop-field
-	    for (my $i=$start; $i<$stop; $i++)
-	    {
-		$genome[$chromosome][$strand][$i][$condition]++;
-	    }
-	}
-	close(FH) || LOGDIE("Unable to close FILEHANDLE: $!");
-    }
-}
-
-# print the output
-my @conditions_ordered = sort (keys %conditions);
 print $fh "# Conditional counts are printed in the following order: ", join(", ", ("total", @conditions_ordered)), "\n";
 
-foreach my $chromosome_key (sort keys %chromosomes)
+foreach my $chromosome (@chromosome_order)
 {
-    my $chromosome = $chromosomes{$chromosome_key};
-    foreach my $strand_key (sort keys %strands)
-    {
-	my $strand = $strands{$strand_key};
+    my $genome=[];
 
-	# check if the strand and the chromosome are existing
-	unless (defined $genome[$chromosome] && ref($genome[$chromosome]) eq "ARRAY")
+    foreach my $condition (keys %input_sorted)
+    {
+	for(my $entry=0; $entry <@{$input_sorted{$condition}{dat}}; $entry++)
 	{
-	    # chromosomes should be always defined!
-	    LOGDIE("Missing entry for chromosome '$chromosome_key'");
+	    next if ($input_sorted{$condition}{pos}[$entry] >= @{$input_sorted{$condition}{dat}[$entry]});
+
+	    for (my $i=$input_sorted{$condition}{pos}[$entry]; $i<@{$input_sorted{$condition}{dat}[$entry]}; $i++)
+	    {
+		# check if the chromosome is still correct
+		my ($chr, $start, $stop, $mrna_ids, $score, $strand) = @{$input_sorted{$condition}{dat}[$entry][$i]};  # a single line from a input bed
+		# NW_001809801.1	79510	79534	XM_001647792.1	1	+
+		# NW_001809801.1	79527	79534	XM_001647792.1	1	+
+		# NW_001809801.1	248783	248807	XM_001647796.1	1	-
+		# NW_001809801.1	533942	533950	XM_001647802.1	1	-
+		# NW_001809801.1	2779750	2779790	XM_001647839.1	1	+
+
+		# if the chromosome is not expected, we will store the position and go on
+		if ($chr ne $chromosome)
+		{
+		    $input_sorted{$condition}{pos}[$entry] = $i;
+		    last;
+		}
+
+		# for each chromosomal position we need to consider:
+		# Counter + strand
+		# Counter - strand
+
+		# due to bed stop field is 0-based, but exclusive, we
+		# need to continue as long as $i is less then stop-field
+		for (my $j=$start; $j<$stop; $j++)
+		{
+		    $genome[$strand2number{$strand}][$j][$condition2number{$condition}]++;
+		}
+	    }
 	}
-	unless (defined $genome[$chromosome][$strand] && ref($genome[$chromosome][$strand]) eq "ARRAY")
+    }
+
+    foreach my $strand (@strands_ordered)
+    {
+	unless (defined $genome[$strand2number{$strand}] && ref($genome[$strand2number{$strand}]) eq "ARRAY")
 	{
 	    # if no feature is annotated on the strand if could be missing
-	    WARN("No feature on chromosome '$chromosome_key' for ($strand_key)-strand.");
+	    WARN("No feature on chromosome '$chromosome' for ($strand)-strand.");
 	    next;
 	}
 
 	my $start = -1;
-	for (my $i=0; $i<@{$genome[$chromosome][$strand]}; $i++)
+	for (my $i=0; $i<@{$genome[$strand2number{$strand}]}; $i++)
 	{
 	    # check if we can skip this position
-	    unless (defined $genome[$chromosome][$strand][$i] && ref($genome[$chromosome][$strand][$i]) eq "ARRAY")
+	    unless (defined $genome[$strand2number{$strand}][$i] && ref($genome[$strand2number{$strand}][$i]) eq "ARRAY")
 	    {
 		next;
 	    }
 
-	    my $counts_on_position = get_counts_for_position(\@genome, $chromosome, $strand, $i, \%conditions);
+	    my $counts_on_position = get_counts_for_position($genome[$strand2number{$strand}][$i], \@conditions_ordered);
 
 	    if ($counts_on_position->{total} > 0)
 	    {
@@ -269,9 +256,9 @@ foreach my $chromosome_key (sort keys %chromosomes)
 
 		my @counts = ($counts_on_position);
 
-		for (my $j=$i+1; $j<@{$genome[$chromosome][$strand]}; $j++)
+		for (my $j=$i+1; $j<@{$genome[$strand2number{$strand}]}; $j++)
 		{
-		    my $counts_on_inner_position = get_counts_for_position(\@genome, $chromosome, $strand, $j, \%conditions);
+		    my $counts_on_inner_position = get_counts_for_position($genome[$strand2number{$strand}][$j], \@conditions_ordered);
 
 		    if ($counts_on_inner_position->{total} > 0)
 		    {
@@ -285,7 +272,7 @@ foreach my $chromosome_key (sort keys %chromosomes)
 		# due to bed stop field is 0-based, but exclusive, we
                 # need to increase stop coordinate by 1
 		print $fh join("\t", (
-				   $chromosome_key,
+				   $chromosome,
 				   $start,
 				   $stop+1,
 				   sprintf("length=%d;counts=%s",
@@ -294,15 +281,14 @@ foreach my $chromosome_key (sort keys %chromosomes)
 					   )
 				   ),
 				   ".",
-				   $strand_key
+				   $strand
 			       )
 		    ), "\n";
 		$i = $stop; ## will be increased by the for loop, therefore next iteration starts at $stop+1
 	    }
 	}
-	$genome[$chromosome][$strand] = undef; # reduce memory footprint
+
     }
-    $genome[$chromosome] = undef; # reduce memory footprint
 }
 
 sub generate_cigar_like_string
@@ -321,15 +307,17 @@ sub generate_cigar_like_string
 
 sub get_counts_for_position
 {
-    my ($ref_genome, $chr, $str, $pos, $ref_conditions) = @_;
+    my ($ref_pos, $ref_conditions_ordered) = @_;
 
     my %counts = ( total => 0 );
 
-    foreach my $condition (keys %{$ref_conditions})
+    for(my $i=0; $i<@{$ref_conditions_ordered}; $i++)
     {
-	my $val = $ref_genome->[$chr][$str][$pos][$ref_conditions->{$condition}];
-	$counts{$condition} = (defined $val) ? $val : 0;
-	$counts{total} += $counts{$condition};
+	my $val       = $ref_pos->[$i];
+	my $condition = $ref_conditions_ordered->[$i];
+
+	$counts{$condition}  = (defined $val) ? $val : 0;
+	$counts{total}      += $counts{$condition};
     }
 
     return \%counts;
