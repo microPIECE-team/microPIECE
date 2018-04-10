@@ -313,14 +313,23 @@ Please report any new issues ad [new Github-Issue](https://github.com/microPIECE
 ## Changelog
 - scheduled for next release
 
+    No features so far
+
+- [v1.5.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.5.0) (2018-04-10)
+
     Removing additional length cutoff during CLIP transfer (Fixes [#153](https://github.com/microPIECE-team/microPIECE/issues/153))
 
     Add command line options `--CLIPminProcessLength`, `--CLIPmaxProcessLength`, and `--CLIPminlength` for length limits used in `run_CLIP_process` and `run_CLIP_clip_mapper` steps enabling processing of peaks with user defined widths (Fixes [#145](https://github.com/microPIECE-team/microPIECE/issues/145))
 
     Dynamic naming of output files based on minlength variable in `run_CLIP_clip_mapper` (Fixes [#146](https://github.com/microPIECE-team/microPIECE/issues/146))
 
-    Correct calculation of length of a bed feature and moving `scripts/CLIP_bedtool_discard_sizes.pl` into `lib/microPIECE.pm` (Fixes [#147](https://github.com/microPIECE-team/microPIECE/iss
-ues/147))
+    Correct calculation of length of a bed feature and moving `scripts/CLIP_bedtool_discard_sizes.pl` into `lib/microPIECE.pm` (Fixes [#147](https://github.com/microPIECE-team/microPIECE/issues/147))
+
+    <div>
+            This version is archived as <a href="https://doi.org/10.5281/zenodo.1215850"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.1215850.svg" alt="DOI" /></a>.
+    </div>
+
+    This version was accepted by [The Journal of Open Source Software](https://joss.theoj.org) (Review issue [#616](https://github.com/openjournals/joss-reviews/issues/616))
 
     Add an optimized pre-binning step with pseudocounts for bins covered by an exon as preparation for `Piranha` (Fixes [#132](https://github.com/microPIECE-team/microPIECE/issues/132) and [#155](https://github.com/microPIECE-team/microPIECE/issues/155))
 

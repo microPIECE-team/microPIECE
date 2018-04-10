@@ -459,6 +459,10 @@ Please report any new issues ad L<new Github-Issue|https://github.com/microPIECE
 
 =item scheduled for next release
 
+No features so far
+
+=item L<v1.5.0|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.5.0> (2018-04-10)
+
 Removing additional length cutoff during CLIP transfer (Fixes L<#153|https://github.com/microPIECE-team/microPIECE/issues/153>)
 
 Add command line options C<--CLIPminProcessLength>, C<--CLIPmaxProcessLength>, and C<--CLIPminlength> for length limits used in C<run_CLIP_process> and C<run_CLIP_clip_mapper> steps enabling processing of peaks with user defined widths (Fixes L<#145|https://github.com/microPIECE-team/microPIECE/issues/145>)
@@ -468,6 +472,20 @@ Dynamic naming of output files based on minlength variable in C<run_CLIP_clip_ma
 Correct calculation of length of a bed feature and moving F<scripts/CLIP_bedtool_discard_sizes.pl> into F<lib/microPIECE.pm> (Fixes L<#147|https://github.com/microPIECE-team/microPIECE/issues/147>)
 
 Add an optimized pre-binning step with pseudocounts for bins covered by an exon as preparation for C<Piranha> (Fixes L<#132|https://github.com/microPIECE-team/microPIECE/issues/132> and L<#155|https://github.com/microPIECE-team/microPIECE/issues/155>)
+
+=begin html
+
+This version is archived as <a href="https://doi.org/10.5281/zenodo.1215850"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.1215850.svg" alt="DOI" /></a>.
+
+=end html
+
+=begin text
+
+This version is archived as L<https://doi.org/10.5281/zenodo.1215850>.
+
+=end text
+
+This version was accepted by L<The Journal of Open Source Software|https://joss.theoj.org> (Review issue L<#616|https://github.com/openjournals/joss-reviews/issues/616>)
 
 =item L<v1.4.0|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.4.0> (2018-03-31)
 
