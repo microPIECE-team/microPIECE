@@ -1,0 +1,6 @@
+# case1 minus strand, exon spanning
+XM_008192597.2	391	415	.	.	+
+# case2 minus strand, two exon spannings
+XM_008192597.2	172	415	.	.	+
+# case3 plus strand, one exon spanning
+XM_015977843.1	927	953	.	.	+
