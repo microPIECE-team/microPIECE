@@ -115,6 +115,13 @@ if (@bamfiles>1)
     warn("Multiple bam files as input is currently not supported. Will create bin only for first bam: ".$bamfiles[0]." and skip the following: ".join(",", @bamfiles[1..@bamfiles-1])."\n");
     @bamfiles = ($bamfiles[0]);
 }
+
+if (@bamfiles == 0)
+{
+    warn("You need to specify at least one BAM file as input\n\n\n");
+    pod2usage(2);
+}
+
 @transcripts = split(",", join(",", @transcripts));
 
 # try to call samtools
