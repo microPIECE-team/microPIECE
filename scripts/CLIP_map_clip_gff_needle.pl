@@ -12,7 +12,6 @@ my $gff_csv2	= $ARGV[3];	# use to check for XM_TCA to XP_TCA
 my $trans_file	= $ARGV[4];	# use to parse XM_TCA sequence for needle alignment
 my $outfile     = $ARGV[5];
 
-my $clip_len_cutoff=55;
 # OUTPUT :
 # XM_AAE	XP_AAE		#peaks		XM_TCA		XP_TCA		# peaks
 
@@ -40,7 +39,6 @@ foreach(sort keys %gff_hash){
 		my $clip_trim	= $_;
 		my $clip_seq	= $clip_hash{$clip_key};
 		my $clip_seq_len= length($clip_seq);
-		next if ($clip_seq_len > $clip_len_cutoff);
 		$clip_trim	=~s/-.*$//;
 		if($clip_trim eq $gff_xm_key){
 			push(@original_clip_seqs,$clip_key);

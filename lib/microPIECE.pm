@@ -3,7 +3,7 @@ package microPIECE;
 use strict;
 use warnings;
 
-use version 0.77; our $VERSION = version->declare("v1.4.0");
+use version 0.77; our $VERSION = version->declare("v1.5.0");
 
 use Log::Log4perl;
 use Data::Dumper;
@@ -1221,17 +1221,31 @@ sub run_CLIP_process
     my $L = Log::Log4perl::get_logger();
 
     my $min = 22;
+    if (exists $opt->{CLIPminProcessLength} && defined $opt->{CLIPminProcessLength})
+    {
+	$min = $opt->{CLIPminProcessLength};
+    }
     my $max = 50;
+    if (exists $opt->{CLIPmaxProcessLength} && defined $opt->{CLIPmaxProcessLength})
+    {
+	$max = $opt->{CLIPmaxProcessLength};
+    }
 
-    my @inputfiles = glob("clip_merged_*of*BEDfilter_mapGFF_minLen0.bed");
+    # check if min <= $max
+    if ($min > $max)
+    {
+	$L->logdie("Minimum length should be less than maximum length. You might specify other values using --CLIPmaxProcessLength or --CLIPminProcessLength parameter");
+    }
+
+    my @inputfiles = glob("clip_merged_*of*BEDfilter_mapGFF_minLen*.bed");
 
     foreach my $file (@inputfiles)
     {
 	my $sorted_bed = sprintf("%s%s_min%i_max%i_sort.bed",      getcwd()."/", basename($file, ".bed"), $min, $max);
 	my $fasta =      sprintf("%s%s_min%i_max%i_sort.fasta",    getcwd()."/", basename($file, ".bed"), $min, $max);
 	my $fastaUC =    sprintf("%s%s_min%i_max%i_sort_UC.fasta", getcwd()."/", basename($file, ".bed"), $min, $max);
-	my @cmd = ($opt->{scriptdir}."CLIP_bedtool_discard_sizes.pl", $file, $min, $max);
-	my $output = run_cmd($L, \@cmd);
+
+	my $output = CLIP_bedtool_discard_sizes($file, $min, $max);
 
 	# sort the file
 	my @dat = ();
@@ -1251,7 +1265,7 @@ sub run_CLIP_process
 	close(FH) || $L->logdie("Unable to close '$sorted_bed': $!");
 
 	# run bedtools getfasta
-	@cmd = ("bedtools", "getfasta", "-s", "-name", "-fi", $opt->{genomeA}, "-bed", $sorted_bed, );
+	my @cmd = ("bedtools", "getfasta", "-s", "-name", "-fi", $opt->{genomeA}, "-bed", $sorted_bed, );
 	my $fastaoutput = run_cmd($L, \@cmd);
 
 	open(FH, ">", $fasta) || $L->logdie("Unable to open '$fasta': $!");
@@ -1280,12 +1294,16 @@ sub run_CLIP_clip_mapper
     my $L = Log::Log4perl::get_logger();
 
     my $minlength = 0;
+    if (exists $opt->{CLIPminlength} && defined $opt->{CLIPminlength})
+    {
+	$minlength = $opt->{CLIPminlength};
+    }
 
     my @inputfiles = glob("clip_merged_*of*BEDfilter.bed");
 
     foreach my $file (@inputfiles)
     {
-	my $outputname = getcwd()."/".basename($file, ".bed")."_mapGFF_minLen0.bed";
+	my $outputname = sprintf("%s/%s_mapGFF_minLen%i.bed", getcwd(), basename($file, ".bed"), $minlength);
 	my @cmd = ($opt->{scriptdir}."CLIP_mapper.pl", $file, $opt->{annotationA}, $minlength);
 	run_cmd($L, \@cmd, undef, $outputname);
     }
@@ -1334,10 +1352,16 @@ sub run_CLIP_piranha
 
     foreach my $clipfile (@{$opt->{clip}})
     {
-	my $bedfile           = getcwd()."/".basename($clipfile).".bed";
+	my $bamfile           = getcwd()."/".basename($clipfile).".bam";
+	my $prebinned         = getcwd()."/".basename($clipfile).".prebinned.bed";
 	my $piranhafile       = getcwd()."/".basename($clipfile).".piranha.bed";
 	my $sortedpiranhafile = getcwd()."/".basename($clipfile).".piranha.sorted.bed";
-	my @cmd = ("Piranha","-b", $opt->{piranha_bin_size}, "-o", $piranhafile, "-s", $bedfile);
+	# run the prebinning
+	my @cmd = ($opt->{scriptdir}."CLIP_binned_bed_from_bam_and_transcripts_for_piranha.pl", "--bam", $bamfile, "--size", $opt->{piranha_bin_size}, "--transcripts", $opt->{annotationA});
+	run_cmd($L, \@cmd, undef, $prebinned);
+
+	# run Piranha with prebinned bed
+	@cmd = ("Piranha", "-o", $piranhafile, "-s", $prebinned);
 	if (exists $opt->{testrun} && $opt->{testrun})
 	{
 	    $L->warn("TESTRUN was activated though --testrun option. This increases the p-value threshold for Piranha to 20%!!! Please use only for the provided testset and NOT(!!!) for real analysis!!!");
@@ -1387,7 +1411,6 @@ sub run_CLIP_mapping
     {
 	my $trimmedfile = getcwd()."/".basename($clipfile).".trim";
 	my $bamfile     = getcwd()."/".basename($clipfile).".bam";
-	my $bedfile     = getcwd()."/".basename($clipfile).".bed";
 	# -N 1		:= look for splice sites
 	# -B 5		:= batch mode 5, allocate positions, genome and suffix array
 	# -O		:= ordered output
@@ -1402,8 +1425,8 @@ sub run_CLIP_mapping
 	@cmd = ("samtools", "sort", "-o", $bamfile, $samtools_output);
 	run_cmd($L, \@cmd);
 
-	@cmd = ("bedtools", "bamtobed", "-i", $bamfile);
-	run_cmd($L, \@cmd, undef, $bedfile);
+	@cmd = ("samtools", "index", $bamfile);
+	run_cmd($L, \@cmd);
     }
 
     clean_tempfiles();
@@ -1657,6 +1680,40 @@ sub clean_tempfiles
 
 	if (-e $file) { unlink($file) || die "$!"; }
     }
+}
+
+sub CLIP_bedtool_discard_sizes
+{
+    my ($bedfile, $min, $max) = @_;
+
+    my $output = "";
+
+    my $L = Log::Log4perl::get_logger();
+
+    open(BED ,"<",$bedfile) || $L->logdie("Unable to open file '$bedfile': $!");
+    while(<BED>){
+	chomp;
+
+	# ignore comment line
+	if ($_ =~ /^#/)
+	{
+	    $output.= $_."\n";
+	    next;
+	}
+
+	my $bed_line	= $_;
+	my @bed_array	= split("\t",$bed_line);
+	my $bed_start	= $bed_array[1];
+	my $bed_stop	= $bed_array[2];
+	my $bed_len	= $bed_stop-$bed_start;
+	next if($bed_len < $min);
+	next if($bed_len > $max);
+
+	$output.= $bed_line."\n";
+    }
+    close(BED)|| $L->logdie("Unable to close file '$bedfile': $!");
+
+    return $output;
 }
 
 $SIG{INT}=sub{ clean_tempfiles(); };

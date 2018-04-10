@@ -46,15 +46,15 @@ We also provide `microPIECE` as [DOCKER image](https://hub.docker.com/r/micropie
 ### Information about the docker images:
 | Branch | Size | Layers | Comment |
 |-|-|-|-|
-|[![](https://images.microbadger.com/badges/version/micropiece/micropiece:v1.4.0.svg)](https://microbadger.com/images/micropiece/micropiece:v1.4.0) | [![](https://images.microbadger.com/badges/image/micropiece/micropiece:v1.4.0.svg)](https://microbadger.com/images/micropiece/micropiece:v1.4.0) | [![](https://images.microbadger.com/badges/commit/micropiece/micropiece:v1.4.0.svg)](https://microbadger.com/images/micropiece/micropiece:v1.4.0) | Latest release [v1.4.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.4.0) |
+|[![](https://images.microbadger.com/badges/version/micropiece/micropiece:v1.5.0.svg)](https://microbadger.com/images/micropiece/micropiece:v1.5.0) | [![](https://images.microbadger.com/badges/image/micropiece/micropiece:v1.5.0.svg)](https://microbadger.com/images/micropiece/micropiece:v1.5.0) | [![](https://images.microbadger.com/badges/commit/micropiece/micropiece:v1.5.0.svg)](https://microbadger.com/images/micropiece/micropiece:v1.5.0) | Latest release [v1.5.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.5.0) |
 |[![](https://images.microbadger.com/badges/version/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master) | [![](https://images.microbadger.com/badges/image/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master) | [![](https://images.microbadger.com/badges/commit/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master) | |
 |[![](https://images.microbadger.com/badges/version/micropiece/micropiece:develop.svg)](https://microbadger.com/images/micropiece/micropiece:develop) | [![](https://images.microbadger.com/badges/image/micropiece/micropiece:develop.svg)](https://microbadger.com/images/micropiece/micropiece:develop) | [![](https://images.microbadger.com/badges/commit/micropiece/micropiece:develop.svg)](https://microbadger.com/images/micropiece/micropiece:develop) | |
 
 
 ```
-docker pull micropiece/micropiece:v1.4.0
+docker pull micropiece/micropiece:v1.5.0
 git clone git@github.com:microPIECE-team/microPIECE-testset.git testset
-docker run -it --rm -v $PWD:/data micropiece/micropiece:v1.4.0 microPIECE.pl   \
+docker run -it --rm -v $PWD:/data micropiece/micropiece:v1.5.0 microPIECE.pl   \
   --genomeA testset/NC_035109.1_reduced_AAE_genome.fa  \
   --genomeB testset/NC_007416.3_reduced_TCA_genome.fa   \
   --annotationA testset/NC_035109.1_reduced_AAE_genome.gff   \
@@ -179,6 +179,20 @@ docker run -it --rm -v $PWD:/data micropiece/micropiece:v1.4.0 microPIECE.pl   \
 
     Sets the `Piranah` bin size and has a default value of `20`.
 
+- `--CLIPminProcessLength` and `--CLIPmaxProcessLength`
+
+    Both are integer values and set the lower and upper limit for the
+    processed peak length. Peaks having a width below
+    `--CLIPminProcessLength` or above `--CLIPmaxProcessLength` are
+    ignored. Default values are 22 for `--CLIPminProcessLength` and 50
+    for `--CLIPmaxProcessLength`.
+
+- `--CLIPminlength`
+
+    An integer value specifying the minimal length of a CLIP peak to be
+    processed. Default value is 0, meaning no minimal length for CLIP
+    peaks.
+
 ### OUTPUT
 
 - pseudo mirBASE dat file: `final_mirbase_pseudofile.dat`
@@ -299,7 +313,28 @@ Please report any new issues ad [new Github-Issue](https://github.com/microPIECE
 ## Changelog
 - scheduled for next release
 
-    No features planed
+    No features so far
+
+- [v1.5.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.5.0) (2018-04-10)
+
+    Removing additional length cutoff during CLIP transfer (Fixes [#153](https://github.com/microPIECE-team/microPIECE/issues/153))
+
+    Add command line options `--CLIPminProcessLength`, `--CLIPmaxProcessLength`, and `--CLIPminlength` for length limits used in `run_CLIP_process` and `run_CLIP_clip_mapper` steps enabling 
+processing of peaks with user defined widths (Fixes [#145](https://github.com/microPIECE-team/microPIECE/issues/145))
+
+    Dynamic naming of output files based on minlength variable in `run_CLIP_clip_mapper` (Fixes [#146](https://github.com/microPIECE-team/microPIECE/issues/146))
+
+    Correct calculation of length of a bed feature and moving `scripts/CLIP_bedtool_discard_sizes.pl` into `lib/microPIECE.pm` (Fixes [#147](https://github.com/microPIECE-team/microPIECE/iss
+ues/147))
+
+    Add an optimized pre-binning step with pseudocounts for bins covered by an exon as preparation for `Piranha` (Fixes [#132](https://github.com/microPIECE-team/microPIECE/issues/132) and [
+#155](https://github.com/microPIECE-team/microPIECE/issues/155))
+
+    <div>
+            This version is archived as <a href="https://doi.org/10.5281/zenodo.1215850"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.1215850.svg" alt="DOI" /></a>.
+    </div>
+
+    This version was accepted by [The Journal of Open Source Software](https://joss.theoj.org) (Review issue [#616](https://github.com/openjournals/joss-reviews/issues/616))
 
 - [v1.4.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.4.0) (2018-03-31)
 

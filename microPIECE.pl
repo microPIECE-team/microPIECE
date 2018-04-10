@@ -50,6 +50,10 @@ my $opt = {
     mirbasedir         => undef,
     tempdir            => undef,
     piranha_bin_size   => 20,
+
+    CLIPminProcessLength => undef,
+    CLIPmaxProcessLength => undef,
+    CLIPminlength        => undef,
 };
 
 GetOptions(
@@ -75,6 +79,10 @@ GetOptions(
     'mirbasedir=s'         => \$opt->{mirbasedir},
     'tempdir=s'            => \$opt->{tempdir},
     'piranhabinsize=i'     => \$opt->{piranha_bin_size},
+
+    'CLIPmaxProcessLength=i' => \$opt->{CLIPmaxProcessLength},
+    'CLIPminProcessLength=i' => \$opt->{CLIPminProcessLength},
+    'CLIPminlength=i'        => \$opt->{CLIPminlength},
     ) || pod2usage(1);
 
 # split clip files if required
@@ -98,6 +106,12 @@ $opt->{help} && pod2usage(1);
 if($opt->{version}){
 	print $microPIECE::VERSION->normal(),"\n";
 	exit 0;
+}
+
+# CLIPmin/maxProcessLength
+if (defined $opt->{CLIPminProcessLength} && defined $opt->{CLIPmaxProcessLength} && $opt->{CLIPminProcessLength} > $opt->{CLIPmaxProcessLength})
+{
+    $L->logdie("Minimum length should be less than maximum length. You might specify other values using --CLIPmaxProcessLength or --CLIPminProcessLength parameter");
 }
 
 microPIECE::hello();
@@ -260,6 +274,20 @@ C<--out> parameter.
 =item C<--piranhabinsize>
 
 Sets the F<Piranha> bin size and has a default value of C<20>.
+
+=item C<--CLIPminProcessLength> and C<--CLIPmaxProcessLength>
+
+Both are integer values and set the lower and upper limit for the
+processed peak length. Peaks having a width below
+C<--CLIPminProcessLength> or above C<--CLIPmaxProcessLength> are
+ignored. Default values are 22 for C<--CLIPminProcessLength> and 50
+for C<--CLIPmaxProcessLength>.
+
+=item C<--CLIPminlength>
+
+An integer value specifying the minimal length of a CLIP peak to be
+processed. Default value is 0, meaning no minimal length for CLIP
+peaks.
 
 =back
 
@@ -431,7 +459,33 @@ Please report any new issues ad L<new Github-Issue|https://github.com/microPIECE
 
 =item scheduled for next release
 
-No features planed
+No features so far
+
+=item L<v1.5.0|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.5.0> (2018-04-10)
+
+Removing additional length cutoff during CLIP transfer (Fixes L<#153|https://github.com/microPIECE-team/microPIECE/issues/153>)
+
+Add command line options C<--CLIPminProcessLength>, C<--CLIPmaxProcessLength>, and C<--CLIPminlength> for length limits used in C<run_CLIP_process> and C<run_CLIP_clip_mapper> steps enabling processing of peaks with user defined widths (Fixes L<#145|https://github.com/microPIECE-team/microPIECE/issues/145>)
+
+Dynamic naming of output files based on minlength variable in C<run_CLIP_clip_mapper> (Fixes L<#146|https://github.com/microPIECE-team/microPIECE/issues/146>)
+
+Correct calculation of length of a bed feature and moving F<scripts/CLIP_bedtool_discard_sizes.pl> into F<lib/microPIECE.pm> (Fixes L<#147|https://github.com/microPIECE-team/microPIECE/issues/147>)
+
+Add an optimized pre-binning step with pseudocounts for bins covered by an exon as preparation for C<Piranha> (Fixes L<#132|https://github.com/microPIECE-team/microPIECE/issues/132> and L<#155|https://github.com/microPIECE-team/microPIECE/issues/155>)
+
+=begin html
+
+This version is archived as <a href="https://doi.org/10.5281/zenodo.1215850"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.1215850.svg" alt="DOI" /></a>.
+
+=end html
+
+=begin text
+
+This version is archived as L<https://doi.org/10.5281/zenodo.1215850>.
+
+=end text
+
+This version was accepted by L<The Journal of Open Source Software|https://joss.theoj.org> (Review issue L<#616|https://github.com/openjournals/joss-reviews/issues/616>)
 
 =item L<v1.4.0|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.4.0> (2018-03-31)
 
