@@ -299,6 +299,8 @@ foreach my $chromosome (@chromosome_order)
     WARN(sprintf("Finished work on chromosome %s", $chromosome));
 }
 
+WARN("Finished merging!");
+
 sub generate_cigar_like_string
 {
     my ($ref_counts, $ref_ordered_conditions) = @_;
