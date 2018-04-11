@@ -1,0 +1,14 @@
+# case1 minus strand, exon spanning
+NC_007416.3	7770	7783	.	.	-
+NC_007416.3	9209	9220	.	.	-
+# case2 minus strand, two exon spannings
+NC_007416.3	9209	9427	.	.	-
+NC_007416.3	10248	10260	.	.	-
+NC_007416.3	7770	7783	.	.	-
+# case3 plus strand, one exon spanning
+NC_007416.3	13840	13852	.	.	+
+NC_007416.3	13946	13960	.	.	+
+# case4 minus strand, whole exon
+NC_007416.3	10248	10432	.	.	-
+# case5 minus strand, part of exon
+NC_007416.3	10248	10332	.	.	-

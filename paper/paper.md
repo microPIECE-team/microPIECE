@@ -11,7 +11,7 @@ authors:
   orcid: 0000-0002-0512-9802
   affiliation: 1
 - name: André Billion
-  orcid:
+  orcid: 0000-0002-5073-3347
   affiliation: 1
 - name: Andreas Vilcinskas
   orcid: 0000-0001-8276-4968
@@ -24,7 +24,7 @@ affiliations:
   index: 1
 - name: Institute for Insect Biotechnology, Heinrich-Buff-Ring 26-32, 35392 Giessen, Germany
   index: 2
-date: 21 February 2018
+date: 11 April 2018
 bibliography: paper.bib
 ---
 

@@ -1,0 +1,4 @@
+test.fa		: genome part
+test.gff	: gff part
+tr.bed		: bed file with transcriptome coordinates
+genome.bed	: bed file with genome coordinates
