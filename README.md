@@ -31,13 +31,13 @@ For the minimal workflow it needs a genome file, as well as its annotation file 
 ## Installation
 Please install the dependencies and run
 ```
-git clone -b v1.4.0 git@github.com:microPIECE-team/microPIECE.git
+git clone -b v1.5.0 git@github.com:microPIECE-team/microPIECE.git
 ```
 or download the latest release as `*.tar.gz` or `*.zip` file:
 ```
-curl -L -o microPIECE_v1.4.0.tar.gz https://github.com/microPIECE-team/microPIECE/archive/v1.4.0.tar.gz
+curl -L -o microPIECE_v1.5.0.tar.gz https://github.com/microPIECE-team/microPIECE/archive/v1.5.0.tar.gz
 # or
-curl -L -o microPIECE_v1.4.0.zip https://github.com/microPIECE-team/microPIECE/archive/v1.4.0.zip
+curl -L -o microPIECE_v1.5.0.zip https://github.com/microPIECE-team/microPIECE/archive/v1.5.0.zip
 ```
 
 ## Docker
