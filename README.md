@@ -31,7 +31,7 @@ For the minimal workflow it needs a genome file, as well as its annotation file 
 ## Installation
 Please install the dependencies and run
 ```
-git clone -b v1.5.1 git@github.com:microPIECE-team/microPIECE.git
+git clone -b v1.5.1 https://github.com/microPIECE-team/microPIECE.git
 ```
 or download the latest release as `*.tar.gz` or `*.zip` file:
 ```
