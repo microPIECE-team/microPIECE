@@ -191,6 +191,8 @@ foreach my $chromosome (@chromosome_order)
 
     my @genome = ();
 
+    WARN(sprintf("Working on chromosome %s", $chromosome));
+
     foreach my $condition (keys %input_sorted)
     {
 	for(my $entry=0; $entry <@{$input_sorted{$condition}{dat}}; $entry++)
