@@ -143,6 +143,8 @@ my %strands    = ();
 my %input_sorted = ();
 my $max_length = 0;
 
+WARN("Start import and sort of input files...");
+
 foreach my $key (keys %input)
 {
     foreach my $file (@{$input{$key}})
@@ -185,6 +187,8 @@ my %strand2number;
 @strand2number{@strands_ordered} = (0..(int(@strands_ordered)-1));
 
 print $fh "# Conditional counts are printed in the following order: ", join(", ", ("total", @conditions_ordered)), "\n";
+
+WARN("Sorting finished... Starting merge process...");
 
 foreach my $chromosome (@chromosome_order)
 {
@@ -290,8 +294,9 @@ foreach my $chromosome (@chromosome_order)
 		$i = $stop; ## will be increased by the for loop, therefore next iteration starts at $stop+1
 	    }
 	}
-
     }
+
+    WARN(sprintf("Finished work on chromosome %s", $chromosome));
 }
 
 sub generate_cigar_like_string
