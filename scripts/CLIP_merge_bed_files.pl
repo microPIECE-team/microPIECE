@@ -138,7 +138,6 @@ if ($output ne "-")
 }
 
 my %chromosomes = ();
-my @genome = ();
 my %strands    = ();
 
 my %input_sorted = ();
@@ -189,7 +188,8 @@ print $fh "# Conditional counts are printed in the following order: ", join(", "
 
 foreach my $chromosome (@chromosome_order)
 {
-    my $genome=[];
+
+    my @genome = ();
 
     foreach my $condition (keys %input_sorted)
     {
