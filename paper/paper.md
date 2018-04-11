@@ -11,7 +11,7 @@ authors:
   orcid: 0000-0002-0512-9802
   affiliation: 1
 - name: André Billion
-  orcid:
+  orcid: 0000-0002-5073-3347
   affiliation: 1
 - name: Andreas Vilcinskas
   orcid: 0000-0001-8276-4968
