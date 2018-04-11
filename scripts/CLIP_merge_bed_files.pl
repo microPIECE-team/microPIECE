@@ -209,10 +209,11 @@ foreach my $chromosome (@chromosome_order)
 		# NW_001809801.1	533942	533950	XM_001647802.1	1	-
 		# NW_001809801.1	2779750	2779790	XM_001647839.1	1	+
 
+		$input_sorted{$condition}{pos}[$entry] = $i;
+
 		# if the chromosome is not expected, we will store the position and go on
 		if ($chr ne $chromosome)
 		{
-		    $input_sorted{$condition}{pos}[$entry] = $i;
 		    last;
 		}
 
