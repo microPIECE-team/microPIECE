@@ -315,6 +315,14 @@ Please report any new issues ad [new Github-Issue](https://github.com/microPIECE
 
     No features so far
 
+- [v1.5.1](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.5.1) (2018-04-11)
+
+    Added optimized pre-binning step for `Piranha` (Fixes [#132](https://github.com/microPIECE-team/microPIECE/issues/132))
+
+    <div>
+            This version is archived as <a href="https://doi.org/10.5281/zenodo.1216823"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.1216823.svg" alt="DOI" /></a>.
+    </div>
+
 - [v1.5.0](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.5.0) (2018-04-10)
 
     Removing additional length cutoff during CLIP transfer (Fixes [#153](https://github.com/microPIECE-team/microPIECE/issues/153))
