@@ -1405,6 +1405,7 @@ sub run_CLIP_piranha_working_thread
     my @cmd = ($opt->{scriptdir}."CLIP_binned_bed_from_bam_and_transcripts_for_piranha.pl", "--bam", $bamfile, "--size", $opt->{piranha_bin_size}, "--transcripts", $opt->{annotationA});
     my $cmd = join(" ", (@cmd, ">$prebinned"));
     qx($cmd);
+    $L->info("Calling command: $cmd");
     if ($? != 0)
     {
 	$L->logdie("Error running command '$cmd'");
@@ -1418,6 +1419,7 @@ sub run_CLIP_piranha_working_thread
 	push(@cmd, ("-p", 0.2));
     }
     $cmd = join(" ", (@cmd));
+    $L->info("Calling command: $cmd");
     qx($cmd);
     if ($? != 0)
     {
