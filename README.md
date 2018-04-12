@@ -53,7 +53,7 @@ We also provide `microPIECE` as [DOCKER image](https://hub.docker.com/r/micropie
 
 ```
 docker pull micropiece/micropiece:v1.5.1
-git clone git@github.com:microPIECE-team/microPIECE-testset.git testset
+git clone https://github.com/microPIECE-team/microPIECE-testset.git testset
 docker run -it --rm -v $PWD:/data micropiece/micropiece:v1.5.1 microPIECE.pl   \
   --genomeA testset/NC_035109.1_reduced_AAE_genome.fa  \
   --genomeB testset/NC_007416.3_reduced_TCA_genome.fa   \
@@ -289,7 +289,7 @@ docker run -it --rm -v $PWD:/data micropiece/micropiece:v1.5.1 microPIECE.pl   \
 #### Testset
 Feel free to test the pipeline with our [microPIECE-testset](https://github.com/microPIECE-team/microPIECE-testset) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1188471.svg)](https://doi.org/10.5281/zenodo.1188471):
 
-`git clone git@github.com:microPIECE-team/microPIECE-testset.git`
+`git clone https://github.com/microPIECE-team/microPIECE-testset.git`
 
 #### Alternative
   - **minimal workflow**
