@@ -1547,7 +1547,7 @@ sub copy_final_files
     {
 	if (! defined $sourcefile)
 	{
-	    $L->logcarp("Sourcefile '$sourcefile' is not defined");
+	    $L->logcarp("Sourcefile is not defined");
 	}
 	elsif (! -e $sourcefile)
 	{
