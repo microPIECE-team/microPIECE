@@ -1547,11 +1547,11 @@ sub copy_final_files
     {
 	if (! defined $sourcefile)
 	{
-	    $L->error("Sourcefile '$sourcefile' is not defined");
+	    $L->logcarp("Sourcefile '$sourcefile' is not defined");
 	}
 	elsif (! -e $sourcefile)
 	{
-	    $L->error("Sourcefile '$sourcefile' not accessable");
+	    $L->logcarp("Sourcefile '$sourcefile' not accessable");
 	} else {
 	    my $destfile = basename($sourcefile);
 	    if (-e $destfile)
