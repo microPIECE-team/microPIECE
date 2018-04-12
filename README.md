@@ -313,6 +313,10 @@ Please report any new issues ad [new Github-Issue](https://github.com/microPIECE
 ## Changelog
 - scheduled for next release
 
+    No features planned
+
+- [v1.5.2](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.5.2) (2018-04-13)
+
     Refactoring of `CLIP_merge_bed_files.pl` to reduce memory footprint by a factor of 10x (Fixes [#174](https://github.com/microPIECE-team/microPIECE/issues/174))
 
     Refactoring of Piranha run to support multithreading (Fixes [#177](https://github.com/microPIECE-team/microPIECE/issues/177))
