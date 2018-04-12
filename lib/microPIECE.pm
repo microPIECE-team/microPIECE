@@ -1354,10 +1354,10 @@ sub run_CLIP_piranha
     my $L = Log::Log4perl::get_logger();
 
     my $num_threads = $opt->{threads};
-    my $queue = Thread::Queue->new();
-
     if ($num_threads > 1)
     {
+	my $queue = Thread::Queue->new();
+
 	for (1..$num_threads) {
 	    async {
 		while (my $job = $queue->dequeue()) {
@@ -1389,7 +1389,13 @@ sub run_CLIP_piranha_working_thread
 {
     my ($clipfile, $opt) = @_;
 
-    my $L = Log::Log4perl::get_logger(sprintf("Thread %2 d", threads->tid()));
+    my $L;
+    if ($opt->{threads}>1)
+    {
+	$L = Log::Log4perl::get_logger(sprintf("Thread %d", threads->tid()));
+    } else {
+	$L = Log::Log4perl::get_logger();
+    }
 
     my $bamfile           = getcwd()."/".basename($clipfile).".bam";
     my $prebinned         = getcwd()."/".basename($clipfile).".prebinned.bed";
