@@ -1399,11 +1399,13 @@ sub run_CLIP_piranha_working_thread
 
     my $bamfile           = getcwd()."/".basename($clipfile).".bam";
     my $prebinned         = getcwd()."/".basename($clipfile).".prebinned.bed";
+    my $prebinnedlog      = getcwd()."/".basename($clipfile).".prebinned.bed.log";
     my $piranhafile       = getcwd()."/".basename($clipfile).".piranha.bed";
+    my $piranhafilelog    = getcwd()."/".basename($clipfile).".piranha.bed.log";
     my $sortedpiranhafile = getcwd()."/".basename($clipfile).".piranha.sorted.bed";
     # run the prebinning
     my @cmd = ($opt->{scriptdir}."CLIP_binned_bed_from_bam_and_transcripts_for_piranha.pl", "--bam", $bamfile, "--size", $opt->{piranha_bin_size}, "--transcripts", $opt->{annotationA});
-    my $cmd = join(" ", (@cmd, ">$prebinned"));
+    my $cmd = join(" ", (@cmd, ">$prebinned", "2>$prebinnedlog"));
     qx($cmd);
     $L->info("Calling command: $cmd");
     if ($? != 0)
@@ -1418,7 +1420,7 @@ sub run_CLIP_piranha_working_thread
 	$L->warn("TESTRUN was activated though --testrun option. This increases the p-value threshold for Piranha to 20%!!! Please use only for the provided testset and NOT(!!!) for real analysis!!!");
 	push(@cmd, ("-p", 0.2));
     }
-    $cmd = join(" ", (@cmd));
+    $cmd = join(" ", (@cmd, "2>$piranhafilelog"));
     $L->info("Calling command: $cmd");
     qx($cmd);
     if ($? != 0)
