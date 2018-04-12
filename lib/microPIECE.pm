@@ -1579,22 +1579,43 @@ sub transfer_resultfiles
     # pseudo mirBASE dat file
     # final_mirbase_pseudofile.dat :=
     # A pseudo mirBASE dat file containing all precursor sequences with their named mature sequences and their coordinates.
-    copy_final_files($opt, $opt->{mining}{completion}{dat});
+    if (exists $opt->{mining}{completion}{dat} && defined $opt->{mining}{completion}{dat})
+    {
+	copy_final_files($opt, $opt->{mining}{completion}{dat});
+    } else {
+	$L->info("Skipping copying of pseudo mirBASE dat file");
+    }
+
 
     # mature miRNA set
     # mature_combined_mirbase_novel.fa :=
     # mature microRNA set, containing novels and miRBase-completed (if mined), together with the known miRNAs from miRBase
-    copy_final_files($opt, $opt->{final_mature});
+    if (exists $opt->{final_mature} && defined $opt->{final_mature})
+    {
+	copy_final_files($opt, $opt->{final_mature});
+    } else {
+	$L->info("Skipping copying of mature miRNA set");
+    }
 
     # precursor miRNA set
     # hairpin_combined_mirbase_novel.fa :=
     # precursor microRNA set, containing novels (if mined), together with the known miRNAs from miRBase
-    copy_final_files($opt, $opt->{final_hairpin});
+    if (exists $opt->{final_hairpin} && defined $opt->{final_hairpin})
+    {
+	copy_final_files($opt, $opt->{final_hairpin});
+    } else {
+	$L->info("Skipping copying of final hairpin set");
+    }
 
     # mature miRNA expression per condition
     # miRNA_expression.csv :=
     # Semicolon-separated file : rpm;condition;miRNA
-    copy_final_files($opt, $opt->{mining_quantification_result});
+    if (exists $opt->{mining_quantification_result} && defined $opt->{mining_quantification_result})
+    {
+	copy_final_files($opt, $opt->{mining_quantification_result});
+    } else {
+	$L->info("Skipping copying of mature expression per condition file");
+    }
 
     # orthologous prediction file
     # miRNA_orthologs.csv :=
@@ -1605,12 +1626,22 @@ sub transfer_resultfiles
     #                      subject_aligned_seq query_length
     #                      subject_length query_coverage
     #                      subject_coverage
-    copy_final_files($opt, $opt->{mining}{orthologs});
+    if (exists $opt->{mining}{orthologs} && defined $opt->{mining}{orthologs})
+    {
+	copy_final_files($opt, $opt->{mining}{orthologs});
+    } else {
+	$L->info("Skipping copying of potential ortholog file");
+    }
 
     # miRDeep2 mining result in HTML
     # result_02_03_2018_t_09_30_01.html:=
     # the standard output HTML file of miRDeep2
-    copy_final_files($opt, $opt->{mirdeep_output_html}, $opt->{mirdeep_output});
+    if (exists $opt->{mirdeep_output_html} && defined $opt->{mirdeep_output_html})
+    {
+	copy_final_files($opt, $opt->{mirdeep_output_html}, $opt->{mirdeep_output});
+    } else {
+	$L->info("Skipping copying of mirDEEP2 output file");
+    }
 
     # all isomir output files
     # isomir_output_CONDITION.csv
@@ -1623,7 +1654,13 @@ sub transfer_resultfiles
     #          sequence
     #          rpm
     #          condition
-    copy_final_files($opt, @{$opt->{isomir_output_files}});
+    if (exists $opt->{isomir_output_files} && defined $opt->{isomir_output_files})
+    {
+	copy_final_files($opt, @{$opt->{isomir_output_files}});
+    } else {
+	$L->info("Skipping copying of isomir output files");
+    }
+
 
     # genomic location of miRNAs
     # miRNA_genomic_position.csv
@@ -1641,17 +1678,32 @@ sub transfer_resultfiles
     #          genomic-stop
     #          evalue
     #          bitscore
-    copy_final_files($opt, $opt->{mining}{genomic_location});
+    if (exists $opt->{mining}{genomic_location} && defined $opt->{mining}{genomic_location})
+    {
+	copy_final_files($opt, $opt->{mining}{genomic_location});
+    } else {
+	$L->info("Skipping copying of genomic location output file");
+    }
 
     # all library support-level target predictions
     # *_miranda_output.txt :=
     # miranda output, reduced to the lines, starting with > only
-    copy_final_files($opt, @{$opt->{miranda_output}});
+    if (exists $opt->{miranda_output} && defined $opt->{miranda_output})
+    {
+	copy_final_files($opt, @{$opt->{miranda_output}});
+    } else {
+	$L->info("Skipping copying of miranda output files");
+    }
 
     # all library support-level CLIP transfer .bed files
     # *transfered_merged.bed :=
     # bed-file of the transferred CLIP-regions in speciesB transcriptome
-    copy_final_files($opt, @{$opt->{clip_final_bed}});
+    if (exists $opt->{clip_final_bed} && defined $opt->{clip_final_bed})
+    {
+	copy_final_files($opt, @{$opt->{clip_final_bed}});
+    } else {
+	$L->info("Skipping copying of final CLIP output files");
+    }
 
     $L->info("Finished copy process");
 }
