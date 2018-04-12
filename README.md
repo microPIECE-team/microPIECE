@@ -315,6 +315,8 @@ Please report any new issues ad [new Github-Issue](https://github.com/microPIECE
 
     Refactoring of `CLIP_merge_bed_files.pl` to reduce memory footprint by a factor of 10x (Fixes [#174](https://github.com/microPIECE-team/microPIECE/issues/174))
 
+    Refactoring of Piranha run to support multithreading (Fixes [#177](https://github.com/microPIECE-team/microPIECE/issues/177))
+
     Setting default bin size for Piranha to 30 (Fixes [#178](https://github.com/microPIECE-team/microPIECE/issues/178))
 
 - [v1.5.1](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.5.1) (2018-04-11)
