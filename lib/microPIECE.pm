@@ -1387,7 +1387,9 @@ sub run_CLIP_piranha
 
 sub run_CLIP_piranha_working_thread
 {
-    my ($clipfile, $opt, $L) = @_;
+    my ($clipfile, $opt) = @_;
+
+    my $L = Log::Log4perl::get_logger(sprintf("Thread %2 d", threads->tid()));
 
     my $bamfile           = getcwd()."/".basename($clipfile).".bam";
     my $prebinned         = getcwd()."/".basename($clipfile).".prebinned.bed";
