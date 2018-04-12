@@ -3,6 +3,9 @@ package microPIECE;
 use strict;
 use warnings;
 
+use threads;
+use Thread::Queue 3.01 qw( );
+
 use version 0.77; our $VERSION = version->declare("v1.5.1");
 
 use Log::Log4perl;
@@ -1350,52 +1353,78 @@ sub run_CLIP_piranha
 
     my $L = Log::Log4perl::get_logger();
 
+    my $num_threads = $opt->{threads};
+    my $queue = Thread::Queue->new();
+
+    for (1..$num_threads) {
+	async {
+	    while (my $job = $queue->dequeue()) {
+		run_CLIP_piranha_working_thread(@{$job});
+	    }
+	};
+    }
+
     foreach my $clipfile (@{$opt->{clip}})
     {
-	my $bamfile           = getcwd()."/".basename($clipfile).".bam";
-	my $prebinned         = getcwd()."/".basename($clipfile).".prebinned.bed";
-	my $piranhafile       = getcwd()."/".basename($clipfile).".piranha.bed";
-	my $sortedpiranhafile = getcwd()."/".basename($clipfile).".piranha.sorted.bed";
-	# run the prebinning
-	my @cmd = ($opt->{scriptdir}."CLIP_binned_bed_from_bam_and_transcripts_for_piranha.pl", "--bam", $bamfile, "--size", $opt->{piranha_bin_size}, "--transcripts", $opt->{annotationA});
-	run_cmd($L, \@cmd, undef, $prebinned);
-
-	# run Piranha with prebinned bed
-	@cmd = ("Piranha", "-o", $piranhafile, "-s", $prebinned);
-	if (exists $opt->{testrun} && $opt->{testrun})
-	{
-	    $L->warn("TESTRUN was activated though --testrun option. This increases the p-value threshold for Piranha to 20%!!! Please use only for the provided testset and NOT(!!!) for real analysis!!!");
-	    push(@cmd, ("-p", 0.2));
-	}
-	run_cmd($L, \@cmd);
-
-	# own sort routine, was originally based on a sort call,
-	# nevertheless, I want to scan for lines containing -nan from
-	# Piranha output and skip that lines, due to they will produce
-	# errors later.
-	my @dat = ();
-	open(FH, "<", $piranhafile) || $L->logdie("Unable to open '$piranhafile': $!");
-	while (<FH>)
-	{
-	    chomp;
-	    my @fields = split("\t", $_);
-	    if ($fields[-1] eq "-nan")
-	    {
-		$L->warn(sprintf("Line %d from file '%s' contained '-nan' and will be skipped", $., $piranhafile));
-	    } else {
-		push(@dat, \@fields);
-	    }
-	}
-	close(FH) || $L->logdie("Unable to close '$piranhafile': $!");
-	@dat = sort { $a->[0] cmp $b->[0] || $a->[1] <=> $b->[2] } (@dat);
-
-	open(FH, ">", $sortedpiranhafile) || $L->logdie("Unable to open '$sortedpiranhafile': $!");
-	foreach my $fields (@dat)
-	{
-	    print FH join("\t", @{$fields}), "\n";
-	}
-	close(FH) || $L->logdie("Unable to close '$sortedpiranhafile': $!");
+	$queue->enqueue([$clipfile, $opt, $L]);
     }
+
+    $queue->end();
+
+    foreach (threads->list())
+    {
+	$_->join();
+    }
+}
+
+sub run_CLIP_piranha_working_thread
+{
+    my ($clipfile, $opt, $L) = @_;
+
+    my $bamfile           = getcwd()."/".basename($clipfile).".bam";
+    my $prebinned         = getcwd()."/".basename($clipfile).".prebinned.bed";
+    my $piranhafile       = getcwd()."/".basename($clipfile).".piranha.bed";
+    my $sortedpiranhafile = getcwd()."/".basename($clipfile).".piranha.sorted.bed";
+    # run the prebinning
+    my @cmd = ($opt->{scriptdir}."CLIP_binned_bed_from_bam_and_transcripts_for_piranha.pl", "--bam", $bamfile, "--size", $opt->{piranha_bin_size}, "--transcripts", $opt->{annotationA});
+    run_cmd($L, \@cmd, undef, $prebinned);
+
+    # run Piranha with prebinned bed
+    @cmd = ("Piranha", "-o", $piranhafile, "-s", $prebinned);
+    if (exists $opt->{testrun} && $opt->{testrun})
+    {
+	$L->warn("TESTRUN was activated though --testrun option. This increases the p-value threshold for Piranha to 20%!!! Please use only for the provided testset and NOT(!!!) for real analysis!!!");
+	push(@cmd, ("-p", 0.2));
+    }
+    run_cmd($L, \@cmd);
+
+    # own sort routine, was originally based on a sort call,
+    # nevertheless, I want to scan for lines containing -nan from
+    # Piranha output and skip that lines, due to they will produce
+    # errors later.
+    my @dat = ();
+    open(FH, "<", $piranhafile) || $L->logdie("Unable to open '$piranhafile': $!");
+    while (<FH>)
+    {
+	chomp;
+	my @fields = split("\t", $_);
+	if ($fields[-1] eq "-nan")
+	{
+	    $L->warn(sprintf("Line %d from file '%s' contained '-nan' and will be skipped", $., $piranhafile));
+	} else {
+	    push(@dat, \@fields);
+	}
+    }
+    close(FH) || $L->logdie("Unable to close '$piranhafile': $!");
+    @dat = sort { $a->[0] cmp $b->[0] || $a->[1] <=> $b->[2] } (@dat);
+
+    open(FH, ">", $sortedpiranhafile) || $L->logdie("Unable to open '$sortedpiranhafile': $!");
+    foreach my $fields (@dat)
+    {
+	print FH join("\t", @{$fields}), "\n";
+    }
+    close(FH) || $L->logdie("Unable to close '$sortedpiranhafile': $!");
+
 }
 
 sub run_CLIP_mapping
