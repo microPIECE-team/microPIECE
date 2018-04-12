@@ -459,6 +459,10 @@ Please report any new issues ad L<new Github-Issue|https://github.com/microPIECE
 
 =item scheduled for next release
 
+No features planned
+
+=item L<v1.5.2|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.5.2> (2018-04-13)
+
 Refactoring of F<CLIP_merge_bed_files.pl> to reduce memory footprint by a factor of 10x (Fixes L<#174|https://github.com/microPIECE-team/microPIECE/issues/174>)
 
 Refactoring of Piranha run to support multithreading (Fixes L<#177|https://github.com/microPIECE-team/microPIECE/issues/177>)
