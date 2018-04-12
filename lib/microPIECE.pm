@@ -1392,7 +1392,7 @@ sub run_CLIP_piranha_working_thread
     my $L;
     if ($opt->{threads}>1)
     {
-	$L = Log::Log4perl::get_logger(sprintf("Thread %d", threads->tid()));
+	$L = Log::Log4perl::get_logger(sprintf("Piranha-thr %d", threads->tid()));
     } else {
 	$L = Log::Log4perl::get_logger();
     }
