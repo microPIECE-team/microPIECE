@@ -1403,7 +1403,12 @@ sub run_CLIP_piranha_working_thread
     my $sortedpiranhafile = getcwd()."/".basename($clipfile).".piranha.sorted.bed";
     # run the prebinning
     my @cmd = ($opt->{scriptdir}."CLIP_binned_bed_from_bam_and_transcripts_for_piranha.pl", "--bam", $bamfile, "--size", $opt->{piranha_bin_size}, "--transcripts", $opt->{annotationA});
-    run_cmd($L, \@cmd, undef, $prebinned);
+    my $cmd = join(" ", (@cmd, ">$prebinned"));
+    qx($cmd);
+    if ($? != 0)
+    {
+	$L->logdie("Error running command '$cmd'");
+    }
 
     # run Piranha with prebinned bed
     @cmd = ("Piranha", "-o", $piranhafile, "-s", $prebinned);
@@ -1412,7 +1417,12 @@ sub run_CLIP_piranha_working_thread
 	$L->warn("TESTRUN was activated though --testrun option. This increases the p-value threshold for Piranha to 20%!!! Please use only for the provided testset and NOT(!!!) for real analysis!!!");
 	push(@cmd, ("-p", 0.2));
     }
-    run_cmd($L, \@cmd);
+    $cmd = join(" ", (@cmd));
+    qx($cmd);
+    if ($? != 0)
+    {
+	$L->logdie("Error running command '$cmd'");
+    }
 
     # own sort routine, was originally based on a sort call,
     # nevertheless, I want to scan for lines containing -nan from
