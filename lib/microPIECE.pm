@@ -1356,24 +1356,32 @@ sub run_CLIP_piranha
     my $num_threads = $opt->{threads};
     my $queue = Thread::Queue->new();
 
-    for (1..$num_threads) {
-	async {
-	    while (my $job = $queue->dequeue()) {
-		run_CLIP_piranha_working_thread(@{$job});
-	    }
-	};
-    }
-
-    foreach my $clipfile (@{$opt->{clip}})
+    if ($num_threads > 1)
     {
-	$queue->enqueue([$clipfile, $opt, $L]);
-    }
+	for (1..$num_threads) {
+	    async {
+		while (my $job = $queue->dequeue()) {
+		    run_CLIP_piranha_working_thread(@{$job});
+		}
+	    };
+	}
 
-    $queue->end();
+	foreach my $clipfile (@{$opt->{clip}})
+	{
+	    $queue->enqueue([$clipfile, $opt]);
+	}
 
-    foreach (threads->list())
-    {
-	$_->join();
+	$queue->end();
+
+	foreach (threads->list())
+	{
+	    $_->join();
+	}
+    } else {
+	foreach my $clipfile (@{$opt->{clip}})
+	{
+	    run_CLIP_piranha_working_thread($clipfile, $opt);
+	}
     }
 }
 
