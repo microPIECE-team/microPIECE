@@ -1414,7 +1414,7 @@ sub run_CLIP_piranha_working_thread
     }
 
     # run Piranha with prebinned bed
-    @cmd = ("Piranha", "-o", $piranhafile, "-s", $prebinned);
+    @cmd = ("Piranha", "-VERBOSE", "-o", $piranhafile, "-s", $prebinned);
     if (exists $opt->{testrun} && $opt->{testrun})
     {
 	$L->warn("TESTRUN was activated though --testrun option. This increases the p-value threshold for Piranha to 20%!!! Please use only for the provided testset and NOT(!!!) for real analysis!!!");
