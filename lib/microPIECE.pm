@@ -6,7 +6,7 @@ use warnings;
 use threads;
 use Thread::Queue 3.01 qw( );
 
-use version 0.77; our $VERSION = version->declare("v1.5.1");
+use version 0.77; our $VERSION = version->declare("v1.5.2");
 
 use Log::Log4perl;
 use Data::Dumper;
