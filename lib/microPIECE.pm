@@ -1573,11 +1573,12 @@ sub copy_final_files
 		if ($opt->{overwrite} )
 		{
 		    unlink($destfile) || $L->logdie("Unable to remove existing destination: '$destfile': $!");
-		    copy($sourcefile, $destfile) || $L->logdie("Unable to copy '$sourcefile' to '$destfile'");
 		} else {
 		    $L->error("Destination file exists and overwrite was not specified");
 		}
 	    }
+	    $L->info("Copying $sourcefile --> $destfile");
+	    copy($sourcefile, $destfile) || $L->logdie("Unable to copy '$sourcefile' to '$destfile'");
 	}
     }
 }
