@@ -463,6 +463,8 @@ Refactoring of F<CLIP_merge_bed_files.pl> to reduce memory footprint by a factor
 
 Refactoring of Piranha run to support multithreading (Fixes L<#177|https://github.com/microPIECE-team/microPIECE/issues/177>)
 
+Fixing copy process of final files (Fixes L<#184|https://github.com/microPIECE-team/microPIECE/issues/184>)
+
 Setting default bin size for Piranha to 30 (Fixes L<#178|https://github.com/microPIECE-team/microPIECE/issues/178>)
 
 =item L<v1.5.1|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.5.1> (2018-04-11)
