@@ -31,13 +31,13 @@ For the minimal workflow it needs a genome file, as well as its annotation file 
 ## Installation
 Please install the dependencies and run
 ```
-git clone -b v1.5.1 git@github.com:microPIECE-team/microPIECE.git
+git clone -b v1.5.2 https://github.com/microPIECE-team/microPIECE.git
 ```
 or download the latest release as `*.tar.gz` or `*.zip` file:
 ```
-curl -L -o microPIECE_v1.5.1.tar.gz https://github.com/microPIECE-team/microPIECE/archive/v1.5.1.tar.gz
+curl -L -o microPIECE_v1.5.2.tar.gz https://github.com/microPIECE-team/microPIECE/archive/v1.5.2.tar.gz
 # or
-curl -L -o microPIECE_v1.5.1.zip https://github.com/microPIECE-team/microPIECE/archive/v1.5.1.zip
+curl -L -o microPIECE_v1.5.2.zip https://github.com/microPIECE-team/microPIECE/archive/v1.5.2.zip
 ```
 
 ## Docker
@@ -46,15 +46,15 @@ We also provide `microPIECE` as [DOCKER image](https://hub.docker.com/r/micropie
 ### Information about the docker images:
 | Branch | Size | Layers | Comment |
 |-|-|-|-|
-|[![](https://images.microbadger.com/badges/version/micropiece/micropiece:v1.5.1.svg)](https://microbadger.com/images/micropiece/micropiece:v1.5.1) | [![](https://images.microbadger.com/badges/image/micropiece/micropiece:v1.5.1.svg)](https://microbadger.com/images/micropiece/micropiece:v1.5.1) | [![](https://images.microbadger.com/badges/commit/micropiece/micropiece:v1.5.1.svg)](https://microbadger.com/images/micropiece/micropiece:v1.5.1) | Latest release [v1.5.1](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.5.1) |
+|[![](https://images.microbadger.com/badges/version/micropiece/micropiece:v1.5.2.svg)](https://microbadger.com/images/micropiece/micropiece:v1.5.2) | [![](https://images.microbadger.com/badges/image/micropiece/micropiece:v1.5.2.svg)](https://microbadger.com/images/micropiece/micropiece:v1.5.2) | [![](https://images.microbadger.com/badges/commit/micropiece/micropiece:v1.5.2.svg)](https://microbadger.com/images/micropiece/micropiece:v1.5.2) | Latest release [v1.5.2](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.5.2) |
 |[![](https://images.microbadger.com/badges/version/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master) | [![](https://images.microbadger.com/badges/image/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master) | [![](https://images.microbadger.com/badges/commit/micropiece/micropiece:master.svg)](https://microbadger.com/images/micropiece/micropiece:master) | |
 |[![](https://images.microbadger.com/badges/version/micropiece/micropiece:develop.svg)](https://microbadger.com/images/micropiece/micropiece:develop) | [![](https://images.microbadger.com/badges/image/micropiece/micropiece:develop.svg)](https://microbadger.com/images/micropiece/micropiece:develop) | [![](https://images.microbadger.com/badges/commit/micropiece/micropiece:develop.svg)](https://microbadger.com/images/micropiece/micropiece:develop) | |
 
 
 ```
-docker pull micropiece/micropiece:v1.5.1
-git clone git@github.com:microPIECE-team/microPIECE-testset.git testset
-docker run -it --rm -v $PWD:/data micropiece/micropiece:v1.5.1 microPIECE.pl   \
+docker pull micropiece/micropiece:v1.5.2
+git clone https://github.com/microPIECE-team/microPIECE-testset.git testset
+docker run -it --rm -v $PWD:/data micropiece/micropiece:v1.5.2 microPIECE.pl   \
   --genomeA testset/NC_035109.1_reduced_AAE_genome.fa  \
   --genomeB testset/NC_007416.3_reduced_TCA_genome.fa   \
   --annotationA testset/NC_035109.1_reduced_AAE_genome.gff   \
@@ -177,7 +177,7 @@ docker run -it --rm -v $PWD:/data micropiece/micropiece:v1.5.1 microPIECE.pl   \
 
 - `--piranahbinsize`
 
-    Sets the `Piranah` bin size and has a default value of `20`.
+    Sets the `Piranah` bin size and has a default value of `30`.
 
 - `--CLIPminProcessLength` and `--CLIPmaxProcessLength`
 
@@ -289,7 +289,7 @@ docker run -it --rm -v $PWD:/data micropiece/micropiece:v1.5.1 microPIECE.pl   \
 #### Testset
 Feel free to test the pipeline with our [microPIECE-testset](https://github.com/microPIECE-team/microPIECE-testset) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1188471.svg)](https://doi.org/10.5281/zenodo.1188471):
 
-`git clone git@github.com:microPIECE-team/microPIECE-testset.git`
+`git clone https://github.com/microPIECE-team/microPIECE-testset.git`
 
 #### Alternative
   - **minimal workflow**
@@ -313,7 +313,17 @@ Please report any new issues ad [new Github-Issue](https://github.com/microPIECE
 ## Changelog
 - scheduled for next release
 
-    No features so far
+    No features planned
+
+- [v1.5.2](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.5.2) (2018-04-13)
+
+    Refactoring of `CLIP_merge_bed_files.pl` to reduce memory footprint by a factor of 10x (Fixes [#174](https://github.com/microPIECE-team/microPIECE/issues/174))
+
+    Refactoring of Piranha run to support multithreading (Fixes [#177](https://github.com/microPIECE-team/microPIECE/issues/177))
+
+    Fixing copy process of final files (Fixes [#184](https://github.com/microPIECE-team/microPIECE/issues/184))
+
+    Setting default bin size for Piranha to 30 (Fixes [#178](https://github.com/microPIECE-team/microPIECE/issues/178))
 
 - [v1.5.1](https://github.com/microPIECE-team/microPIECE/releases/tag/v1.5.1) (2018-04-11)
 

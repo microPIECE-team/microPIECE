@@ -3,7 +3,10 @@ package microPIECE;
 use strict;
 use warnings;
 
-use version 0.77; our $VERSION = version->declare("v1.5.1");
+use threads;
+use Thread::Queue 3.01 qw( );
+
+use version 0.77; our $VERSION = version->declare("v1.5.2");
 
 use Log::Log4perl;
 use Data::Dumper;
@@ -1350,52 +1353,108 @@ sub run_CLIP_piranha
 
     my $L = Log::Log4perl::get_logger();
 
-    foreach my $clipfile (@{$opt->{clip}})
+    my $num_threads = $opt->{threads};
+    if ($num_threads > 1)
     {
-	my $bamfile           = getcwd()."/".basename($clipfile).".bam";
-	my $prebinned         = getcwd()."/".basename($clipfile).".prebinned.bed";
-	my $piranhafile       = getcwd()."/".basename($clipfile).".piranha.bed";
-	my $sortedpiranhafile = getcwd()."/".basename($clipfile).".piranha.sorted.bed";
-	# run the prebinning
-	my @cmd = ($opt->{scriptdir}."CLIP_binned_bed_from_bam_and_transcripts_for_piranha.pl", "--bam", $bamfile, "--size", $opt->{piranha_bin_size}, "--transcripts", $opt->{annotationA});
-	run_cmd($L, \@cmd, undef, $prebinned);
+	my $queue = Thread::Queue->new();
 
-	# run Piranha with prebinned bed
-	@cmd = ("Piranha", "-o", $piranhafile, "-s", $prebinned);
-	if (exists $opt->{testrun} && $opt->{testrun})
-	{
-	    $L->warn("TESTRUN was activated though --testrun option. This increases the p-value threshold for Piranha to 20%!!! Please use only for the provided testset and NOT(!!!) for real analysis!!!");
-	    push(@cmd, ("-p", 0.2));
+	for (1..$num_threads) {
+	    async {
+		while (my $job = $queue->dequeue()) {
+		    run_CLIP_piranha_working_thread(@{$job});
+		}
+	    };
 	}
-	run_cmd($L, \@cmd);
 
-	# own sort routine, was originally based on a sort call,
-	# nevertheless, I want to scan for lines containing -nan from
-	# Piranha output and skip that lines, due to they will produce
-	# errors later.
-	my @dat = ();
-	open(FH, "<", $piranhafile) || $L->logdie("Unable to open '$piranhafile': $!");
-	while (<FH>)
+	foreach my $clipfile (@{$opt->{clip}})
 	{
-	    chomp;
-	    my @fields = split("\t", $_);
-	    if ($fields[-1] eq "-nan")
-	    {
-		$L->warn(sprintf("Line %d from file '%s' contained '-nan' and will be skipped", $., $piranhafile));
-	    } else {
-		push(@dat, \@fields);
-	    }
+	    $queue->enqueue([$clipfile, $opt]);
 	}
-	close(FH) || $L->logdie("Unable to close '$piranhafile': $!");
-	@dat = sort { $a->[0] cmp $b->[0] || $a->[1] <=> $b->[2] } (@dat);
 
-	open(FH, ">", $sortedpiranhafile) || $L->logdie("Unable to open '$sortedpiranhafile': $!");
-	foreach my $fields (@dat)
+	$queue->end();
+
+	foreach (threads->list())
 	{
-	    print FH join("\t", @{$fields}), "\n";
+	    $_->join();
 	}
-	close(FH) || $L->logdie("Unable to close '$sortedpiranhafile': $!");
+    } else {
+	foreach my $clipfile (@{$opt->{clip}})
+	{
+	    run_CLIP_piranha_working_thread($clipfile, $opt);
+	}
     }
+}
+
+sub run_CLIP_piranha_working_thread
+{
+    my ($clipfile, $opt) = @_;
+
+    my $L;
+    if ($opt->{threads}>1)
+    {
+	$L = Log::Log4perl::get_logger(sprintf("Piranha-thr %d", threads->tid()));
+    } else {
+	$L = Log::Log4perl::get_logger();
+    }
+
+    my $bamfile           = getcwd()."/".basename($clipfile).".bam";
+    my $prebinned         = getcwd()."/".basename($clipfile).".prebinned.bed";
+    my $prebinnedlog      = getcwd()."/".basename($clipfile).".prebinned.bed.log";
+    my $piranhafile       = getcwd()."/".basename($clipfile).".piranha.bed";
+    my $piranhafilelog    = getcwd()."/".basename($clipfile).".piranha.bed.log";
+    my $sortedpiranhafile = getcwd()."/".basename($clipfile).".piranha.sorted.bed";
+    # run the prebinning
+    my @cmd = ($opt->{scriptdir}."CLIP_binned_bed_from_bam_and_transcripts_for_piranha.pl", "--bam", $bamfile, "--size", $opt->{piranha_bin_size}, "--transcripts", $opt->{annotationA});
+    my $cmd = join(" ", (@cmd, ">$prebinned", "2>$prebinnedlog"));
+    qx($cmd);
+    $L->info("Calling command: $cmd");
+    if ($? != 0)
+    {
+	$L->logdie("Error running command '$cmd'");
+    }
+
+    # run Piranha with prebinned bed
+    @cmd = ("Piranha", "-VERBOSE", "-o", $piranhafile, "-s", $prebinned);
+    if (exists $opt->{testrun} && $opt->{testrun})
+    {
+	$L->warn("TESTRUN was activated though --testrun option. This increases the p-value threshold for Piranha to 20%!!! Please use only for the provided testset and NOT(!!!) for real analysis!!!");
+	push(@cmd, ("-p", 0.2));
+    }
+    $cmd = join(" ", (@cmd, "2>$piranhafilelog"));
+    $L->info("Calling command: $cmd");
+    qx($cmd);
+    if ($? != 0)
+    {
+	$L->logdie("Error running command '$cmd'");
+    }
+
+    # own sort routine, was originally based on a sort call,
+    # nevertheless, I want to scan for lines containing -nan from
+    # Piranha output and skip that lines, due to they will produce
+    # errors later.
+    my @dat = ();
+    open(FH, "<", $piranhafile) || $L->logdie("Unable to open '$piranhafile': $!");
+    while (<FH>)
+    {
+	chomp;
+	my @fields = split("\t", $_);
+	if ($fields[-1] eq "-nan")
+	{
+	    $L->warn(sprintf("Line %d from file '%s' contained '-nan' and will be skipped", $., $piranhafile));
+	} else {
+	    push(@dat, \@fields);
+	}
+    }
+    close(FH) || $L->logdie("Unable to close '$piranhafile': $!");
+    @dat = sort { $a->[0] cmp $b->[0] || $a->[1] <=> $b->[2] } (@dat);
+
+    open(FH, ">", $sortedpiranhafile) || $L->logdie("Unable to open '$sortedpiranhafile': $!");
+    foreach my $fields (@dat)
+    {
+	print FH join("\t", @{$fields}), "\n";
+    }
+    close(FH) || $L->logdie("Unable to close '$sortedpiranhafile': $!");
+
 }
 
 sub run_CLIP_mapping
@@ -1502,11 +1561,11 @@ sub copy_final_files
     {
 	if (! defined $sourcefile)
 	{
-	    $L->error("Sourcefile '$sourcefile' is not defined");
+	    $L->logcarp("Sourcefile is not defined");
 	}
 	elsif (! -e $sourcefile)
 	{
-	    $L->error("Sourcefile '$sourcefile' not accessable");
+	    $L->logcarp("Sourcefile '$sourcefile' not accessable");
 	} else {
 	    my $destfile = basename($sourcefile);
 	    if (-e $destfile)
@@ -1514,11 +1573,12 @@ sub copy_final_files
 		if ($opt->{overwrite} )
 		{
 		    unlink($destfile) || $L->logdie("Unable to remove existing destination: '$destfile': $!");
-		    copy($sourcefile, $destfile) || $L->logdie("Unable to copy '$sourcefile' to '$destfile'");
 		} else {
 		    $L->error("Destination file exists and overwrite was not specified");
 		}
 	    }
+	    $L->info("Copying $sourcefile --> $destfile");
+	    copy($sourcefile, $destfile) || $L->logdie("Unable to copy '$sourcefile' to '$destfile'");
 	}
     }
 }
@@ -1534,22 +1594,43 @@ sub transfer_resultfiles
     # pseudo mirBASE dat file
     # final_mirbase_pseudofile.dat :=
     # A pseudo mirBASE dat file containing all precursor sequences with their named mature sequences and their coordinates.
-    copy_final_files($opt, $opt->{mining}{completion}{dat});
+    if (exists $opt->{mining}{completion}{dat} && defined $opt->{mining}{completion}{dat})
+    {
+	copy_final_files($opt, $opt->{mining}{completion}{dat});
+    } else {
+	$L->info("Skipping copying of pseudo mirBASE dat file");
+    }
+
 
     # mature miRNA set
     # mature_combined_mirbase_novel.fa :=
     # mature microRNA set, containing novels and miRBase-completed (if mined), together with the known miRNAs from miRBase
-    copy_final_files($opt, $opt->{final_mature});
+    if (exists $opt->{final_mature} && defined $opt->{final_mature})
+    {
+	copy_final_files($opt, $opt->{final_mature});
+    } else {
+	$L->info("Skipping copying of mature miRNA set");
+    }
 
     # precursor miRNA set
     # hairpin_combined_mirbase_novel.fa :=
     # precursor microRNA set, containing novels (if mined), together with the known miRNAs from miRBase
-    copy_final_files($opt, $opt->{final_hairpin});
+    if (exists $opt->{final_hairpin} && defined $opt->{final_hairpin})
+    {
+	copy_final_files($opt, $opt->{final_hairpin});
+    } else {
+	$L->info("Skipping copying of final hairpin set");
+    }
 
     # mature miRNA expression per condition
     # miRNA_expression.csv :=
     # Semicolon-separated file : rpm;condition;miRNA
-    copy_final_files($opt, $opt->{mining_quantification_result});
+    if (exists $opt->{mining_quantification_result} && defined $opt->{mining_quantification_result})
+    {
+	copy_final_files($opt, $opt->{mining_quantification_result});
+    } else {
+	$L->info("Skipping copying of mature expression per condition file");
+    }
 
     # orthologous prediction file
     # miRNA_orthologs.csv :=
@@ -1560,12 +1641,22 @@ sub transfer_resultfiles
     #                      subject_aligned_seq query_length
     #                      subject_length query_coverage
     #                      subject_coverage
-    copy_final_files($opt, $opt->{mining}{orthologs});
+    if (exists $opt->{mining}{orthologs} && defined $opt->{mining}{orthologs})
+    {
+	copy_final_files($opt, $opt->{mining}{orthologs});
+    } else {
+	$L->info("Skipping copying of potential ortholog file");
+    }
 
     # miRDeep2 mining result in HTML
     # result_02_03_2018_t_09_30_01.html:=
     # the standard output HTML file of miRDeep2
-    copy_final_files($opt, $opt->{mirdeep_output_html}, $opt->{mirdeep_output});
+    if (exists $opt->{mirdeep_output_html} && defined $opt->{mirdeep_output_html})
+    {
+	copy_final_files($opt, $opt->{mirdeep_output_html}, $opt->{mirdeep_output});
+    } else {
+	$L->info("Skipping copying of mirDEEP2 output file");
+    }
 
     # all isomir output files
     # isomir_output_CONDITION.csv
@@ -1578,7 +1669,13 @@ sub transfer_resultfiles
     #          sequence
     #          rpm
     #          condition
-    copy_final_files($opt, @{$opt->{isomir_output_files}});
+    if (exists $opt->{isomir_output_files} && defined $opt->{isomir_output_files})
+    {
+	copy_final_files($opt, @{$opt->{isomir_output_files}});
+    } else {
+	$L->info("Skipping copying of isomir output files");
+    }
+
 
     # genomic location of miRNAs
     # miRNA_genomic_position.csv
@@ -1596,17 +1693,32 @@ sub transfer_resultfiles
     #          genomic-stop
     #          evalue
     #          bitscore
-    copy_final_files($opt, $opt->{mining}{genomic_location});
+    if (exists $opt->{mining}{genomic_location} && defined $opt->{mining}{genomic_location})
+    {
+	copy_final_files($opt, $opt->{mining}{genomic_location});
+    } else {
+	$L->info("Skipping copying of genomic location output file");
+    }
 
     # all library support-level target predictions
     # *_miranda_output.txt :=
     # miranda output, reduced to the lines, starting with > only
-    copy_final_files($opt, @{$opt->{miranda_output}});
+    if (exists $opt->{miranda_output} && defined $opt->{miranda_output})
+    {
+	copy_final_files($opt, @{$opt->{miranda_output}});
+    } else {
+	$L->info("Skipping copying of miranda output files");
+    }
 
     # all library support-level CLIP transfer .bed files
     # *transfered_merged.bed :=
     # bed-file of the transferred CLIP-regions in speciesB transcriptome
-    copy_final_files($opt, @{$opt->{clip_final_bed}});
+    if (exists $opt->{clip_final_bed} && defined $opt->{clip_final_bed})
+    {
+	copy_final_files($opt, @{$opt->{clip_final_bed}});
+    } else {
+	$L->info("Skipping copying of final CLIP output files");
+    }
 
     $L->info("Finished copy process");
 }

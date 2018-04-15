@@ -18,7 +18,7 @@ Log::Log4perl->init( \q(
 	log4perl.appender.Screen                = Log::Log4perl::Appender::Screen
 	log4perl.appender.Screen.stderr         = 1
 	log4perl.appender.Screen.layout         = PatternLayout
-	log4perl.appender.Screen.layout.ConversionPattern = [%d{yyyy-MM-dd HH:mm:ss}] %m%n
+	log4perl.appender.Screen.layout.ConversionPattern = [%d{yyyy-MM-dd HH:mm:ss}] [%c] %m%n
 ));
 
 # parse the input parameter
@@ -49,7 +49,7 @@ my $opt = {
     speciesB_tag       => undef,
     mirbasedir         => undef,
     tempdir            => undef,
-    piranha_bin_size   => 20,
+    piranha_bin_size   => 30,
 
     CLIPminProcessLength => undef,
     CLIPmaxProcessLength => undef,
@@ -273,7 +273,7 @@ C<--out> parameter.
 
 =item C<--piranhabinsize>
 
-Sets the F<Piranha> bin size and has a default value of C<20>.
+Sets the F<Piranha> bin size and has a default value of C<30>.
 
 =item C<--CLIPminProcessLength> and C<--CLIPmaxProcessLength>
 
@@ -459,7 +459,17 @@ Please report any new issues ad L<new Github-Issue|https://github.com/microPIECE
 
 =item scheduled for next release
 
-No features so far
+No features planned
+
+=item L<v1.5.2|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.5.2> (2018-04-13)
+
+Refactoring of F<CLIP_merge_bed_files.pl> to reduce memory footprint by a factor of 10x (Fixes L<#174|https://github.com/microPIECE-team/microPIECE/issues/174>)
+
+Refactoring of Piranha run to support multithreading (Fixes L<#177|https://github.com/microPIECE-team/microPIECE/issues/177>)
+
+Fixing copy process of final files (Fixes L<#184|https://github.com/microPIECE-team/microPIECE/issues/184>)
+
+Setting default bin size for Piranha to 30 (Fixes L<#178|https://github.com/microPIECE-team/microPIECE/issues/178>)
 
 =item L<v1.5.1|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.5.1> (2018-04-11)
 
