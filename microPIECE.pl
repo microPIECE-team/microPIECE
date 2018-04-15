@@ -471,6 +471,18 @@ Fixing copy process of final files (Fixes L<#184|https://github.com/microPIECE-t
 
 Setting default bin size for Piranha to 30 (Fixes L<#178|https://github.com/microPIECE-team/microPIECE/issues/178>)
 
+=begin html
+
+This version is archived as <a href="https://doi.org/10.5281/zenodo.1218731"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.1218731.svg" alt="DOI" /></a>.
+
+=end html
+
+=begin text
+
+This version is archived as L<https://doi.org/10.5281/zenodo.1218731>.
+
+=end text
+
 =item L<v1.5.1|https://github.com/microPIECE-team/microPIECE/releases/tag/v1.5.1> (2018-04-11)
 
 Added optimized pre-binning step for C<Piranha> (Fixes L<#132|https://github.com/microPIECE-team/microPIECE/issues/132>)
